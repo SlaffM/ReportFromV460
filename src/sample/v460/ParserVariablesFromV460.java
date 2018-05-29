@@ -58,9 +58,7 @@ public class ParserVariablesFromV460 {
         for(AbstractBean abstractBean : csvTransfer.getCsvList()){
 
             parserVariablesFromV460.addVariable(abstractBean);
-            //Iec870Variable iec870Variable = (Iec870Variable) abstractBean;
-
-            AbstractBean bean = FactoryIecType
+            Iec870Variable iec870Variable = (Iec870Variable) abstractBean;
 
             oldCountPanelPoints = panelPoints.size();
 
