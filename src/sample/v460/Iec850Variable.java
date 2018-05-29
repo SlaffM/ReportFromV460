@@ -2,7 +2,7 @@ package sample.v460;
 
 import com.opencsv.bean.CsvBindByPosition;
 
-public class Iec850Variable extends AbstractBean {
+public class Iec850Variable implements IecProtocolStrategy {
 
     @CsvBindByPosition(position = 2)
     private String driverType;
@@ -24,15 +24,6 @@ public class Iec850Variable extends AbstractBean {
 
     @CsvBindByPosition(position = 19)
     private String symbAddr;
-
-    @CsvBindByPosition(position = 76)
-    private String iec870_type;
-
-    @CsvBindByPosition(position = 77)
-    private String iec870_coa1;
-
-    @CsvBindByPosition(position = 78)
-    private String iec870_ioa1;
 
     public String getTagname() {
         return tagname;
@@ -90,30 +81,6 @@ public class Iec850Variable extends AbstractBean {
         this.symbAddr = symbAddr;
     }
 
-    public String getIec870_type() {
-        return iec870_type;
-    }
-
-    public void setIec870_type(String iec870_type) {
-        this.iec870_type = iec870_type;
-    }
-
-    public String getIec870_coa1() {
-        return iec870_coa1;
-    }
-
-    public void setIec870_coa1(String iec870_coa1) {
-        this.iec870_coa1 = iec870_coa1;
-    }
-
-    public String getIec870_ioa1() {
-        return iec870_ioa1;
-    }
-
-    public void setIec870_ioa1(String iec870_ioa1) {
-        this.iec870_ioa1 = iec870_ioa1;
-    }
-
     public String getPanelLocation(){
         return getTagname().substring(0,8).trim();
     }
@@ -145,7 +112,6 @@ public class Iec850Variable extends AbstractBean {
         return "Iec870Variable{" +
                 "signal='" + getSignalName() + '\'' +
                 ", Matrix='" + getMatrix() + '\'' +
-                ", ioa1='" + getIec870_ioa1() + '\'' +
                 ", resLabel='" + getRecourcesLabel() + '\'' +
                 ", symAddr='" + getSymbAddr() + '\'' +
                 '}';
