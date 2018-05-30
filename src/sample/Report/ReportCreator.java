@@ -8,13 +8,12 @@ import java.util.Map;
 
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
-import sample.v460.AbstractBean;
-import sample.v460.Iec870VariableType;
+import sample.v460.ResourceBean;
 
 
 public class ReportCreator {
 
-    public static void CreateDocFile(Map<String, ArrayList<AbstractBean>> points) throws IOException {
+    public static void CreateDocFile(Map<String, ArrayList<ResourceBean>> points) throws IOException {
 
 /*
         String[] sheetArray = new String[]{"one", "two", "three", "four"};
@@ -26,7 +25,7 @@ public class ReportCreator {
 
         XWPFDocument document = new XWPFDocument();
 
-        for(Map.Entry<String, ArrayList<AbstractBean>> iecVariables: points.entrySet()){
+        for(Map.Entry<String, ArrayList<ResourceBean>> iecVariables: points.entrySet()){
             ReportPanelTitle reportPanelTitle = new ReportPanelTitle();
             reportPanelTitle.setTagname(iecVariables.getKey());
 
@@ -39,7 +38,7 @@ public class ReportCreator {
         fos.close();
     }
 
-    private static void changeOrientation(XWPFDocument document, ReportPanelTitle reportPanelTitle, ArrayList<AbstractBean> iec870VariableTypes){
+    private static void changeOrientation(XWPFDocument document, ReportPanelTitle reportPanelTitle, ArrayList<ResourceBean> iec870VariableTypes){
 
 
         CTBody body = document.getDocument().getBody();
@@ -150,7 +149,7 @@ public class ReportCreator {
 
 
 
-    private static XWPFTable createTableVariablesPanel(XWPFDocument document, ArrayList<AbstractBean> iec870VariableTypes){
+    private static XWPFTable createTableVariablesPanel(XWPFDocument document, ArrayList<ResourceBean> iec870VariableTypes){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
         run.addBreak();

@@ -7,7 +7,7 @@ public class CsvTransfer {
 
         private List<String[]> csvStringList;
 
-        private List<AbstractBean> csvList;
+        private List<ResourceBean> csvList;
 
         public CsvTransfer() {}
 
@@ -25,13 +25,13 @@ public class CsvTransfer {
             this.csvStringList = csvStringList;
         }
 
-        public void setCsvList(List<AbstractBean> csvList) {
+        public void setCsvList(List<ResourceBean> csvList) {
             this.csvList = csvList;
         }
 
-        public List<AbstractBean> getCsvList() {
+        public List<ResourceBean> getCsvList() {
             if (csvList != null) return csvList;
-            return new ArrayList<AbstractBean>();
+            return new ArrayList<ResourceBean>();
         }
 
 
