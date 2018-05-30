@@ -8,12 +8,13 @@ import java.util.Map;
 
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
-import sample.v460.Iec870Variable;
+import sample.v460.AbstractBean;
+import sample.v460.Iec870VariableType;
 
 
 public class ReportCreator {
 
-    public static void CreateDocFile(Map<String, ArrayList<Iec870Variable>> points) throws IOException {
+    public static void CreateDocFile(Map<String, ArrayList<AbstractBean>> points) throws IOException {
 
 /*
         String[] sheetArray = new String[]{"one", "two", "three", "four"};
@@ -25,7 +26,7 @@ public class ReportCreator {
 
         XWPFDocument document = new XWPFDocument();
 
-        for(Map.Entry<String, ArrayList<Iec870Variable>> iecVariables: points.entrySet()){
+        for(Map.Entry<String, ArrayList<AbstractBean>> iecVariables: points.entrySet()){
             ReportPanelTitle reportPanelTitle = new ReportPanelTitle();
             reportPanelTitle.setTagname(iecVariables.getKey());
 
@@ -38,7 +39,7 @@ public class ReportCreator {
         fos.close();
     }
 
-    private static void changeOrientation(XWPFDocument document, ReportPanelTitle reportPanelTitle, ArrayList<Iec870Variable> iec870Variables){
+    private static void changeOrientation(XWPFDocument document, ReportPanelTitle reportPanelTitle, ArrayList<AbstractBean> iec870VariableTypes){
 
 
         CTBody body = document.getDocument().getBody();
@@ -74,7 +75,7 @@ public class ReportCreator {
 
 
 
-        XWPFTable panelVariablesTable = createTableVariablesPanel(document, iec870Variables);
+        XWPFTable panelVariablesTable = createTableVariablesPanel(document, iec870VariableTypes);
 
 
         //XWPFParagraph para = document.createParagraph();
@@ -149,7 +150,7 @@ public class ReportCreator {
 
 
 
-    private static XWPFTable createTableVariablesPanel(XWPFDocument document, ArrayList<Iec870Variable> iec870Variables){
+    private static XWPFTable createTableVariablesPanel(XWPFDocument document, ArrayList<AbstractBean> iec870VariableTypes){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
         run.addBreak();
@@ -168,7 +169,7 @@ public class ReportCreator {
                 "Адрес IEC"
         };
 
-        XWPFTable table = document.createTable(iec870Variables.size()+1,variablesTableHeaders.length);
+        XWPFTable table = document.createTable(iec870VariableTypes.size()+1,variablesTableHeaders.length);
 
         XWPFTableRow tableRowOne = table.getRow(0);
         for(int count=0; count<variablesTableHeaders.length; count++){
@@ -186,21 +187,21 @@ public class ReportCreator {
             tableRowOne.getCell(count).setText(variablesTableHeaders[count]);
         }
         int rowCounter = 1;
-        for(Iec870Variable iec870Variable: iec870Variables){
+        /*for(Iec870VariableType iec870VariableType : iec870VariableTypes){
             tableRowOne = table.getRow(rowCounter);
-            tableRowOne.getCell(0).setText(iec870Variable.getPanelLocation());
-            tableRowOne.getCell(1).setText(iec870Variable.getSystem());
-            tableRowOne.getCell(2).setText(iec870Variable.getVoltageClass());
-            tableRowOne.getCell(3).setText(iec870Variable.getConnectionTitle());
-            tableRowOne.getCell(4).setText(iec870Variable.getDevice());
-            tableRowOne.getCell(5).setText(iec870Variable.getSignalName());
-            tableRowOne.getCell(6).setText(iec870Variable.getMatrix());
-            tableRowOne.getCell(7).setText(iec870Variable.getAlarmClass());
-            tableRowOne.getCell(8).setText(iec870Variable.getIec870_type());
-            tableRowOne.getCell(9).setText(iec870Variable.getIec870_coa1());
-            tableRowOne.getCell(10).setText(iec870Variable.getIec870_ioa1());
+            tableRowOne.getCell(0).setText(iec870VariableType.getPanelLocation());
+            tableRowOne.getCell(1).setText(iec870VariableType.getSystem());
+            tableRowOne.getCell(2).setText(iec870VariableType.getVoltageClass());
+            tableRowOne.getCell(3).setText(iec870VariableType.getConnectionTitle());
+            tableRowOne.getCell(4).setText(iec870VariableType.getDevice());
+            tableRowOne.getCell(5).setText(iec870VariableType.getSignalName());
+            tableRowOne.getCell(6).setText(iec870VariableType.getMatrix());
+            tableRowOne.getCell(7).setText(iec870VariableType.getAlarmClass());
+            tableRowOne.getCell(8).setText(iec870VariableType.getIec870_type());
+            tableRowOne.getCell(9).setText(iec870VariableType.getIec870_coa1());
+            tableRowOne.getCell(10).setText(iec870VariableType.getIec870_ioa1());
             rowCounter++;
-        }
+        }*/
 
         return table;
     }

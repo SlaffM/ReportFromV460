@@ -16,14 +16,13 @@ public class ParserVariablesFromV460 {
     private static String fileCsv;
     private ArrayList<AbstractBean> beans;
 
-    private static Map<String, ArrayList<Iec870Variable>> panelPoints;
+    private static Map<String, ArrayList<AbstractBean>> panelPoints;
 
 
 
-    public ParserVariablesFromV460(String file, ArrayList<AbstractBean> iec870Variables){
+    public ParserVariablesFromV460(String file, ArrayList<AbstractBean> abstractBeans){
         fileCsv = file;
-        beans = iec870Variables;
-        panelPoints = new Hashtable<>();
+        beans = abstractBeans;
     }
     public ParserVariablesFromV460(String file){
         this(file, new ArrayList<>());
@@ -32,19 +31,21 @@ public class ParserVariablesFromV460 {
         this(fileCsv, new ArrayList<>());
     }
 
-    public static ParserVariablesFromV460 parse(String file) throws Exception {
+    public static Map<String, ArrayList<AbstractBean>> parse(String file) throws Exception {
 
-        ParserVariablesFromV460 parserVariablesFromV460 = new ParserVariablesFromV460();
+        //ParserVariablesFromV460 parserVariablesFromV460 = new ParserVariablesFromV460();
+
+        Map<String, ArrayList<AbstractBean>> points = new Hashtable<>();
 
         Path path = Paths.get(file);
 
         CsvTransfer csvTransfer = new CsvTransfer();
         ColumnPositionMappingStrategy ms = new ColumnPositionMappingStrategy();
-        ms.setType(Iec870Variable.class);
+        ms.setType(Iec870VariableType.class);
 
         Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_16);
         CsvToBean cb = new CsvToBeanBuilder(reader)
-                .withType(Iec870Variable.class)
+                .withType(Iec870VariableType.class)
                 .withMappingStrategy(ms)
                 .withSeparator('\t')
                 .withSkipLines(1)
@@ -53,30 +54,45 @@ public class ParserVariablesFromV460 {
         reader.close();
 
         int oldCountPanelPoints = 0;
-        ArrayList<Iec870Variable> variablesInPoint = new ArrayList<>();
+        ArrayList<AbstractBean> variablesInPoint = new ArrayList<>();
 
         for(AbstractBean abstractBean : csvTransfer.getCsvList()){
 
-            parserVariablesFromV460.addVariable(abstractBean);
-            Iec870Variable iec870Variable = (Iec870Variable) abstractBean;
+            System.out.println(abstractBean.getPrefixTagname() +" - "+abstractBean.driverType());
 
-            oldCountPanelPoints = panelPoints.size();
+            if(abstractBean.isIec850Variable() || abstractBean.isIec870Variable()){
+                oldCountPanelPoints = points.size();
 
-            panelPoints.put(iec870Variable.getPrefixTagname(),variablesInPoint);
-            if(panelPoints.size() > oldCountPanelPoints){
-                System.out.println(iec870Variable.getDevice());
-                variablesInPoint = new ArrayList<>();
+                points.put(abstractBean.getPrefixTagname(),variablesInPoint);
+                if(points.size() > oldCountPanelPoints){
+                    System.out.println(abstractBean.getPrefixTagname());
+                    variablesInPoint = new ArrayList<>();
+                }
+                switch (abstractBean.driverType()) {
+                    case IEC850:
+                        Iec850VariableType iec850VariableType = (Iec850VariableType)abstractBean;
+                        variablesInPoint.add(iec850VariableType);
+                    case IEC870:
+                    case SPRECON870:
+                        Iec870VariableType iec870VariableType = (Iec870VariableType)abstractBean;
+                        variablesInPoint.add(iec870VariableType);
+                    default:
+                        break;
+                }
+
+
             }
-            variablesInPoint.add(iec870Variable);
         }
-        return parserVariablesFromV460;
+        return points;
     }
+
+
 
     private void addVariable(AbstractBean abstractBean){
         beans.add(abstractBean);
     }
 
-    public Map<String, ArrayList<Iec870Variable>> getPanelPoints() {
+    public Map<String, ArrayList<AbstractBean>> getPanelPoints() {
         return panelPoints;
     }
 }

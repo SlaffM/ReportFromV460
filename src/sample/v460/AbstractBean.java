@@ -1,5 +1,14 @@
 package sample.v460;
 
-public abstract class AbstractBean {
+public interface AbstractBean {
+
+    void accept(VisitorProtocol visitorProtocol);
+    DriverType driverType();
+    String getPrefixTagname();
+
+    boolean isAdditionalVariable();
+    boolean isIec870Variable();
+    boolean isIec850Variable();
+
 
 }

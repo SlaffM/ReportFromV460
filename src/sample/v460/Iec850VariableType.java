@@ -2,7 +2,7 @@ package sample.v460;
 
 import com.opencsv.bean.CsvBindByPosition;
 
-public class Iec850Variable implements IecProtocolStrategy {
+public class Iec850VariableType implements AbstractBean {
 
     @CsvBindByPosition(position = 2)
     private String driverType;
@@ -109,11 +109,65 @@ public class Iec850Variable implements IecProtocolStrategy {
 
     @Override
     public String toString() {
-        return "Iec870Variable{" +
+        return "Iec870VariableType{" +
                 "signal='" + getSignalName() + '\'' +
                 ", Matrix='" + getMatrix() + '\'' +
                 ", resLabel='" + getRecourcesLabel() + '\'' +
                 ", symAddr='" + getSymbAddr() + '\'' +
                 '}';
+    }
+
+    public void accept(VisitorProtocol visitorProtocol){
+        visitorProtocol.visit(this);
+    }
+
+    @Override
+    public boolean isAdditionalVariable() {
+        switch (driverType()){
+            case MATHDR32: case Intern: case SNMP32:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public boolean isIec870Variable() {
+        switch (driverType()){
+            case SPRECON870: case IEC870:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public boolean isIec850Variable() {
+        switch (driverType()){
+            case IEC850:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public DriverType driverType(){
+        switch(getDriverType()){
+            case "SPRECON870":
+                return DriverType.SPRECON870;
+            case "IEC870":
+                return DriverType.IEC870;
+            case "IEC850":
+                return DriverType.IEC850;
+            case "SNMP32":
+                return DriverType.SNMP32;
+            case "Intern":
+                return DriverType.Intern;
+            case "MATHDR32":
+                return DriverType.MATHDR32;
+            default:
+                return DriverType.UNKNOWN;
+        }
     }
 }
