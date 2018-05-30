@@ -2,6 +2,7 @@ package sample.v460;
 
 
 import com.opencsv.bean.*;
+import sample.Report.ReportPanelTitle;
 
 
 import java.io.*;
@@ -18,8 +19,6 @@ public class ParserVariablesFromV460 {
 
     private static Map<String, ArrayList<ResourceBean>> panelPoints;
 
-
-
     public ParserVariablesFromV460(String file, ArrayList<ResourceBean> resourceBeans){
         fileCsv = file;
         beans = resourceBeans;
@@ -31,9 +30,7 @@ public class ParserVariablesFromV460 {
         this(fileCsv, new ArrayList<>());
     }
 
-    public static Map<String, ArrayList<ResourceBean>> parse(String file) throws Exception {
-
-        //ParserVariablesFromV460 parserVariablesFromV460 = new ParserVariablesFromV460();
+    public static ArrayList<PointParam> parse(String file) throws Exception {
 
         Map<String, ArrayList<ResourceBean>> points = new Hashtable<>();
 
@@ -55,7 +52,6 @@ public class ParserVariablesFromV460 {
 
         int oldCountPanelPoints = 0;
         ArrayList<ResourceBean> variablesInPoint = new ArrayList<>();
-
         for(ResourceBean resourceBean : csvTransfer.getCsvList()){
 
             if(resourceBean.isIec850Variable() || resourceBean.isIec870Variable()){
@@ -65,23 +61,25 @@ public class ParserVariablesFromV460 {
                 if(points.size() > oldCountPanelPoints){
                     variablesInPoint = new ArrayList<>();
                 }
-
-                switch (resourceBean.driverType()){
-                    case IEC850:
-                        Iec850VariableType iec850VariableType = (Iec850VariableType)resourceBean;
-                        variablesInPoint.add(iec850VariableType);
-                        break;
-                    case SPRECON870: case IEC870:
-                        Iec870VariableType iec870VariableType = (Iec870VariableType)resourceBean;
-                        variablesInPoint.add(iec870VariableType);
-                        break;
-                    default:
-                        break;
-                }
-
+                variablesInPoint.add(resourceBean);
             }
         }
-        return points;
+
+        ArrayList<PointParam> pointParams = new ArrayList<>();
+
+        for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
+            PointParam pointParam = new PointParam();
+            ReportPanelTitle reportPanelTitle = new ReportPanelTitle();
+            reportPanelTitle.setTagname(entry.getKey());
+            DriverType driverType = entry.getValue().get(0).driverType();
+
+            pointParam.setReportPanelTitle(reportPanelTitle);
+            pointParam.setDriverType(driverType);
+            pointParam.setResourceBeans(entry.getValue());
+            pointParams.add(pointParam);
+        }
+
+        return pointParams;
     }
 
     private void addVariable(ResourceBean resourceBean){
