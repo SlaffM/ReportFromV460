@@ -5,7 +5,6 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
-import sample.v460.Iec870VariableType;
 import sample.v460.PointParam;
 import sample.v460.ResourceBean;
 

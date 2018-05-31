@@ -6,6 +6,6 @@
 
 <GridPane alignment="center" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121" fx:controller="sample.Controller">
    <children>
-      <Button fx:id="btnGenerate" mnemonicParsing="false" onAction="#createDocFile" text="Generate" />
+      <Button fx:id="btnGenerate" mnemonicParsing="false" onAction="#createDocFile" text="Сделать круто" />
    </children>
 </GridPane>
