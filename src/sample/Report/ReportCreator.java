@@ -20,7 +20,6 @@ public class ReportCreator {
         ReportContext reportContext = new ReportContext();
 
         for(PointParam point: pointParams){
-
             switch (point.getDriverType()){
                 case IEC870: case SPRECON870:
                     reportContext.setReportStrategy(new Iec870ReportStrategy());
@@ -28,10 +27,12 @@ public class ReportCreator {
                 case IEC850:
                     reportContext.setReportStrategy(new Iec850ReportStrategy());
                     break;
+                case SPRECON850:
+                    reportContext.setReportStrategy(new Iec850SpreconReportStrategy());
+                    break;
                 default:
                     break;
             }
-
             reportContext.createTable(document, point);
         }
 

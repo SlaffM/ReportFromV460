@@ -11,14 +11,13 @@ import sample.v460.ResourceBean;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public class Iec870ReportStrategy implements ReportStrategy{
+public class Iec850SpreconReportStrategy implements ReportStrategy {
 
     public void createTable(XWPFDocument document, PointParam pointParam) {
         createTableForPoint(document, pointParam);
     }
 
     private void createTableForPoint(XWPFDocument document, PointParam pointParam){
-
 
         CTBody body = document.getDocument().getBody();
         if(!body.isSetSectPr()){
@@ -81,9 +80,8 @@ public class Iec870ReportStrategy implements ReportStrategy{
                 "Наименование сигнала",
                 "Текс состояния",
                 "Класс тревог",
-                "Тип АСДУ",
-                "Адрес АСДУ",
-                "Адрес IEC"
+                "Адрес Sprecon",
+                "Адрес Sprecon IEC850"
         };
 
         XWPFTable table = document.createTable(resourceBeans.size()+1,variablesTableHeaders.length);
@@ -114,9 +112,8 @@ public class Iec870ReportStrategy implements ReportStrategy{
             tableRowOne.getCell(5).setText(resourceBean.getSignalName());
             tableRowOne.getCell(6).setText(resourceBean.getStatusText());
             tableRowOne.getCell(7).setText(resourceBean.getAlarmClass());
-            tableRowOne.getCell(8).setText(resourceBean.getIec870_type());
-            tableRowOne.getCell(9).setText(resourceBean.getIec870_coa1());
-            tableRowOne.getCell(10).setText(resourceBean.getIec870_ioa1());
+            tableRowOne.getCell(8).setText(resourceBean.getRecourcesLabel());
+            tableRowOne.getCell(9).setText(resourceBean.getSymbAddr());
             rowCounter++;
         }
 
@@ -179,8 +176,6 @@ public class Iec870ReportStrategy implements ReportStrategy{
 
         return table;
     }
-
-
 
 
 }

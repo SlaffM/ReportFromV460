@@ -4,6 +4,10 @@ public class ReportPanelTitle {
 
     private String tagname;
 
+    public ReportPanelTitle(String tagname) {
+        this.tagname = tagname;
+    }
+
     public String getTagname() {
         return tagname;
     }

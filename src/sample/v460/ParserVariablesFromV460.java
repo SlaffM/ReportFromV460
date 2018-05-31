@@ -2,6 +2,7 @@ package sample.v460;
 
 
 import com.opencsv.bean.*;
+import sample.Helpers.Helpers;
 import sample.Report.ReportPanelTitle;
 
 
@@ -68,11 +69,14 @@ public class ParserVariablesFromV460 {
         ArrayList<PointParam> pointParams = new ArrayList<>();
 
         for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
-            PointParam pointParam = new PointParam();
-            ReportPanelTitle reportPanelTitle = new ReportPanelTitle();
-            reportPanelTitle.setTagname(entry.getKey());
-            DriverType driverType = entry.getValue().get(0).driverType();
 
+            PointParam pointParam = new PointParam();
+            ReportPanelTitle reportPanelTitle = new ReportPanelTitle(entry.getKey());
+            DriverType driverType = entry.getValue().get(0).driverType();
+            if(Helpers.isBeanSprecon850Driver(entry.getValue().get(0)))
+            {
+                driverType = DriverType.SPRECON850;
+            }
             pointParam.setReportPanelTitle(reportPanelTitle);
             pointParam.setDriverType(driverType);
             pointParam.setResourceBeans(entry.getValue());

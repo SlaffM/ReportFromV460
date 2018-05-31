@@ -1,6 +1,7 @@
 package sample.v460;
 
 import com.opencsv.bean.CsvBindByPosition;
+import sample.Helpers.Helpers;
 
 public class ResourceBean implements Cloneable{
 
@@ -71,7 +72,7 @@ public class ResourceBean implements Cloneable{
         return symbAddr;
     }
     public void setSymbAddr(String symbAddr) {
-        this.symbAddr = symbAddr;
+        this.symbAddr = getFormattedIec850Address(symbAddr);
     }
 
     public String getIec870_type() {
@@ -103,6 +104,9 @@ public class ResourceBean implements Cloneable{
             case GM3:   return "ПС2";
             default:    return "";
         }
+    }
+    public String getStatusText() {
+        return getStatusTextByRules(getMatrix());
     }
     public String getPanelLocation(){
         return getTagname().substring(0,8).trim();
@@ -186,11 +190,19 @@ public class ResourceBean implements Cloneable{
             return AlarmClassType.BM;
         }
     }
+    private String getStatusTextByRules(String srcMatrix)  {
+        if(Helpers.isMatrixStartsAlarmClass(srcMatrix)){
+            return Helpers.getTextWithPattern(srcMatrix, "_(\\w+)/");
+        }else if(Helpers.isMatrixEndsWithAlarmClass(srcMatrix)){
+            return Helpers.getTextWithPattern(srcMatrix, "(^\\w+/\\w+)_");
+        }else{
+            return srcMatrix;
+        }
+    }
+    private String getFormattedIec850Address(String symAddress){
+        return Helpers.getTextWithPattern(symAddress, "!(\\w.*)").replace("[ST]","");
+    }
 
-
-    /*private String formatMatrix(String srcMatrix){
-
-    }*/
 
     @Override
     public String toString() {

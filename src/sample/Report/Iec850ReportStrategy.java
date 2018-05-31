@@ -8,6 +8,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import sample.v460.PointParam;
 import sample.v460.ResourceBean;
 
+import java.awt.print.PageFormat;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -81,7 +82,8 @@ public class Iec850ReportStrategy implements ReportStrategy {
                 "Наименование сигнала",
                 "Текс состояния",
                 "Класс тревог",
-                "Адрес Экра"
+                "Адрес Экра",
+                "Адрес Экра IEC850"
         };
 
         XWPFTable table = document.createTable(resourceBeans.size()+1,variablesTableHeaders.length);
@@ -110,9 +112,10 @@ public class Iec850ReportStrategy implements ReportStrategy {
             tableRowOne.getCell(3).setText(resourceBean.getConnectionTitle());
             tableRowOne.getCell(4).setText(resourceBean.getDevice());
             tableRowOne.getCell(5).setText(resourceBean.getSignalName());
-            tableRowOne.getCell(6).setText(resourceBean.getMatrix());
+            tableRowOne.getCell(6).setText(resourceBean.getStatusText());
             tableRowOne.getCell(7).setText(resourceBean.getAlarmClass());
             tableRowOne.getCell(8).setText(resourceBean.getRecourcesLabel());
+            tableRowOne.getCell(9).setText(resourceBean.getSymbAddr());
             rowCounter++;
         }
 
