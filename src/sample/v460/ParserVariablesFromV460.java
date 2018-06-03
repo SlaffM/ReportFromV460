@@ -3,9 +3,8 @@ package sample.v460;
 
 import com.opencsv.bean.*;
 import sample.Helpers.Helpers;
+import sample.Report.ReportPanelSprTitle;
 import sample.Report.ReportPanelTitle;
-
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -15,29 +14,33 @@ import java.util.*;
 
 public class ParserVariablesFromV460 {
 
-    private static String fileCsv;
-    private ArrayList<ResourceBean> beans;
+    private String file;
 
-    private static Map<String, ArrayList<ResourceBean>> panelPoints;
-
-    public ParserVariablesFromV460(String file, ArrayList<ResourceBean> resourceBeans){
-        fileCsv = file;
-        beans = resourceBeans;
-    }
     public ParserVariablesFromV460(String file){
-        this(file, new ArrayList<>());
-    }
-    public ParserVariablesFromV460(){
-        this(fileCsv, new ArrayList<>());
+        this.file = file;
     }
 
-    public static ArrayList<PointParam> parse(String file) throws Exception {
 
-        Map<String, ArrayList<ResourceBean>> points = new Hashtable<>();
+
+    public ArrayList<PointParam> parse() throws Exception {
+
+        List<ResourceBean> resourceBeans = getBeansFromCsv(getFile());
+
+        Map<String, ArrayList<ResourceBean>> points = getSrcPoints(resourceBeans);
+
+        ArrayList<PointParam> pointParams = getPointParams(points);
+
+        return pointParams;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    private List<ResourceBean> getBeansFromCsv(String file) throws IOException {
 
         Path path = Paths.get(file);
 
-        CsvTransfer csvTransfer = new CsvTransfer();
         ColumnPositionMappingStrategy ms = new ColumnPositionMappingStrategy();
         ms.setType(ResourceBean.class);
 
@@ -48,34 +51,55 @@ public class ParserVariablesFromV460 {
                 .withSeparator('\t')
                 .withSkipLines(1)
                 .build();
-        csvTransfer.setCsvList(cb.parse());
+
+        List<ResourceBean> resourceBeans = new ArrayList<>(cb.parse());
         reader.close();
+
+
+
+        if(resourceBeans != null){ return resourceBeans; }
+        return new ArrayList<>();
+    }
+
+    private Map<String, ArrayList<ResourceBean>> getSrcPoints(List<ResourceBean> resourceBeans){
+        Map<String, ArrayList<ResourceBean>> points = new Hashtable<>();
 
         int oldCountPanelPoints = 0;
         ArrayList<ResourceBean> variablesInPoint = new ArrayList<>();
-        for(ResourceBean resourceBean : csvTransfer.getCsvList()){
-
+        for(ResourceBean resourceBean : resourceBeans){
             if(resourceBean.isIec850Variable() || resourceBean.isIec870Variable()){
                 oldCountPanelPoints = points.size();
-
-                points.put(resourceBean.getPrefixTagname(),variablesInPoint);
+                if(Helpers.isBeanSprecon850Driver(resourceBean)){
+                    points.put(resourceBean.getPrefixConnection(),variablesInPoint);
+                }else{
+                    points.put(resourceBean.getPrefixTagname(),variablesInPoint);
+                }
                 if(points.size() > oldCountPanelPoints){
                     variablesInPoint = new ArrayList<>();
                 }
                 variablesInPoint.add(resourceBean);
             }
         }
+        return points;
+    }
+
+    private ArrayList<PointParam> getPointParams(Map<String, ArrayList<ResourceBean>> points){
 
         ArrayList<PointParam> pointParams = new ArrayList<>();
 
         for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
 
             PointParam pointParam = new PointParam();
-            ReportPanelTitle reportPanelTitle = new ReportPanelTitle(entry.getKey());
-            DriverType driverType = entry.getValue().get(0).driverType();
-            if(Helpers.isBeanSprecon850Driver(entry.getValue().get(0)))
-            {
+            ReportPanelTitle reportPanelTitle;
+            DriverType driverType;
+            ResourceBean resourceBean = entry.getValue().get(0);
+
+            if(Helpers.isBeanSprecon850Driver(resourceBean)){
+                reportPanelTitle = new ReportPanelSprTitle(resourceBean);
                 driverType = DriverType.SPRECON850;
+            }else{
+                reportPanelTitle = new ReportPanelTitle(resourceBean);
+                driverType = resourceBean.driverType();
             }
             pointParam.setReportPanelTitle(reportPanelTitle);
             pointParam.setDriverType(driverType);
@@ -84,13 +108,7 @@ public class ParserVariablesFromV460 {
         }
 
         return pointParams;
+
     }
 
-    private void addVariable(ResourceBean resourceBean){
-        beans.add(resourceBean);
-    }
-
-    public Map<String, ArrayList<ResourceBean>> getPanelPoints() {
-        return panelPoints;
-    }
 }

@@ -115,7 +115,7 @@ public class Iec850ReportStrategy implements ReportStrategy {
             tableRowOne.getCell(6).setText(resourceBean.getStatusText());
             tableRowOne.getCell(7).setText(resourceBean.getAlarmClass());
             tableRowOne.getCell(8).setText(resourceBean.getRecourcesLabel());
-            tableRowOne.getCell(9).setText(resourceBean.getSymbAddr());
+            tableRowOne.getCell(9).setText(resourceBean.getShortSymbAddress());
             rowCounter++;
         }
 
@@ -153,9 +153,9 @@ public class Iec850ReportStrategy implements ReportStrategy {
         tableRowFour.getCell(0).setText("Обозначение контроллера");
         tableRowFour.getCell(1).setText(reportPanelTitle.getControllerTitle());
 
-        /*XWPFTableRow tableRowFive = table.createRow();
+        XWPFTableRow tableRowFive = table.createRow();
         tableRowFive.getCell(0).setText("IP-адрес");
-        tableRowFive.getCell(1).setText(reportPanelTitle.getNetAddr());*/
+        tableRowFive.getCell(1).setText(reportPanelTitle.getIpAddress());
 
         for (XWPFTableRow row : table.getRows()) {
 
@@ -163,8 +163,6 @@ public class Iec850ReportStrategy implements ReportStrategy {
             p1.setAlignment(ParagraphAlignment.CENTER);
             XWPFRun r1 = p1.createRun();
             r1.setBold(true);
-
-
 
             /*for (XWPFTableCell cell : row.getTableCells()) {
                 for (XWPFParagraph paragraph : cell.getParagraphs()) {

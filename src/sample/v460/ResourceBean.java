@@ -72,7 +72,7 @@ public class ResourceBean implements Cloneable{
         return symbAddr;
     }
     public void setSymbAddr(String symbAddr) {
-        this.symbAddr = getFormattedIec850Address(symbAddr);
+        this.symbAddr = symbAddr;
     }
 
     public String getIec870_type() {
@@ -129,6 +129,10 @@ public class ResourceBean implements Cloneable{
     public String getPrefixTagname(){
         return getTagname().substring(0,78).trim();
     }
+    public String getPrefixConnection(){return getTagname().substring(0,51).trim(); }
+    public String getPrefixSpreconSymbAddress(){return getSpreconSymbPrefix(getSymbAddr());}
+    public String getShortSymbAddress(){return getFormattedIec850Address(getSymbAddr());}
+    public String getIpAddress(){return String.format("10.47.171.%s", getNetAddr());}
 
     public DriverType driverType(){
         switch(getDriverType()){
@@ -167,7 +171,7 @@ public class ResourceBean implements Cloneable{
     }
     public boolean isIec850Variable() {
         switch (driverType()){
-            case IEC850:
+            case IEC850: case SPRECON850:
                 return true;
             default:
                 return false;
@@ -201,6 +205,10 @@ public class ResourceBean implements Cloneable{
     }
     private String getFormattedIec850Address(String symAddress){
         return Helpers.getTextWithPattern(symAddress, "!(\\w.*)").replace("[ST]","");
+    }
+
+    private String getSpreconSymbPrefix(String symAddress){
+        return Helpers.getTextWithPattern(symAddress, "(^\\w.*)!");
     }
 
 

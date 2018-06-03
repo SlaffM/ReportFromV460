@@ -16,9 +16,9 @@ public class Helpers {
 
     public static boolean isMatrixEndsWithAlarmClass(String srcMatrix){
         return (srcMatrix.endsWith("_BM") ||
-                srcMatrix.startsWith("_DM") ||
-                srcMatrix.startsWith("_GM1") ||
-                srcMatrix.startsWith("_GM2") ||
+                srcMatrix.endsWith("_DM") ||
+                srcMatrix.endsWith("_GM1") ||
+                srcMatrix.endsWith("_GM2") ||
                 srcMatrix.endsWith("_GM3"));
     }
 
@@ -34,7 +34,7 @@ public class Helpers {
     }
 
     public static boolean isBeanSprecon850Driver(ResourceBean resourceBean){
-        String findHex = getTextWithPattern(resourceBean.getRecourcesLabel(), "(\\d{2}\\.)+\\d{2}");
+        String findHex = getTextWithPattern(resourceBean.getRecourcesLabel(), "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})");
         return !findHex.isEmpty();
     }
 

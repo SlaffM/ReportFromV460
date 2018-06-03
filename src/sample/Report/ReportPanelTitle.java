@@ -1,11 +1,19 @@
 package sample.Report;
 
+import sample.v460.ResourceBean;
+
 public class ReportPanelTitle {
 
     private String tagname;
+    private String idAddress;
+    private ResourceBean resourceBean;
 
     public ReportPanelTitle(String tagname) {
         this.tagname = tagname;
+    }
+
+    public ReportPanelTitle(ResourceBean resourceBean){
+        this.resourceBean = resourceBean;
     }
 
     public String getTagname() {
@@ -16,15 +24,24 @@ public class ReportPanelTitle {
     }
 
     public String getPanelLocation(){
-        return getTagname().substring(0,8).trim();
+        return getResourceBean().getPanelLocation();
     }
     public String getPanelTitle(){
-        return getTagname().substring(51).trim();
+        return getResourceBean().getDevice();
     }
+
+    public String getIpAddress() {
+        return getResourceBean().getIpAddress();
+    }
+
+    public ResourceBean getResourceBean() {
+        return resourceBean;
+    }
+
     public String getConnectionTitle(){
-        return getTagname().substring(24,51).trim();
+        return getResourceBean().getConnectionTitle();
     }
     public String getControllerTitle(){
-        return getTagname().substring(51).trim();
+        return getResourceBean().getConnectionTitle();
     }
 }

@@ -8,10 +8,11 @@ import sample.v460.ParserVariablesFromV460;
 import java.util.ArrayList;
 
 public class Controller {
-
     public void createDocFile(ActionEvent actionEvent) throws Exception {
-        ArrayList<PointParam> listPointParams = ParserVariablesFromV460.parse("v460.txt");
+
+        ArrayList<PointParam> listPointParams = new ParserVariablesFromV460("mkpa.txt").parse();
         ReportCreator.CreateDocFile(listPointParams);
+
     }
 }
 
