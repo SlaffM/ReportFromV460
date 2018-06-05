@@ -93,9 +93,11 @@ public class Iec850ReportStrategy implements ReportStrategy {
             tableRowOne.getCell(count).setColor("779BFF");
             tableRowOne.getCell(count).getParagraphs().get(0).setAlignment(ParagraphAlignment.CENTER);
 
+            tableRowOne.setRepeatHeader(true);
             XWPFParagraph para1 = tableRowOne.getCell(count).getParagraphs().get(0);
 
             XWPFRun rh = para1.createRun();
+
             // style cell as desired
 
             rh.setFontSize(16);
@@ -118,6 +120,7 @@ public class Iec850ReportStrategy implements ReportStrategy {
             tableRowOne.getCell(9).setText(resourceBean.getShortSymbAddress());
             rowCounter++;
         }
+
 
         return table;
     }
@@ -151,7 +154,7 @@ public class Iec850ReportStrategy implements ReportStrategy {
 
         XWPFTableRow tableRowFour = table.createRow();
         tableRowFour.getCell(0).setText("Обозначение контроллера");
-        tableRowFour.getCell(1).setText(reportPanelTitle.getControllerTitle());
+        tableRowFour.getCell(1).setText("Шкаф МТ10. Сервер SCADA");
 
         XWPFTableRow tableRowFive = table.createRow();
         tableRowFive.getCell(0).setText("IP-адрес");

@@ -20,8 +20,6 @@ public class ParserVariablesFromV460 {
         this.file = file;
     }
 
-
-
     public ArrayList<PointParam> parse() throws Exception {
 
         List<ResourceBean> resourceBeans = getBeansFromCsv(getFile());
@@ -64,13 +62,22 @@ public class ParserVariablesFromV460 {
     private Map<String, ArrayList<ResourceBean>> getSrcPoints(List<ResourceBean> resourceBeans){
         Map<String, ArrayList<ResourceBean>> points = new Hashtable<>();
 
+        Hashtable<String, ArrayList<ResourceBean>> dictionary = new Hashtable<>();
+
         int oldCountPanelPoints = 0;
         ArrayList<ResourceBean> variablesInPoint = new ArrayList<>();
         for(ResourceBean resourceBean : resourceBeans){
-            if(resourceBean.isIec850Variable() || resourceBean.isIec870Variable()){
+            if(isIecVariable(resourceBean)){
                 oldCountPanelPoints = points.size();
                 if(Helpers.isBeanSprecon850Driver(resourceBean)){
                     points.put(resourceBean.getPrefixConnection(),variablesInPoint);
+                    if(dictionary.containsKey(resourceBean.getNetAddr())){
+                        dictionary.get(resourceBean.getNetAddr()).add(resourceBean);
+                    }else{
+                        ArrayList<ResourceBean> beansInPoint = new ArrayList<>();
+                        beansInPoint.add(resourceBean);
+                        dictionary.put(resourceBean.getNetAddr(), beansInPoint);
+                    }
                 }else{
                     points.put(resourceBean.getPrefixTagname(),variablesInPoint);
                 }
@@ -80,9 +87,13 @@ public class ParserVariablesFromV460 {
                 variablesInPoint.add(resourceBean);
             }
         }
-        return points;
+        return dictionary;//points;
     }
+    //private ArrayList<ResourceBean> setResourceBeansInDict(String key, Hashtable<String, ArrayList<ResourceBean>> dict)
 
+    private boolean isIecVariable(ResourceBean resourceBean){
+        return resourceBean.isIec850Variable() || resourceBean.isIec870Variable();
+    }
     private ArrayList<PointParam> getPointParams(Map<String, ArrayList<ResourceBean>> points){
 
         ArrayList<PointParam> pointParams = new ArrayList<>();

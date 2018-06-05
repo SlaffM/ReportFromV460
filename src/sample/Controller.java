@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Controller {
     public void createDocFile(ActionEvent actionEvent) throws Exception {
 
-        ArrayList<PointParam> listPointParams = new ParserVariablesFromV460("mkpa.txt").parse();
+        ArrayList<PointParam> listPointParams = new ParserVariablesFromV460("spr_ts.txt").parse();
         ReportCreator.CreateDocFile(listPointParams);
 
     }

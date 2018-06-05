@@ -9,6 +9,6 @@ import java.util.ArrayList;
 
 public interface ReportStrategy {
 
-    void createTable(XWPFDocument document, PointParam pointParam);
+        void createTable(XWPFDocument document, PointParam pointParam);
 
 }
