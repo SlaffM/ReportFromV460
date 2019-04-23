@@ -2,19 +2,17 @@ package sample.Report;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+//import org.apache.poi.xssf.usermodel.*;
+import sample.Report.Strategy.*;
 import sample.v460.PointParam;
-import sample.v460.ResourceBean;
 
 
 public class ReportCreator {
 
-    public static void CreateDocFile(ArrayList<PointParam> pointParams) throws IOException {
+    public static void CreateDocFile(ArrayList<PointParam> pointParams, String docFile) throws IOException {
 
         XWPFDocument document = new XWPFDocument();
         ReportContext reportContext = new ReportContext();
@@ -36,7 +34,7 @@ public class ReportCreator {
             reportContext.createTable(document, point);
         }
 
-        FileOutputStream fos = new FileOutputStream(new File("test.docx"));
+        FileOutputStream fos = new FileOutputStream(new File(docFile));
         document.write(fos);
         fos.close();
     }

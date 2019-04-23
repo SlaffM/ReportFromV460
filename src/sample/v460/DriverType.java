@@ -9,5 +9,4 @@ public enum DriverType {
     Intern,
     MATHDR32,
     UNKNOWN
-
 }

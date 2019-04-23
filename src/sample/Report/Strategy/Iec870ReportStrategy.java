@@ -1,17 +1,18 @@
-package sample.Report;
+package sample.Report.Strategy;
 
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
+import sample.Report.ReportPanelTitle.ReportPanelTitle;
 import sample.v460.PointParam;
 import sample.v460.ResourceBean;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public class Iec870ReportStrategy implements ReportStrategy{
+public class Iec870ReportStrategy implements ReportStrategy {
 
     public void createTable(XWPFDocument document, PointParam pointParam) {
         createTableForPoint(document, pointParam);
@@ -62,8 +63,6 @@ public class Iec870ReportStrategy implements ReportStrategy{
         //CTP ctp = para.getCTP();
         //CTPPr br = ctp.addNewPPr();
         //br.setSectPr(section);
-
-
     }
 
 

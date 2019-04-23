@@ -3,8 +3,9 @@ package sample.v460;
 import com.opencsv.bean.CsvBindByPosition;
 import sample.Helpers.Helpers;
 
-public class ResourceBean implements Cloneable{
+import static sample.v460.DriverType.*;
 
+public class ResourceBean implements Cloneable{
     @CsvBindByPosition(position = 2)
     String driverType;
     @CsvBindByPosition(position = 4)
@@ -13,7 +14,7 @@ public class ResourceBean implements Cloneable{
     String matrix;
     @CsvBindByPosition(position = 6, required = true)
     String tagname;
-    @CsvBindByPosition(position = 12)
+    @CsvBindByPosition(position = 12) //12
     String recourcesLabel;
     @CsvBindByPosition(position = 13)
     String netAddr;
@@ -25,6 +26,37 @@ public class ResourceBean implements Cloneable{
     String iec870_coa1;
     @CsvBindByPosition(position = 78)
     String iec870_ioa1;
+    DriverType lodicDriverType;
+
+    public DriverType getLodicDriverType() {
+        return lodicDriverType;
+    }
+
+    public void setLodicDriverType() {
+        switch(driverType){
+            case "SPRECON870":
+                lodicDriverType = SPRECON870;
+                break;
+            case "IEC870":
+                lodicDriverType = isSpreconDriver() ? SPRECON870 : IEC870;
+                break;
+            case "IEC850":
+                lodicDriverType = isSpreconDriver() ? SPRECON850 : IEC850;
+                break;
+            case "SNMP32":
+                lodicDriverType = SNMP32;
+                break;
+            case "Intern":
+                lodicDriverType = Intern;
+                break;
+            case "MATHDR32":
+                lodicDriverType = MATHDR32;
+                break;
+            default:
+                lodicDriverType = UNKNOWN;
+                break;
+        }
+    }
 
     public String getTagname() {
         return tagname;
@@ -33,8 +65,9 @@ public class ResourceBean implements Cloneable{
         this.tagname = tagname;
     }
 
-    public String getDriverType() {
-        return driverType;
+    public DriverType getDriverType() {
+        return getLodicDriverType();
+        //return driverType;
     }
     public void setDriverType(String driverType) {
         this.driverType = driverType;
@@ -77,9 +110,6 @@ public class ResourceBean implements Cloneable{
 
     public String getIec870_type() {
         return iec870_type;
-    }
-    public void setIec870_type(String iec870_type) {
-        this.iec870_type = iec870_type;
     }
 
     public String getIec870_coa1() {
@@ -134,27 +164,8 @@ public class ResourceBean implements Cloneable{
     public String getShortSymbAddress(){return getFormattedIec850Address(getSymbAddr());}
     public String getIpAddress(){return String.format("10.47.171.%s", getNetAddr());}
 
-    public DriverType driverType(){
-        switch(getDriverType()){
-            case "SPRECON870":
-                return DriverType.SPRECON870;
-            case "IEC870":
-                return DriverType.IEC870;
-            case "IEC850":
-                return DriverType.IEC850;
-            case "SNMP32":
-                return DriverType.SNMP32;
-            case "Intern":
-                return DriverType.Intern;
-            case "MATHDR32":
-                return DriverType.MATHDR32;
-            default:
-                return DriverType.UNKNOWN;
-        }
-    }
-
     public boolean isAdditionalVariable() {
-        switch (driverType()){
+        switch (getDriverType()){
             case MATHDR32: case Intern: case SNMP32:
                 return true;
             default:
@@ -162,7 +173,7 @@ public class ResourceBean implements Cloneable{
         }
     }
     public boolean isIec870Variable() {
-        switch (driverType()){
+        switch (getDriverType()){
             case SPRECON870: case IEC870:
                 return true;
             default:
@@ -170,7 +181,7 @@ public class ResourceBean implements Cloneable{
         }
     }
     public boolean isIec850Variable() {
-        switch (driverType()){
+        switch (getDriverType()){
             case IEC850: case SPRECON850:
                 return true;
             default:
@@ -211,6 +222,10 @@ public class ResourceBean implements Cloneable{
         return Helpers.getTextWithPattern(symAddress, "(^\\w.*)!");
     }
 
+    public boolean isSpreconDriver(){
+        String findHex = Helpers.getTextWithPattern(getRecourcesLabel(), "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})");
+        return !findHex.isEmpty();
+    }
 
     @Override
     public String toString() {

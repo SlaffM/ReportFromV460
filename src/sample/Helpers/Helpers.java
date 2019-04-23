@@ -1,5 +1,6 @@
 package sample.Helpers;
 
+import org.apache.commons.lang3.ObjectUtils;
 import sample.v460.ResourceBean;
 
 import java.util.regex.Matcher;
@@ -23,6 +24,9 @@ public class Helpers {
     }
 
     public static String getTextWithPattern(String text, String pattern){
+
+        if (text == null) {return "";}
+
         Pattern p = Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = p.matcher(text);
 
@@ -37,5 +41,7 @@ public class Helpers {
         String findHex = getTextWithPattern(resourceBean.getRecourcesLabel(), "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})");
         return !findHex.isEmpty();
     }
+
+
 
 }

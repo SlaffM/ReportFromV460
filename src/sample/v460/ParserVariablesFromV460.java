@@ -2,9 +2,7 @@ package sample.v460;
 
 
 import com.opencsv.bean.*;
-import sample.Helpers.Helpers;
-import sample.Report.ReportPanelSprTitle;
-import sample.Report.ReportPanelTitle;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -20,18 +18,13 @@ public class ParserVariablesFromV460 {
         this.file = file;
     }
 
-    public ArrayList<PointParam> parse() throws Exception {
-
+    public ArrayList<PointParam> buildPoints() throws Exception {
         List<ResourceBean> resourceBeans = getBeansFromCsv(getFile());
-
         Map<String, ArrayList<ResourceBean>> points = getSrcPoints(resourceBeans);
-
-        ArrayList<PointParam> pointParams = getPointParams(points);
-
-        return pointParams;
+        return getPointsTable(points);
     }
 
-    public String getFile() {
+    private String getFile() {
         return file;
     }
 
@@ -50,76 +43,53 @@ public class ParserVariablesFromV460 {
                 .withSkipLines(1)
                 .build();
 
-        List<ResourceBean> resourceBeans = new ArrayList<>(cb.parse());
+        ArrayList resourceBeans = new ArrayList<>(cb.parse());
         reader.close();
 
-
-
-        if(resourceBeans != null){ return resourceBeans; }
-        return new ArrayList<>();
+        return resourceBeans != null ? resourceBeans : new ArrayList<>();
     }
 
     private Map<String, ArrayList<ResourceBean>> getSrcPoints(List<ResourceBean> resourceBeans){
-        Map<String, ArrayList<ResourceBean>> points = new Hashtable<>();
-
         Hashtable<String, ArrayList<ResourceBean>> dictionary = new Hashtable<>();
 
         int oldCountPanelPoints = 0;
         ArrayList<ResourceBean> variablesInPoint = new ArrayList<>();
         for(ResourceBean resourceBean : resourceBeans){
+            resourceBean.setLodicDriverType();
             if(isIecVariable(resourceBean)){
-                oldCountPanelPoints = points.size();
-                if(Helpers.isBeanSprecon850Driver(resourceBean)){
-                    points.put(resourceBean.getPrefixConnection(),variablesInPoint);
-                    if(dictionary.containsKey(resourceBean.getNetAddr())){
+                oldCountPanelPoints = dictionary.size();
+                    if (dictionary.containsKey(resourceBean.getNetAddr())) {
                         dictionary.get(resourceBean.getNetAddr()).add(resourceBean);
-                    }else{
+                    } else {
                         ArrayList<ResourceBean> beansInPoint = new ArrayList<>();
                         beansInPoint.add(resourceBean);
                         dictionary.put(resourceBean.getNetAddr(), beansInPoint);
                     }
-                }else{
-                    points.put(resourceBean.getPrefixTagname(),variablesInPoint);
-                }
-                if(points.size() > oldCountPanelPoints){
-                    variablesInPoint = new ArrayList<>();
-                }
+                if (dictionary.size() > oldCountPanelPoints) { variablesInPoint = new ArrayList<>(); }
                 variablesInPoint.add(resourceBean);
             }
         }
-        return dictionary;//points;
+        return dictionary;
     }
-    //private ArrayList<ResourceBean> setResourceBeansInDict(String key, Hashtable<String, ArrayList<ResourceBean>> dict)
 
     private boolean isIecVariable(ResourceBean resourceBean){
         return resourceBean.isIec850Variable() || resourceBean.isIec870Variable();
     }
-    private ArrayList<PointParam> getPointParams(Map<String, ArrayList<ResourceBean>> points){
+    private ArrayList<PointParam> getPointsTable(Map<String, ArrayList<ResourceBean>> points){
 
         ArrayList<PointParam> pointParams = new ArrayList<>();
 
         for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
 
-            PointParam pointParam = new PointParam();
-            ReportPanelTitle reportPanelTitle;
-            DriverType driverType;
             ResourceBean resourceBean = entry.getValue().get(0);
-
-            if(Helpers.isBeanSprecon850Driver(resourceBean)){
-                reportPanelTitle = new ReportPanelSprTitle(resourceBean);
-                driverType = DriverType.SPRECON850;
-            }else{
-                reportPanelTitle = new ReportPanelTitle(resourceBean);
-                driverType = resourceBean.driverType();
-            }
-            pointParam.setReportPanelTitle(reportPanelTitle);
-            pointParam.setDriverType(driverType);
-            pointParam.setResourceBeans(entry.getValue());
+            PointParam pointParam = new PointParam.Builder()
+                    .driverType(resourceBean.getLodicDriverType())
+                    .reportPanelTitle(resourceBean)
+                    .resourceBeans(entry.getValue())
+                    .build();
             pointParams.add(pointParam);
         }
-
         return pointParams;
-
     }
 
 }
