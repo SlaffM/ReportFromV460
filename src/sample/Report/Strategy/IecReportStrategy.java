@@ -1,8 +1,11 @@
 package sample.Report.Strategy;
 
+import org.apache.poi.hssf.record.HCenterRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.format.CellFormat;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.ss.util.PropertyTemplate;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
@@ -13,11 +16,16 @@ import sample.Report.ReportPanelTitle.ReportPanelTitle;
 import sample.v460.PointParam;
 import sample.v460.ResourceBean;
 
+import javax.swing.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class IecReportStrategy implements ReportStrategy{
+
+    int rowsFromPrevPointTable = 2;
 
     @Override
     public void createDocTable(XWPFDocument document, PointParam pointParam) {
@@ -236,17 +244,12 @@ public class IecReportStrategy implements ReportStrategy{
 
         for(ResourceBean resourceBean : resourceBeans){
             tableRow = sheet.createRow(sheet.getLastRowNum() + 1);
-
-            tableRow.createCell(0).setCellValue(resourceBean.getPanelLocation());
-            tableRow.createCell(1).setCellValue(resourceBean.getSystem());
-            tableRow.createCell(2).setCellValue(resourceBean.getVoltageClass());
-            tableRow.createCell(3).setCellValue(resourceBean.getConnectionTitle());
-            tableRow.createCell(4).setCellValue(resourceBean.getDevice());
-            tableRow.createCell(5).setCellValue(resourceBean.getSignalName());
-            tableRow.createCell(6).setCellValue(resourceBean.getStatusText());
-            tableRow.createCell(7).setCellValue(resourceBean.getAlarmClass());
-            tableRow.createCell(8).setCellValue(resourceBean.getRecourcesLabel());
-            tableRow.createCell(9).setCellValue(resourceBean.getShortSymbAddress());
+            for(int colNum = 0; colNum < variablesTableHeaders.length; colNum++){
+                Cell cell = tableRow.createCell(colNum);
+                String prop = getPropsBean(resourceBean).get(colNum);
+                cell.setCellValue(prop);
+                CellUtil.setCellStyleProperties(cell, setDataCellProperties());
+            }
         }
 
         int rowEnd = sheet.getLastRowNum();
@@ -254,13 +257,34 @@ public class IecReportStrategy implements ReportStrategy{
         CellRangeAddress region = new CellRangeAddress(rowStart,rowEnd, 0,variablesTableHeaders.length-1);
         drawBorders(region, sheet);
 
-        sheet.createRow(sheet.getLastRowNum() + 2);
+        sheet.createRow(sheet.getLastRowNum() + rowsFromPrevPointTable);
 
         for(int i = 0; i < variablesTableHeaders.length; i++) {
+            sheet.setRepeatingRows(region);
             sheet.autoSizeColumn(i);
         }
     }
 
+    ArrayList<String> getPropsBean(ResourceBean resourceBean){
+        ArrayList props = new ArrayList();
+        props.add(resourceBean.getPanelLocation());
+        props.add(resourceBean.getSystem());
+        props.add(resourceBean.getVoltageClass());
+        props.add(resourceBean.getConnectionTitle());
+        props.add(resourceBean.getDevice());
+        props.add(resourceBean.getSignalName());
+        props.add(resourceBean.getStatusText());
+        props.add(resourceBean.getAlarmClass());
+        props.add(resourceBean.getRecourcesLabel());
+        props.add(resourceBean.getShortSymbAddress());
+        return props;
+    }
+
+    Map<String,Object> setDataCellProperties(){
+        Map<String,Object> props = new HashMap<>();
+        props.put(CellUtil.ALIGNMENT, HorizontalAlignment.CENTER);
+        return props;
+    }
 
     void drawBorders(CellRangeAddress region, Sheet sheet){
         BorderStyle borderStyle = BorderStyle.THIN;

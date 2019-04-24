@@ -1,8 +1,5 @@
 package sample.Report.Strategy;
 
-import sample.Report.ReportPanelTitle.ReportPanelTitle;
-import java.util.*;
-
 public class Iec850ReportStrategy extends IecReportStrategy {
 
     @Override
@@ -21,5 +18,4 @@ public class Iec850ReportStrategy extends IecReportStrategy {
         };
         return variablesTableHeaders;
     }
-
 }
