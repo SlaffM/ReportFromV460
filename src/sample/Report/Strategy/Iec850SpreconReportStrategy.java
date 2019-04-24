@@ -1,5 +1,10 @@
 package sample.Report.Strategy;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
@@ -11,11 +16,37 @@ import sample.v460.ResourceBean;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
-public class Iec850SpreconReportStrategy implements ReportStrategy {
+public class Iec850SpreconReportStrategy extends IecReportStrategy {
 
-    public void createTable(XWPFDocument document, PointParam pointParam) {
+    @Override
+    String[] createHeadersVariables(){
+        String[] variablesTableHeaders = new String[]{
+                "№ панели",
+                "Система",
+                "Класс напряж.",
+                "Присоединение",
+                "Устройство",
+                "Наименование сигнала",
+                "Текс состояния",
+                "Класс тревог",
+                "Адрес Sprecon",
+                "Адрес Sprecon IEC850"
+        };
+        return variablesTableHeaders;
+    }
+
+
+    /*
+
+    public void createDocTable(XWPFDocument document, PointParam pointParam) {
         createTableForPoint(document, pointParam);
+    }
+
+    @Override
+    public void createXlsTable(HSSFWorkbook document, PointParam pointParam) {
+
     }
 
     private void createTableForPoint(XWPFDocument document, PointParam pointParam){
@@ -35,7 +66,7 @@ public class Iec850SpreconReportStrategy implements ReportStrategy {
         pageSize.setH(BigInteger.valueOf(16840));
         pageSize.setW(BigInteger.valueOf(23820));
 
-        /*if(orientation.equals("landscape")){
+        *//*if(orientation.equals("landscape")){
             pageSize.setOrient(STPageOrientation.LANDSCAPE);
             //A4 = 595x842 -multiply 20 since BigInteger represents 1/20 Point
             //A3 = 842x1191
@@ -47,7 +78,7 @@ public class Iec850SpreconReportStrategy implements ReportStrategy {
             //A3 = 842x1191
             pageSize.setH(BigInteger.valueOf(23820));
             pageSize.setW(BigInteger.valueOf(16840));
-        }*/
+        }*//*
 
         XWPFTable panelTitleTable = createTableTitlePanel(document, pointParam.getReportPanelTitle());
         XWPFTable panelVariablesTable = createTableVariablesPanel(document, pointParam.getResourceBeans());
@@ -129,12 +160,12 @@ public class Iec850SpreconReportStrategy implements ReportStrategy {
 
         XWPFTable table = document.createTable();
 
-        /*XWPFParagraph p1 = table.getRow(0).getCell(0).getParagraphs().get(0);
+        *//*XWPFParagraph p1 = table.getRow(0).getCell(0).getParagraphs().get(0);
         p1.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun r1 = p1.createRun();
         r1.setBold(true);
         r1.setFontFamily("Times New Roman");
-        r1.setTextPosition(100);*/
+        r1.setTextPosition(100);*//*
 
         XWPFTableRow tableRowOne = table.getRow(0);
         tableRowOne.getCell(0).setText("Расположение");
@@ -165,18 +196,18 @@ public class Iec850SpreconReportStrategy implements ReportStrategy {
 
 
 
-            /*for (XWPFTableCell cell : row.getTableCells()) {
+            *//*for (XWPFTableCell cell : row.getTableCells()) {
                 for (XWPFParagraph paragraph : cell.getParagraphs()) {
                     for (XWPFRun run_p : paragraph.getRuns()) {
                         //run_p.setBold(true);
                     }
                 }
-            }*/
+            }*//*
         }
 
 
         return table;
     }
-
+*/
 
 }

@@ -23,7 +23,8 @@ public class Controller {
 
     @FXML public void createDocFile(ActionEvent actionEvent) throws Exception {
         ArrayList<PointParam> listPointParams = new ParserVariablesFromV460(lblPathTxt.textProperty().getValue()).buildPoints();
-        ReportCreator.CreateDocFile(listPointParams, lblPathDoc.textProperty().getValue());
+        //ReportCreator.CreateDocFile(listPointParams, lblPathDoc.textProperty().getValue());
+        ReportCreator.CreateXlsFile(listPointParams, lblPathDoc.textProperty().getValue());
     }
 
     @FXML public void btnLoadTxtFileClick(ActionEvent event){
