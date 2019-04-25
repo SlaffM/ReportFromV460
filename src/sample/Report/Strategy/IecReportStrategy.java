@@ -1,8 +1,6 @@
 package sample.Report.Strategy;
 
-import org.apache.poi.hssf.record.HCenterRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.format.CellFormat;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
@@ -16,7 +14,6 @@ import sample.Report.ReportPanelTitle.ReportPanelTitle;
 import sample.v460.PointParam;
 import sample.v460.ResourceBean;
 
-import javax.swing.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +23,7 @@ import java.util.Map;
 public class IecReportStrategy implements ReportStrategy{
 
     int rowsFromPrevPointTable = 2;
+    int colsForTitlePanel = 2;
 
     @Override
     public void createDocTable(XWPFDocument document, PointParam pointParam) {
@@ -80,7 +78,7 @@ public class IecReportStrategy implements ReportStrategy{
         createXlsTableVariablesPanel(document, pointParam.getResourceBeans());
     }
 
-    LinkedHashMap createHeadersTitle(ReportPanelTitle reportPanelTitle){
+    private LinkedHashMap createHeadersTitle(ReportPanelTitle reportPanelTitle){
         LinkedHashMap titleTable = new LinkedHashMap<String,String>();
 
         titleTable.put("Расположение", reportPanelTitle.getPanelLocation());
@@ -95,12 +93,10 @@ public class IecReportStrategy implements ReportStrategy{
         throw new ArrayIndexOutOfBoundsException();
     }
 
-    XWPFTable createTableTitlePanel(XWPFDocument document, ReportPanelTitle reportPanelTitle){
+    private void createTableTitlePanel(XWPFDocument document, ReportPanelTitle reportPanelTitle){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
         run.addBreak();
-
-        XWPFTable table = document.createTable();
 
         /*XWPFParagraph p1 = table.getRow(0).getCell(0).getParagraphs().get(0);
         p1.setAlignment(ParagraphAlignment.CENTER);
@@ -109,34 +105,18 @@ public class IecReportStrategy implements ReportStrategy{
         r1.setFontFamily("Times New Roman");
         r1.setTextPosition(100);*/
 
-        LinkedHashMap titleTable = createHeadersTitle(reportPanelTitle);
+        LinkedHashMap<String, String> titleTable = createHeadersTitle(reportPanelTitle);
+        XWPFTable table = document.createTable(titleTable.size(), colsForTitlePanel);
 
-        titleTable.forEach((key, value) -> {
-            XWPFTableRow row = table.getRow(0);
-            row.getCell(0).setText((String)key);
-            row.getCell(1).setText((String)titleTable.get(key));
-        });
+        int rowNum = 0;
+        for (Map.Entry<String, String> title : titleTable.entrySet()) {
+            XWPFTableRow row = table.getRow(rowNum);
+            row.getCell(0).setText(title.getKey());
+            row.getCell(1).setText(title.getValue());
+            rowNum++;
+        }
 
         /*
-        XWPFTableRow tableRowOne = table.getRow(0);
-        tableRowOne.getCell(0).setText("Расположение");
-        tableRowOne.addNewTableCell().setText(reportPanelTitle.getPanelLocation());
-
-        XWPFTableRow tableRowTwo = table.createRow();
-        tableRowTwo.getCell(0).setText("Наименование шкафа");
-        tableRowTwo.getCell(1).setText(reportPanelTitle.getPanelTitle());
-
-        XWPFTableRow tableRowThree = table.createRow();
-        tableRowThree.getCell(0).setText("Наименование присоединения");
-        tableRowThree.getCell(1).setText(reportPanelTitle.getConnectionTitle());
-
-        XWPFTableRow tableRowFour = table.createRow();
-        tableRowFour.getCell(0).setText("Обозначение контроллера");
-        tableRowFour.getCell(1).setText("Шкаф МТ10. Сервер SCADA");
-
-        XWPFTableRow tableRowFive = table.createRow();
-        tableRowFive.getCell(0).setText("IP-адрес");
-        tableRowFive.getCell(1).setText(reportPanelTitle.getIpAddress());
 
         for (XWPFTableRow row : table.getRows()) {
 
@@ -156,9 +136,8 @@ public class IecReportStrategy implements ReportStrategy{
         */
 
 
-        return table;
     }
-    void createXlsTableTitlePanel(HSSFWorkbook document, ReportPanelTitle reportPanelTitle) {
+    private void createXlsTableTitlePanel(HSSFWorkbook document, ReportPanelTitle reportPanelTitle) {
 
         LinkedHashMap titleTable = createHeadersTitle(reportPanelTitle);
 
@@ -182,7 +161,7 @@ public class IecReportStrategy implements ReportStrategy{
         sheet.createRow(sheet.getLastRowNum() + 1);
     }
 
-    XWPFTable createTableVariablesPanel(XWPFDocument document, ArrayList<ResourceBean> resourceBeans){
+    private void createTableVariablesPanel(XWPFDocument document, ArrayList<ResourceBean> resourceBeans){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
         run.addBreak();
@@ -209,25 +188,19 @@ public class IecReportStrategy implements ReportStrategy{
             tableRowOne.getCell(count).setText(variablesTableHeaders[count]);
         }
         int rowCounter = 1;
+
         for(ResourceBean resourceBean : resourceBeans){
             tableRowOne = table.getRow(rowCounter);
-            tableRowOne.getCell(0).setText(resourceBean.getPanelLocation());
-            tableRowOne.getCell(1).setText(resourceBean.getSystem());
-            tableRowOne.getCell(2).setText(resourceBean.getVoltageClass());
-            tableRowOne.getCell(3).setText(resourceBean.getConnectionTitle());
-            tableRowOne.getCell(4).setText(resourceBean.getDevice());
-            tableRowOne.getCell(5).setText(resourceBean.getSignalName());
-            tableRowOne.getCell(6).setText(resourceBean.getStatusText());
-            tableRowOne.getCell(7).setText(resourceBean.getAlarmClass());
-            tableRowOne.getCell(8).setText(resourceBean.getRecourcesLabel());
-            tableRowOne.getCell(9).setText(resourceBean.getShortSymbAddress());
+            for(int colNum = 0; colNum < variablesTableHeaders.length; colNum++){
+                XWPFTableCell cell = tableRowOne.getCell(colNum);
+                String prop = getPropertiesResourceBean(resourceBean).get(colNum);
+                cell.setText(prop);
+            }
             rowCounter++;
         }
 
-
-        return table;
     }
-    void createXlsTableVariablesPanel(HSSFWorkbook document, ArrayList<ResourceBean> resourceBeans){
+    private void createXlsTableVariablesPanel(HSSFWorkbook document, ArrayList<ResourceBean> resourceBeans){
 
         String[] variablesTableHeaders = createHeadersVariables();
 
@@ -246,7 +219,7 @@ public class IecReportStrategy implements ReportStrategy{
             tableRow = sheet.createRow(sheet.getLastRowNum() + 1);
             for(int colNum = 0; colNum < variablesTableHeaders.length; colNum++){
                 Cell cell = tableRow.createCell(colNum);
-                String prop = getPropsBean(resourceBean).get(colNum);
+                String prop = getPropertiesResourceBean(resourceBean).get(colNum);
                 cell.setCellValue(prop);
                 CellUtil.setCellStyleProperties(cell, setDataCellProperties());
             }
@@ -265,8 +238,8 @@ public class IecReportStrategy implements ReportStrategy{
         }
     }
 
-    ArrayList<String> getPropsBean(ResourceBean resourceBean){
-        ArrayList props = new ArrayList();
+    ArrayList<String> getPropertiesResourceBean(ResourceBean resourceBean){
+        ArrayList<String> props = new ArrayList<>();
         props.add(resourceBean.getPanelLocation());
         props.add(resourceBean.getSystem());
         props.add(resourceBean.getVoltageClass());
@@ -279,21 +252,25 @@ public class IecReportStrategy implements ReportStrategy{
         props.add(resourceBean.getShortSymbAddress());
         return props;
     }
-
-    Map<String,Object> setDataCellProperties(){
+    private Map<String,Object> setDataCellProperties(){
         Map<String,Object> props = new HashMap<>();
+        //Font headerFont = document.createFont();
+        //headerFont.setFontHeightInPoints((short) 10);
+        //headerFont.setColor(IndexedColors.BLACK.getIndex());
+
         props.put(CellUtil.ALIGNMENT, HorizontalAlignment.CENTER);
+        //props.put(CellUtil.FONT, headerFont);
         return props;
     }
 
-    void drawBorders(CellRangeAddress region, Sheet sheet){
+    private void drawBorders(CellRangeAddress region, Sheet sheet){
         BorderStyle borderStyle = BorderStyle.THIN;
         BorderExtent borderExtent = BorderExtent.ALL;
         PropertyTemplate propertyTemplate = new PropertyTemplate();
         propertyTemplate.drawBorders(region, borderStyle, borderExtent);
         propertyTemplate.applyBorders(sheet);
     }
-    CellStyle setHeaderCellStyle(HSSFWorkbook document){
+    private CellStyle setHeaderCellStyle(HSSFWorkbook document){
         Font headerFont = document.createFont();
         headerFont.setBold(true);
         headerFont.setFontHeightInPoints((short) 10);
