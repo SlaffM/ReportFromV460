@@ -22,8 +22,8 @@ import java.util.Map;
 
 public class IecReportStrategy implements ReportStrategy{
 
-    int rowsFromPrevPointTable = 2;
-    int colsForTitlePanel = 2;
+    private int rowsFromPrevPointTable = 2;
+    private int colsForTitlePanel = 2;
 
     @Override
     public void createDocTable(XWPFDocument document, PointParam pointParam) {
@@ -140,7 +140,6 @@ public class IecReportStrategy implements ReportStrategy{
     private void createXlsTableTitlePanel(HSSFWorkbook document, ReportPanelTitle reportPanelTitle) {
 
         LinkedHashMap titleTable = createHeadersTitle(reportPanelTitle);
-
         Sheet sheet = document.getSheet("Report");
 
         int rowStart = sheet.getLastRowNum() + 1;

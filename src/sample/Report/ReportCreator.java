@@ -6,69 +6,65 @@ import java.util.ArrayList;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xwpf.usermodel.*;
-//import org.apache.poi.xssf.usermodel.*;
 import sample.Report.Strategy.*;
+import sample.v460.DriverType;
 import sample.v460.PointParam;
 
 
 public class ReportCreator {
 
     public static void CreateDocFile(ArrayList<PointParam> pointParams, String docFile) throws IOException {
-
         XWPFDocument document = new XWPFDocument();
-        ReportContext reportContext = new ReportContext();
 
         for(PointParam point: pointParams){
-            switch (point.getDriverType()){
-                case IEC870: case SPRECON870:
-                    reportContext.setReportStrategy(new Iec870ReportStrategy());
-                    break;
-                case IEC850:
-                    reportContext.setReportStrategy(new Iec850ReportStrategy());
-                    break;
-                case SPRECON850:
-                    reportContext.setReportStrategy(new Iec850SpreconReportStrategy());
-                    break;
-                default:
-                    break;
-            }
+            ReportContext reportContext = setReportStrategy(point.getDriverType());
             reportContext.createDocTable(document, point);
         }
-
-        FileOutputStream fos = new FileOutputStream(new File(docFile));
-        document.write(fos);
-        fos.close();
+        writeDataToFile(document, docFile);
     }
 
     public static void CreateXlsFile(ArrayList<PointParam> pointParams, String xlsFile) throws IOException {
-
         HSSFWorkbook book = new HSSFWorkbook();
-        Sheet sheet = book.createSheet("Report");
-
-        ReportContext reportContext = new ReportContext();
+        book.createSheet("Report");
 
         for(PointParam point: pointParams){
-            switch (point.getDriverType()){
-                case IEC870: case SPRECON870:
-                    reportContext.setReportStrategy(new Iec870ReportStrategy());
-                    break;
-                case IEC850:
-                    reportContext.setReportStrategy(new Iec850ReportStrategy());
-                    break;
-                case SPRECON850:
-                    reportContext.setReportStrategy(new Iec850SpreconReportStrategy());
-                    break;
-                default:
-                    break;
-            }
+            ReportContext reportContext = setReportStrategy(point.getDriverType());
             reportContext.createXlsTable(book, point);
         }
+        writeDataToFile(book, xlsFile);
+    }
 
-        FileOutputStream fos = new FileOutputStream(new File(xlsFile));
-        book.write(fos);
-        fos.close();
+    private static ReportContext setReportStrategy(DriverType driverType){
+        ReportContext reportContext = new ReportContext();
+        switch (driverType){
+            case IEC870: case SPRECON870:
+                reportContext.setReportStrategy(new Iec870ReportStrategy());
+                break;
+            case IEC850:
+                reportContext.setReportStrategy(new Iec850ReportStrategy());
+                break;
+            case SPRECON850:
+                reportContext.setReportStrategy(new Iec850SpreconReportStrategy());
+                break;
+            default:
+                break;
+        }
+        return reportContext;
+    }
+
+    private static void writeDataToFile(Object document, String filePath) throws IOException {
+        FileOutputStream fos = new FileOutputStream(new File(filePath));
+         if (document instanceof XWPFDocument){
+             XWPFDocument doc = (XWPFDocument)document;
+             doc.write(fos);
+         }else if(document instanceof HSSFWorkbook){
+             HSSFWorkbook doc = (HSSFWorkbook)document;
+             doc.write(fos);
+         }else{
+             throw new IOException();
+         }
+         fos.close();
     }
 
 }

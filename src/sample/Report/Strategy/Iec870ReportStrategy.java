@@ -24,7 +24,7 @@ public class Iec870ReportStrategy extends IecReportStrategy {
 
     @Override
     ArrayList<String> getPropertiesResourceBean(ResourceBean resourceBean){
-        ArrayList<String> props = new ArrayList<String>();
+        ArrayList<String> props = new ArrayList<>();
 
         props.add(resourceBean.getPanelLocation());
         props.add(resourceBean.getSystem());

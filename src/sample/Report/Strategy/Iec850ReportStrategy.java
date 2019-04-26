@@ -4,7 +4,7 @@ public class Iec850ReportStrategy extends IecReportStrategy {
 
     @Override
     String[] createHeadersVariables(){
-        String[] variablesTableHeaders = new String[]{
+        return new String[]{
                 "№ панели",
                 "Система",
                 "Класс напряж.",
@@ -16,6 +16,5 @@ public class Iec850ReportStrategy extends IecReportStrategy {
                 "Адрес Экра",
                 "Адрес Экра IEC850"
         };
-        return variablesTableHeaders;
     }
 }
