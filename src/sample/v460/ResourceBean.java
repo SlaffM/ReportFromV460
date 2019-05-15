@@ -280,7 +280,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
                 return this.getResourceAddressEkra().compareTo(o.getResourceAddressEkra());
             case SPRECON870:
                 return new CompareToBuilder()
-                        .append(this.getDevice(),o.getDevice())
+                        .append(this.getDevice(), o.getDevice())
                         .append(Integer.parseInt(this.getIec870_coa1()), Integer.parseInt(o.getIec870_coa1()))
                         .append(Integer.parseInt(this.getIec870_ioa1()), Integer.parseInt(o.getIec870_ioa1()))
                         .toComparison();
