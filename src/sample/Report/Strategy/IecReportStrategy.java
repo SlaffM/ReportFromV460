@@ -23,6 +23,7 @@ import java.util.Map;
 public class IecReportStrategy implements ReportStrategy{
 
     private int rowsFromPrevPointTable = 2;
+    private int rowsOffset = 1;
     private int colsForTitlePanel = 2;
 
     @Override
@@ -92,6 +93,9 @@ public class IecReportStrategy implements ReportStrategy{
     String[] createHeadersVariables(){
         throw new ArrayIndexOutOfBoundsException();
     }
+    String[] createHeadersVariablesTI(){
+        throw new ArrayIndexOutOfBoundsException();
+    }
 
     private void createTableTitlePanel(XWPFDocument document, ReportPanelTitle reportPanelTitle){
         XWPFParagraph para = document.createParagraph();
@@ -150,7 +154,6 @@ public class IecReportStrategy implements ReportStrategy{
             cell.setCellValue((String)key);
             cell.setCellStyle(setHeaderCellStyle(document));
             row.createCell(1).setCellValue((String)titleTable.get(key));
-
         });
 
         int rowEnd = sheet.getLastRowNum();
@@ -202,10 +205,9 @@ public class IecReportStrategy implements ReportStrategy{
     private void createXlsTableVariablesPanel(HSSFWorkbook document, ArrayList<ResourceBean> resourceBeans){
 
         String[] variablesTableHeaders = createHeadersVariables();
-
         Sheet sheet = document.getSheet("Report");
 
-        Row tableRow = sheet.createRow(sheet.getLastRowNum() + 1);
+        Row tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
         for(int count = 0; count < variablesTableHeaders.length; count++){
             Cell cell = tableRow.createCell(count);
             cell.setCellValue(variablesTableHeaders[count]);
@@ -214,8 +216,14 @@ public class IecReportStrategy implements ReportStrategy{
 
         int rowStart = sheet.getLastRowNum();
 
+        ArrayList<ResourceBean> beansOfTI = new ArrayList<>();
+
         for(ResourceBean resourceBean : resourceBeans){
-            tableRow = sheet.createRow(sheet.getLastRowNum() + 1);
+            if (resourceBean.isVariableTI()){
+                beansOfTI.add(resourceBean);
+                continue;
+            }
+            tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
             for(int colNum = 0; colNum < variablesTableHeaders.length; colNum++){
                 Cell cell = tableRow.createCell(colNum);
                 String prop = getPropertiesResourceBean(resourceBean).get(colNum);
@@ -229,6 +237,38 @@ public class IecReportStrategy implements ReportStrategy{
         CellRangeAddress region = new CellRangeAddress(rowStart,rowEnd, 0,variablesTableHeaders.length-1);
         drawBorders(region, sheet);
 
+
+        if (!beansOfTI.isEmpty()){
+            String[] variablesTableHeadersTI = createHeadersVariablesTI();
+
+            sheet.createRow(sheet.getLastRowNum() + 1);
+
+            tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
+            for(int count = 0; count < variablesTableHeadersTI.length; count++){
+                Cell cell = tableRow.createCell(count);
+                cell.setCellValue(variablesTableHeadersTI[count]);
+                cell.setCellStyle(setHeaderCellStyle(document));
+            }
+
+            rowStart = sheet.getLastRowNum();
+
+            for(ResourceBean resourceBean: beansOfTI){
+                tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
+                for(int colNum = 0; colNum < variablesTableHeadersTI.length; colNum++){
+                    Cell cell = tableRow.createCell(colNum);
+                    String prop = getPropertiesResourceBeanTI(resourceBean).get(colNum);
+                    cell.setCellValue(prop);
+                    CellUtil.setCellStyleProperties(cell, setDataCellProperties());
+                }
+            }
+
+            rowEnd = sheet.getLastRowNum();
+
+            region = new CellRangeAddress(rowStart,rowEnd, 0,variablesTableHeadersTI.length-1);
+            drawBorders(region, sheet);
+        }
+
+        beansOfTI.clear();
         sheet.createRow(sheet.getLastRowNum() + rowsFromPrevPointTable);
 
         for(int i = 0; i < variablesTableHeaders.length; i++) {
@@ -236,6 +276,9 @@ public class IecReportStrategy implements ReportStrategy{
             sheet.autoSizeColumn(i);
         }
     }
+
+
+
 
     ArrayList<String> getPropertiesResourceBean(ResourceBean resourceBean){
         ArrayList<String> props = new ArrayList<>();
@@ -247,6 +290,20 @@ public class IecReportStrategy implements ReportStrategy{
         props.add(resourceBean.getSignalName());
         props.add(resourceBean.getStatusText());
         props.add(resourceBean.getAlarmClass());
+        props.add(resourceBean.getRecourcesLabel());
+        props.add(resourceBean.getShortSymbAddress());
+        return props;
+    }
+    ArrayList<String> getPropertiesResourceBeanTI(ResourceBean resourceBean){
+        ArrayList<String> props = new ArrayList<>();
+        props.add(resourceBean.getPanelLocation());
+        props.add(resourceBean.getSystem());
+        props.add(resourceBean.getVoltageClass());
+        props.add(resourceBean.getConnectionTitle());
+        props.add(resourceBean.getDevice());
+        props.add(resourceBean.getSignalName());
+        props.add(resourceBean.getUnit());
+        props.add(resourceBean.getKtransform());
         props.add(resourceBean.getRecourcesLabel());
         props.add(resourceBean.getShortSymbAddress());
         return props;
@@ -283,6 +340,7 @@ public class IecReportStrategy implements ReportStrategy{
 
         headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
         headerCellStyle.setFont(headerFont);
         return headerCellStyle;
     }

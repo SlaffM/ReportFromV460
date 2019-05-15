@@ -18,5 +18,21 @@ public class Iec850SpreconReportStrategy extends IecReportStrategy {
         };
     }
 
+    @Override
+    String[] createHeadersVariablesTI(){
+        return new String[]{
+                "№ панели",
+                "Система",
+                "Класс напряж.",
+                "Присоединение",
+                "Устройство",
+                "Наименование сигнала",
+                "Ед. измерения",
+                "Ктт, Ктн",
+                "Адрес Sprecon",
+                "Адрес МЕК 61850"
+        };
+    }
+
 
 }

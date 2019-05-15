@@ -1,11 +1,12 @@
 package sample.v460;
 
 import com.opencsv.bean.CsvBindByPosition;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import sample.Helpers.Helpers;
 
 import static sample.v460.DriverType.*;
 
-public class ResourceBean implements Cloneable{
+public class ResourceBean implements Comparable<ResourceBean>{
     @CsvBindByPosition(position = 2)
     String driverType;
     @CsvBindByPosition(position = 4)
@@ -14,6 +15,8 @@ public class ResourceBean implements Cloneable{
     String matrix;
     @CsvBindByPosition(position = 6, required = true)
     String tagname;
+    @CsvBindByPosition(position = 7)
+    String unit;
     @CsvBindByPosition(position = 12) //12
     String recourcesLabel;
     @CsvBindByPosition(position = 13)
@@ -71,6 +74,13 @@ public class ResourceBean implements Cloneable{
     }
     public void setDriverType(String driverType) {
         this.driverType = driverType;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public String getTypeName() {
@@ -163,30 +173,44 @@ public class ResourceBean implements Cloneable{
     public String getPrefixSpreconSymbAddress(){return getSpreconSymbPrefix(getSymbAddr());}
     public String getShortSymbAddress(){return getFormattedIec850Address(getSymbAddr());}
     public String getIpAddress(){return String.format("10.47.171.%s", getNetAddr());}
+    public String getKtransform(){
+        String lowSymbols = getSignalName().toLowerCase();
+        if (lowSymbols.contains("напряж") && (getUnit().equals("кВ"))){
+            if (tryParseInt(getVoltageClass())){
+                String num = Helpers.getTextWithPattern(getVoltageClass(), "(\\d+)");
+                return String.format("%s/1", Integer.parseInt(num));
+            }
+            return "";
+        }
+        if (lowSymbols.contains("ток") && (getUnit().equals("А"))){ return "2000/1"; }
+
+        return "";
+    }
+
+    boolean tryParseInt(String value){
+        try{
+            String num = Helpers.getTextWithPattern(value, "(\\d+)");
+            if (num.isEmpty()) { return false;}
+            Integer.parseInt(num);
+            return true;
+        }catch (NumberFormatException e){
+            return false;
+        }
+    }
 
     public boolean isAdditionalVariable() {
-        switch (getDriverType()){
-            case MATHDR32: case Intern: case SNMP32:
-                return true;
-            default:
-                return false;
-        }
+        return getDriverType().equals(MATHDR32) || getDriverType().equals(Intern) || getDriverType().equals(SNMP32);
     }
-    public boolean isIec870Variable() {
-        switch (getDriverType()){
-            case SPRECON870: case IEC870:
-                return true;
-            default:
-                return false;
-        }
+    boolean isIec870Variable() {
+        return getDriverType().equals(SPRECON870) || getDriverType().equals(IEC870);
     }
-    public boolean isIec850Variable() {
-        switch (getDriverType()){
-            case IEC850: case SPRECON850:
-                return true;
-            default:
-                return false;
-        }
+    boolean isIec850Variable() {
+        return getDriverType().equals(SPRECON850) || getDriverType().equals(IEC850);
+    }
+
+    public boolean isVariableTI(){
+        String findTI = Helpers.getTextWithPattern(this.getSymbAddr(), "(mag)");
+        return !findTI.isEmpty();
     }
 
 
@@ -215,16 +239,28 @@ public class ResourceBean implements Cloneable{
         }
     }
     private String getFormattedIec850Address(String symAddress){
-        return Helpers.getTextWithPattern(symAddress, "!(\\w.*)").replace("[ST]","");
+        return Helpers.getTextWithPattern(symAddress, "!(\\w.*)").replace("[ST]","").replace("[MX]","");
     }
 
     private String getSpreconSymbPrefix(String symAddress){
         return Helpers.getTextWithPattern(symAddress, "(^\\w.*)!");
     }
 
-    public boolean isSpreconDriver(){
+    private boolean isSpreconDriver(){
         String findHex = Helpers.getTextWithPattern(getRecourcesLabel(), "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})");
         return !findHex.isEmpty();
+    }
+
+    private Long getResourceAddressHex(){
+        String findHex = Helpers.getTextWithPattern(getRecourcesLabel(), "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})").replace(".","");
+        if(!findHex.isEmpty()){ return Long.valueOf(findHex, 16); }
+        return 0L;
+    }
+
+    private Integer getResourceAddressEkra(){
+        String findInt = Helpers.getTextWithPattern(getRecourcesLabel(), "(\\d+)");
+        if(!findInt.isEmpty()){ return Integer.parseInt(findInt); }
+        return 0;
     }
 
     @Override
@@ -233,5 +269,23 @@ public class ResourceBean implements Cloneable{
                 "driverType='" + driverType + '\'' +
                 ", tagname='" + tagname + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(ResourceBean o) {
+        switch (getLodicDriverType()){
+            case SPRECON850:
+                return this.getResourceAddressHex().compareTo(o.getResourceAddressHex());
+            case IEC850:
+                return this.getResourceAddressEkra().compareTo(o.getResourceAddressEkra());
+            case SPRECON870:
+                return new CompareToBuilder()
+                        .append(this.getDevice(),o.getDevice())
+                        .append(Integer.parseInt(this.getIec870_coa1()), Integer.parseInt(o.getIec870_coa1()))
+                        .append(Integer.parseInt(this.getIec870_ioa1()), Integer.parseInt(o.getIec870_ioa1()))
+                        .toComparison();
+            default:
+                return 0;
+        }
     }
 }

@@ -17,4 +17,20 @@ public class Iec850ReportStrategy extends IecReportStrategy {
                 "Адрес Экра IEC850"
         };
     }
+
+    @Override
+    String[] createHeadersVariablesTI(){
+        return new String[]{
+                "№ панели",
+                "Система",
+                "Класс напряж.",
+                "Присоединение",
+                "Устройство",
+                "Наименование сигнала",
+                "Ед. измерения",
+                "Ктт, Ктн",
+                "Адрес Экра",
+                "Адрес Экра IEC850"
+        };
+    }
 }

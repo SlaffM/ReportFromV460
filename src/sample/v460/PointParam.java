@@ -4,6 +4,7 @@ import sample.Report.ReportPanelTitle.ReportPanelSprTitle;
 import sample.Report.ReportPanelTitle.ReportPanelTitle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class PointParam {
 
@@ -38,6 +39,7 @@ public class PointParam {
     }
 
     private void setResourceBeans(ArrayList<ResourceBean> resourceBeans) {
+        Collections.sort(resourceBeans);
         this.resourceBeans = resourceBeans;
     }
 
