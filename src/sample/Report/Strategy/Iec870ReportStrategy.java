@@ -18,7 +18,7 @@ public class Iec870ReportStrategy extends IecReportStrategy {
                 "Класс тревог",
                 "Тип АСДУ",
                 "Адрес АСДУ",
-                "Адрес IEC"
+                "Адрес объекта"
         };
     }
 
@@ -35,7 +35,7 @@ public class Iec870ReportStrategy extends IecReportStrategy {
                 "Ктт, Ктн",
                 "Тип АСДУ",
                 "Адрес АСДУ",
-                "Адрес IEC"
+                "Адрес объекта"
         };
     }
 

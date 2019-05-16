@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<Pane prefHeight="308.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<Pane prefHeight="350.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="160.0" layoutX="14.0" layoutY="137.0" stroke="BLACK" strokeType="INSIDE" width="847.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="120.0" layoutX="14.0" layoutY="13.0" stroke="BLACK" strokeType="INSIDE" width="847.0" />
@@ -37,5 +37,6 @@
       </Label>
       <RadioButton fx:id="rButExcel" layoutX="29.0" layoutY="192.0" mnemonicParsing="false" onAction="#rBtnExcelClicked" selected="true" text="Excel (xls)" />
       <RadioButton fx:id="rButWord" layoutX="129.0" layoutY="192.0" mnemonicParsing="false" onAction="#rBtnWordClicked" text="Word (docx)" />
+      <Button fx:id="btnReadJSON" layoutX="20.0" layoutY="304.0" mnemonicParsing="false" onAction="#readJSON" text="Button" />
    </children>
 </Pane>

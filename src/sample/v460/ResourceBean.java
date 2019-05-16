@@ -203,10 +203,10 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public boolean isAdditionalVariable() {
         return getDriverType().equals(MATHDR32) || getDriverType().equals(Intern) || getDriverType().equals(SNMP32);
     }
-    boolean isIec870Variable() {
+    public boolean isIec870Variable() {
         return getDriverType().equals(SPRECON870) || getDriverType().equals(IEC870);
     }
-    boolean isIec850Variable() {
+    public boolean isIec850Variable() {
         return getDriverType().equals(SPRECON850) || getDriverType().equals(IEC850);
     }
 

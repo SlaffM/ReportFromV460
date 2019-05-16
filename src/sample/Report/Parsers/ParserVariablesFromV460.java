@@ -1,7 +1,9 @@
-package sample.v460;
+package sample.Report.Parsers;
 
 
 import com.opencsv.bean.*;
+import sample.v460.PointParam;
+import sample.v460.ResourceBean;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
