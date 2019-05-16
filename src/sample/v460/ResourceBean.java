@@ -178,11 +178,13 @@ public class ResourceBean implements Comparable<ResourceBean>{
         if (lowSymbols.contains("напряж") && (getUnit().equals("кВ"))){
             if (tryParseInt(getVoltageClass())){
                 String num = Helpers.getTextWithPattern(getVoltageClass(), "(\\d+)");
-                return String.format("%s/1", Integer.parseInt(num));
+                return String.format("%s0/1", Integer.parseInt(num));
             }
             return "";
         }
-        if (lowSymbols.contains("ток") && (getUnit().equals("А"))){ return "2000/1"; }
+        if (lowSymbols.contains("ток") && (getUnit().equals("А"))){
+            return "2000/1";
+        }
 
         return "";
     }
@@ -229,7 +231,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
             return AlarmClassType.BM;
         }
     }
-    private String getStatusTextByRules(String srcMatrix)  {
+    private String getStatusTextByRules(String srcMatrix) {
         if(Helpers.isMatrixStartsAlarmClass(srcMatrix)){
             return Helpers.getTextWithPattern(srcMatrix, "_(\\w+)/");
         }else if(Helpers.isMatrixEndsWithAlarmClass(srcMatrix)){
@@ -278,7 +280,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
                 return this.getResourceAddressHex().compareTo(o.getResourceAddressHex());
             case IEC850:
                 return this.getResourceAddressEkra().compareTo(o.getResourceAddressEkra());
-            case SPRECON870:
+            case SPRECON870: case IEC870:
                 return new CompareToBuilder()
                         .append(this.getDevice(), o.getDevice())
                         .append(Integer.parseInt(this.getIec870_coa1()), Integer.parseInt(o.getIec870_coa1()))

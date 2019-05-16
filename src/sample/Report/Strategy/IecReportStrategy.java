@@ -10,13 +10,13 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
+import sample.Helpers.StyleDocument;
 import sample.Report.ReportPanelTitle.ReportPanelTitle;
 import sample.v460.PointParam;
 import sample.v460.ResourceBean;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,6 +25,8 @@ public class IecReportStrategy implements ReportStrategy{
     private int rowsFromPrevPointTable = 2;
     private int rowsOffset = 1;
     private int colsForTitlePanel = 2;
+
+
 
     private ArrayList<ResourceBean>resourcebeansOfTS = new ArrayList<>();
     private ArrayList<ResourceBean>resourcebeansOfTI = new ArrayList<>();
@@ -214,15 +216,19 @@ public class IecReportStrategy implements ReportStrategy{
     private void addHeadersToVariablesTableXls(HSSFWorkbook document, String[] headers){
         Sheet sheet = document.getSheet("Report");
         Row tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
+
+        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
+
         for(int count = 0; count < headers.length; count++){
             Cell cell = tableRow.createCell(count);
             cell.setCellValue(headers[count]);
-            cell.setCellStyle(setHeaderCellStyle(document));
+            cell.setCellStyle(headerStyle);
         }
     }
     private void addVariablesToVariablesTableXls(HSSFWorkbook document, String[] headers, ArrayList<ResourceBean> resourceBeans) {
         Sheet sheet = document.getSheet("Report");
-        int rowStart = sheet.getLastRowNum();
+
+        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
 
         for(ResourceBean resourceBean : resourceBeans){
             Row tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
@@ -235,13 +241,9 @@ public class IecReportStrategy implements ReportStrategy{
                     prop = getPropertiesResourceBean(resourceBean).get(colNum);
                 }
                 cell.setCellValue(prop);
-                CellUtil.setCellStyleProperties(cell, setDataCellProperties());
+                cell.setCellStyle(baseStyle);
             }
         }
-        int rowEnd = sheet.getLastRowNum();
-
-        CellRangeAddress region = new CellRangeAddress(rowStart,rowEnd, 0,headers.length-1);
-        drawBorders(region, sheet);
 
     }
     private void createXlsTableVariablesPanel(HSSFWorkbook document, ArrayList<ResourceBean> resourceBeans){
@@ -256,7 +258,6 @@ public class IecReportStrategy implements ReportStrategy{
 
         if (!resourcebeansOfTI.isEmpty()) {
             sheet.createRow(sheet.getLastRowNum() + rowsOffset);
-
             addHeadersToVariablesTableXls(document, createHeadersVariablesTI());
             addVariablesToVariablesTableXls(document, createHeadersVariablesTI(), resourcebeansOfTI);
         }
@@ -276,20 +277,16 @@ public class IecReportStrategy implements ReportStrategy{
         LinkedHashMap titleTable = createHeadersTitle(reportPanelTitle);
         Sheet sheet = document.getSheet("Report");
 
-        int rowStart = sheet.getLastRowNum() + 1;
+        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
 
         titleTable.forEach((key, value) -> {
             Row row = sheet.createRow(sheet.getLastRowNum() + 1);
             Cell cell = row.createCell(0);
             cell.setCellValue((String)key);
-            cell.setCellStyle(setHeaderCellStyle(document));
+            cell.setCellStyle(headerStyle);
             row.createCell(1).setCellValue((String)titleTable.get(key));
         });
 
-        int rowEnd = sheet.getLastRowNum();
-
-        CellRangeAddress region = new CellRangeAddress(rowStart,rowEnd, 0,1);
-        drawBorders(region, sheet);
         sheet.createRow(sheet.getLastRowNum() + 1);
     }
 
@@ -321,42 +318,5 @@ public class IecReportStrategy implements ReportStrategy{
         props.add(resourceBean.getShortSymbAddress());
         return props;
     }
-
-    private Map<String,Object> setDataCellProperties(){
-        Map<String,Object> props = new HashMap<>();
-        //Font headerFont = document.createFont();
-        //headerFont.setFontHeightInPoints((short) 10);
-        //headerFont.setColor(IndexedColors.BLACK.getIndex());
-
-        props.put(CellUtil.ALIGNMENT, HorizontalAlignment.CENTER);
-        //props.put(CellUtil.FONT, headerFont);
-        return props;
-    }
-    private void drawBorders(CellRangeAddress region, Sheet sheet){
-        BorderStyle borderStyle = BorderStyle.THIN;
-        BorderExtent borderExtent = BorderExtent.ALL;
-        PropertyTemplate propertyTemplate = new PropertyTemplate();
-        propertyTemplate.drawBorders(region, borderStyle, borderExtent);
-        propertyTemplate.applyBorders(sheet);
-    }
-    private CellStyle setHeaderCellStyle(HSSFWorkbook document){
-        Font headerFont = document.createFont();
-        headerFont.setBold(true);
-        headerFont.setFontHeightInPoints((short) 10);
-        headerFont.setColor(IndexedColors.BLACK.getIndex());
-
-        CellStyle headerCellStyle = document.createCellStyle();
-        headerCellStyle.setBorderTop(BorderStyle.THIN);
-        headerCellStyle.setBorderBottom(BorderStyle.THIN);
-        headerCellStyle.setBorderLeft(BorderStyle.THIN);
-        headerCellStyle.setBorderRight(BorderStyle.THIN);
-
-        headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
-        headerCellStyle.setFont(headerFont);
-        return headerCellStyle;
-    }
-
 
 }

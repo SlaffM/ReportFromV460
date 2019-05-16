@@ -7,18 +7,21 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<Pane prefHeight="346.0" prefWidth="644.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<Pane prefHeight="308.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="197.0" layoutX="14.0" layoutY="137.0" stroke="BLACK" strokeType="INSIDE" width="613.0" />
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="120.0" layoutX="14.0" layoutY="13.0" stroke="BLACK" strokeType="INSIDE" width="613.0" />
-      <Button fx:id="btnGenerate" layoutX="28.0" layoutY="229.0" mnemonicParsing="false" onAction="#createDocFile" prefHeight="49.0" prefWidth="117.0" text="Выполнить" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="160.0" layoutX="14.0" layoutY="137.0" stroke="BLACK" strokeType="INSIDE" width="847.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="120.0" layoutX="14.0" layoutY="13.0" stroke="BLACK" strokeType="INSIDE" width="847.0" />
+      <Button fx:id="btnGenerate" layoutX="28.0" layoutY="229.0" mnemonicParsing="false" onAction="#createFile" prefHeight="49.0" prefWidth="117.0" text="Выполнить" />
       <Button fx:id="btnLoadFileTxt" layoutX="28.0" layoutY="67.0" mnemonicParsing="false" onAction="#btnLoadTxtFileClick" prefHeight="49.0" prefWidth="117.0" text="Загрузить файл" wrapText="true" />
-      <Label fx:id="lblPathTxt" layoutX="154.0" layoutY="68.0" prefHeight="49.0" prefWidth="460.0" style="-fx-background-color: gainsboro;">
+      <Label fx:id="lblPathTxt" layoutX="154.0" layoutY="68.0" prefHeight="49.0" prefWidth="693.0" style="-fx-background-color: gainsboro;">
          <font>
             <Font size="14.0" />
          </font></Label>
-      <Button fx:id="btnSaveDocFile" layoutX="351.0" layoutY="286.0" mnemonicParsing="false" onAction="#btnSaveDocFileClick" prefHeight="37.0" prefWidth="264.0" text="Сохранить в другую директорию" wrapText="true" />
-      <Label fx:id="lblPathDoc" layoutX="155.0" layoutY="229.0" prefHeight="49.0" prefWidth="460.0" style="-fx-background-color: gainsboro;">
+      <Button fx:id="btnSaveDocFile" layoutX="802.0" layoutY="230.0" mnemonicParsing="false" onAction="#btnSaveDocFileClick" prefHeight="37.0" prefWidth="39.0" text="..." wrapText="true">
+         <font>
+            <Font size="22.0" />
+         </font></Button>
+      <Label fx:id="lblPathDoc" layoutX="155.0" layoutY="229.0" prefHeight="49.0" prefWidth="642.0" style="-fx-background-color: gainsboro;">
          <font>
             <Font size="14.0" />
          </font></Label>
@@ -32,7 +35,7 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <RadioButton fx:id="rButExcel" layoutX="29.0" layoutY="192.0" mnemonicParsing="false" onAction="#rBtnExcelClicked" text="Excel (xls)" />
+      <RadioButton fx:id="rButExcel" layoutX="29.0" layoutY="192.0" mnemonicParsing="false" onAction="#rBtnExcelClicked" selected="true" text="Excel (xls)" />
       <RadioButton fx:id="rButWord" layoutX="129.0" layoutY="192.0" mnemonicParsing="false" onAction="#rBtnWordClicked" text="Word (docx)" />
    </children>
 </Pane>
