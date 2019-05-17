@@ -2,9 +2,6 @@ package sample.Report.Strategy;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellUtil;
-import org.apache.poi.ss.util.PropertyTemplate;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
@@ -313,7 +310,7 @@ public class IecReportStrategy implements ReportStrategy{
         props.add(resourceBean.getDevice());
         props.add(resourceBean.getSignalName());
         props.add(resourceBean.getUnit());
-        props.add(resourceBean.getKtransform());
+        props.add(resourceBean.getCoefficientTransform());
         props.add(resourceBean.getRecourcesLabel());
         props.add(resourceBean.getShortSymbAddress());
         return props;

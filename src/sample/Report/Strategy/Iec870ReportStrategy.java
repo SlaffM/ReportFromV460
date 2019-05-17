@@ -69,7 +69,7 @@ public class Iec870ReportStrategy extends IecReportStrategy {
         props.add(resourceBean.getDevice());
         props.add(resourceBean.getSignalName());
         props.add(resourceBean.getUnit());
-        props.add(resourceBean.getKtransform());
+        props.add(resourceBean.getCoefficientTransform());
         props.add(resourceBean.getIec870_type());
         props.add(resourceBean.getIec870_coa1());
         props.add(resourceBean.getIec870_ioa1());

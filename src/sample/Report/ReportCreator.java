@@ -1,5 +1,6 @@
 package sample.Report;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,17 +55,23 @@ public class ReportCreator {
     }
 
     private static void writeDataToFile(Object document, String filePath) throws IOException {
-        FileOutputStream fos = new FileOutputStream(new File(filePath));
-         if (document instanceof XWPFDocument){
-             XWPFDocument doc = (XWPFDocument)document;
-             doc.write(fos);
-         }else if(document instanceof HSSFWorkbook){
-             HSSFWorkbook doc = (HSSFWorkbook)document;
-             doc.write(fos);
-         }else{
-             throw new IOException();
-         }
-         fos.close();
+        try {
+            File file = new File(filePath);
+
+            FileOutputStream fos = new FileOutputStream(file);
+            if (document instanceof XWPFDocument) {
+                XWPFDocument doc = (XWPFDocument) document;
+                doc.write(fos);
+            } else if (document instanceof HSSFWorkbook) {
+                HSSFWorkbook doc = (HSSFWorkbook) document;
+                doc.write(fos);
+            } else {
+                throw new IOException();
+            }
+            fos.close();
+        }catch (FileNotFoundException e){
+            System.out.println(e.getMessage());
+        }
     }
 
 }

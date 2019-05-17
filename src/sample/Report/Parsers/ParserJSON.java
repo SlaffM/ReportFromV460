@@ -50,15 +50,16 @@ public class ParserJSON {
     }
 
     public static ArrayList<EnipObject> getListOfEnips(File folder){
+        if (folder.isDirectory()){
+            ArrayList<EnipObject> enipObjects = new ArrayList<>();
+            System.out.println(folder.getAbsolutePath());
+            File[] files = folder.listFiles();
 
-        ArrayList<EnipObject> enipObjects = new ArrayList<>();
-        File[] files = folder.listFiles();
-
-        for (File file : files) {
-            enipObjects.add(getEnipFromJSON(file));
+            for (File file : files) {
+                enipObjects.add(getEnipFromJSON(file));
+            }
+            return enipObjects;
         }
-        return enipObjects;
+        return new ArrayList<>();
     }
-
-
 }

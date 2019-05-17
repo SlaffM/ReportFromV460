@@ -30,6 +30,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
     @CsvBindByPosition(position = 78)
     String iec870_ioa1;
     DriverType lodicDriverType;
+    String coefficientTransform;
+
 
     public DriverType getLodicDriverType() {
         return lodicDriverType;
@@ -173,20 +175,38 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public String getPrefixSpreconSymbAddress(){return getSpreconSymbPrefix(getSymbAddr());}
     public String getShortSymbAddress(){return getFormattedIec850Address(getSymbAddr());}
     public String getIpAddress(){return String.format("10.47.171.%s", getNetAddr());}
-    public String getKtransform(){
-        String lowSymbols = getSignalName().toLowerCase();
-        if (lowSymbols.contains("напряж") && (getUnit().equals("кВ"))){
-            if (tryParseInt(getVoltageClass())){
+    public String getCoefficientTransform(){
+        if (coefficientTransform == null || coefficientTransform.isEmpty()){ setDefaultCoefficientTransform(); }
+        return coefficientTransform;
+    }
+
+    private String setDefaultCoefficient() {
+        if (isVariableU()) {
+            if (tryParseInt(getVoltageClass())) {
                 String num = Helpers.getTextWithPattern(getVoltageClass(), "(\\d+)");
                 return String.format("%s0/1", Integer.parseInt(num));
             }
             return "";
         }
-        if (lowSymbols.contains("ток") && (getUnit().equals("А"))){
-            return "2000/1";
-        }
-
+        //if (isVariableI()) { return "2000/1"; }
         return "";
+    }
+
+    public boolean isVariableU(){
+        String lowSymbols = getSignalName().toLowerCase();
+        return lowSymbols.contains("напряж") && (getUnit().equals("кВ"));
+    }
+    public boolean isVariableI(){
+        String lowSymbols = getSignalName().toLowerCase();
+        return lowSymbols.contains("ток") && (getUnit().equals("А"));
+    }
+
+    public void setDefaultCoefficientTransform(){
+        setCoefficientTransform(setDefaultCoefficient());
+    }
+
+    public void setCoefficientTransform(String coefficientTransform) {
+        this.coefficientTransform = coefficientTransform;
     }
 
     boolean tryParseInt(String value){
@@ -209,12 +229,11 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public boolean isIec850Variable() {
         return getDriverType().equals(SPRECON850) || getDriverType().equals(IEC850);
     }
-
+    public boolean isIecVariable(){return this.isIec870Variable() || this.isIec850Variable();}
     public boolean isVariableTI(){
         String findTI = Helpers.getTextWithPattern(this.getSymbAddr(), "(mag)");
         return !findTI.isEmpty();
     }
-
 
     private AlarmClassType getAlarmTypeByRules(String srcMatrix){
         if (srcMatrix.contains("_BM") || srcMatrix.contains("_DM") || srcMatrix.startsWith("ОС_")){

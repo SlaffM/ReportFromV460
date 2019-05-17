@@ -26,17 +26,28 @@ public class Controller {
     @FXML public RadioButton rButExcel;
     @FXML public RadioButton rButWord;
     @FXML public Button btnReadJSON;
+    @FXML public Button btnLoadPathToEnip;
+    @FXML public Label lblPathEnip;
 
     private File txtFile;
     private String extensionTxt = ".txt";
     private String extensionExcel = ".xls";
     private String extensionWord = ".docx";
     private String postfixNewFile = "_new";
+    private File dirOfEnip = new File("./enips");
+
+    private ArrayList<EnipObject> enipObjects = new ArrayList<>();
+
 
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
-        ArrayList<PointParam> listPointParams = new ParserVariablesFromV460(lblPathTxt.textProperty().getValue()).buildPoints();
+        if (dirOfEnip.exists()){
+            enipObjects = ParserJSON.getListOfEnips(dirOfEnip);
+            enipObjects.forEach(System.out::println);
+        }
+        String txtPath = lblPathTxt.textProperty().getValue();
+        ArrayList<PointParam> listPointParams = new ParserVariablesFromV460(txtPath, enipObjects).buildPoints();
 
         if (rButExcel.selectedProperty().getValue()){
             ReportCreator.CreateXlsFile(listPointParams, lblPathDoc.textProperty().getValue());
@@ -56,6 +67,7 @@ public class Controller {
         if (ret == JFileChooser.APPROVE_OPTION) {
             txtFile = fileopen.getSelectedFile();
             lblPathTxt.textProperty().setValue(txtFile.getAbsolutePath());
+            lblPathEnip.textProperty().setValue(dirOfEnip.getAbsolutePath());
             actualizingStateFormatFile();
         }
     }
@@ -118,22 +130,18 @@ public class Controller {
         }
     }
 
-    @FXML public void readJSON(){
+    public void btnLoadPathToEnipClick(ActionEvent event) {
+        JFileChooser fileopen = new JFileChooser();
+        fileopen.setCurrentDirectory(new File("."));
+        fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileopen.setAcceptAllFileFilterUsed(false);
 
-        File folder = new File("./enips");
+        int ret = fileopen.showOpenDialog(null);
 
-        ArrayList<EnipObject> enipObjects = ParserJSON.getListOfEnips(folder);
-
-        enipObjects.forEach(System.out::println);
-
-        /*File file = new File("./enips/test.json");
-        System.out.println(ParserJSON.getEnipFromJSON(file));
-
-        file = new File("./enips/test2.json");
-        System.out.println(ParserJSON.getEnipFromJSON(file));*/
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            dirOfEnip = fileopen.getSelectedFile();
+            lblPathEnip.textProperty().setValue(dirOfEnip.getAbsolutePath());
+        }
     }
-
-
-
 }
 

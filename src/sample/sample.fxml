@@ -7,21 +7,21 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<Pane prefHeight="350.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<Pane prefHeight="436.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="160.0" layoutX="14.0" layoutY="137.0" stroke="BLACK" strokeType="INSIDE" width="847.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="147.0" layoutX="15.0" layoutY="274.0" stroke="BLACK" strokeType="INSIDE" width="847.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="120.0" layoutX="14.0" layoutY="13.0" stroke="BLACK" strokeType="INSIDE" width="847.0" />
-      <Button fx:id="btnGenerate" layoutX="28.0" layoutY="229.0" mnemonicParsing="false" onAction="#createFile" prefHeight="49.0" prefWidth="117.0" text="Выполнить" />
+      <Button fx:id="btnGenerate" layoutX="28.0" layoutY="358.0" mnemonicParsing="false" onAction="#createFile" prefHeight="49.0" prefWidth="117.0" text="Выполнить" />
       <Button fx:id="btnLoadFileTxt" layoutX="28.0" layoutY="67.0" mnemonicParsing="false" onAction="#btnLoadTxtFileClick" prefHeight="49.0" prefWidth="117.0" text="Загрузить файл" wrapText="true" />
       <Label fx:id="lblPathTxt" layoutX="154.0" layoutY="68.0" prefHeight="49.0" prefWidth="693.0" style="-fx-background-color: gainsboro;">
          <font>
             <Font size="14.0" />
          </font></Label>
-      <Button fx:id="btnSaveDocFile" layoutX="802.0" layoutY="230.0" mnemonicParsing="false" onAction="#btnSaveDocFileClick" prefHeight="37.0" prefWidth="39.0" text="..." wrapText="true">
+      <Button fx:id="btnSaveDocFile" layoutX="802.0" layoutY="359.0" mnemonicParsing="false" onAction="#btnSaveDocFileClick" prefHeight="37.0" prefWidth="39.0" text="..." wrapText="true">
          <font>
             <Font size="22.0" />
          </font></Button>
-      <Label fx:id="lblPathDoc" layoutX="155.0" layoutY="229.0" prefHeight="49.0" prefWidth="642.0" style="-fx-background-color: gainsboro;">
+      <Label fx:id="lblPathDoc" layoutX="155.0" layoutY="358.0" prefHeight="49.0" prefWidth="642.0" style="-fx-background-color: gainsboro;">
          <font>
             <Font size="14.0" />
          </font></Label>
@@ -30,13 +30,24 @@
             <Font size="14.0" />
          </font>
       </Label>
-      <Label fx:id="lblPathTxt11" layoutX="29.0" layoutY="149.0" prefHeight="37.0" prefWidth="586.0" text="2. Выберете тип файла для сохрания протокола">
+      <Label fx:id="lblPathTxt11" layoutX="29.0" layoutY="278.0" prefHeight="37.0" prefWidth="586.0" text="3. Выберете тип файла для сохрания протокола">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
-      <RadioButton fx:id="rButExcel" layoutX="29.0" layoutY="192.0" mnemonicParsing="false" onAction="#rBtnExcelClicked" selected="true" text="Excel (xls)" />
-      <RadioButton fx:id="rButWord" layoutX="129.0" layoutY="192.0" mnemonicParsing="false" onAction="#rBtnWordClicked" text="Word (docx)" />
-      <Button fx:id="btnReadJSON" layoutX="20.0" layoutY="304.0" mnemonicParsing="false" onAction="#readJSON" text="Button" />
+      <RadioButton fx:id="rButExcel" layoutX="29.0" layoutY="321.0" mnemonicParsing="false" onAction="#rBtnExcelClicked" selected="true" text="Excel (xls)" />
+      <RadioButton fx:id="rButWord" layoutX="129.0" layoutY="321.0" mnemonicParsing="false" onAction="#rBtnWordClicked" text="Word (docx)" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="120.0" layoutX="14.0" layoutY="142.0" stroke="BLACK" strokeType="INSIDE" width="847.0" />
+      <Label fx:id="lblPathTxt12" layoutX="29.0" layoutY="142.0" prefHeight="48.0" prefWidth="819.0" text="2. Укажите путь к конфигурациям для устройств ENIP (используются для добавления коэффициентов трансформации ТИ)" wrapText="true">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Button fx:id="btnLoadPathToEnip" layoutX="27.0" layoutY="198.0" mnemonicParsing="false" onAction="#btnLoadPathToEnipClick" prefHeight="49.0" prefWidth="117.0" text="Указать" wrapText="true" />
+      <Label fx:id="lblPathEnip" layoutX="155.0" layoutY="198.0" prefHeight="49.0" prefWidth="693.0" style="-fx-background-color: gainsboro;">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
    </children>
 </Pane>
