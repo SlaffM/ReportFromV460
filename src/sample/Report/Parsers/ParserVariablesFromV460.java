@@ -32,7 +32,7 @@ public class ParserVariablesFromV460 {
         return file;
     }
 
-    private List<ResourceBean> getBeansFromCsv(String file) throws IOException {
+    private ArrayList getBeansFromCsv(String file) throws IOException {
 
         Path path = Paths.get(file);
         ColumnPositionMappingStrategy ms = new ColumnPositionMappingStrategy();
@@ -49,7 +49,7 @@ public class ParserVariablesFromV460 {
         ArrayList resourceBeans = new ArrayList<>(cb.parse());
         reader.close();
 
-        return resourceBeans != null ? resourceBeans : new ArrayList<>();
+        return resourceBeans;
     }
 
     private Map<String, ArrayList<ResourceBean>> getSrcPoints(List<ResourceBean> resourceBeans){

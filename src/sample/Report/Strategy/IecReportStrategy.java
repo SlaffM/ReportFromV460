@@ -2,6 +2,7 @@ package sample.Report.Strategy;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
@@ -22,7 +23,6 @@ public class IecReportStrategy implements ReportStrategy{
     private int rowsFromPrevPointTable = 2;
     private int rowsOffset = 1;
     private int colsForTitlePanel = 2;
-
 
 
     private ArrayList<ResourceBean>resourcebeansOfTS = new ArrayList<>();
@@ -110,40 +110,6 @@ public class IecReportStrategy implements ReportStrategy{
         }
     }
 
-    private void addHeadersToVariablesTable(XWPFTable table, String[] headers){
-        XWPFTableRow tableRowOne = table.getRow(0);
-        for(int count=0; count<headers.length; count++){
-            tableRowOne.getCell(count).setColor("779BFF");
-            tableRowOne.getCell(count).getParagraphs().get(0).setAlignment(ParagraphAlignment.CENTER);
-
-            tableRowOne.setRepeatHeader(true);
-
-            XWPFParagraph para1 = tableRowOne.getCell(count).getParagraphs().get(0);
-            XWPFRun rh1 = para1.createRun();
-            rh1.setFontSize(16);
-            rh1.setFontFamily("Courier");
-
-            tableRowOne.getCell(count).setText(headers[count]);
-        }
-    }
-    private void addVariablesToVariablesTable(XWPFTable table, String[] headers, ArrayList<ResourceBean> resourceBeans){
-        int rowCounter = 1;
-
-        for(ResourceBean resourceBean : resourceBeans){
-            XWPFTableRow tableRowOneTI = table.getRow(rowCounter);
-            for(int colNum = 0; colNum < headers.length; colNum++){
-                XWPFTableCell cell = tableRowOneTI.getCell(colNum);
-                String prop;
-                if (resourceBean.isVariableTI()){
-                    prop = getPropertiesResourceBeanTI(resourceBean).get(colNum);
-                }else{
-                    prop = getPropertiesResourceBean(resourceBean).get(colNum);
-                }
-                cell.setText(prop);
-            }
-            rowCounter++;
-        }
-    }
     private void createTableVariablesPanel(XWPFDocument document, ArrayList<ResourceBean> resourceBeans){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
@@ -209,7 +175,94 @@ public class IecReportStrategy implements ReportStrategy{
 
 
     }
+    private void addHeadersToVariablesTable(XWPFTable table, String[] headers){
+        XWPFTableRow tableRowOne = table.getRow(0);
+        for(int count=0; count<headers.length; count++){
+            tableRowOne.getCell(count).setColor("779BFF");
+            tableRowOne.getCell(count).getParagraphs().get(0).setAlignment(ParagraphAlignment.CENTER);
 
+            tableRowOne.setRepeatHeader(true);
+
+            XWPFParagraph para1 = tableRowOne.getCell(count).getParagraphs().get(0);
+            XWPFRun rh1 = para1.createRun();
+            rh1.setFontSize(16);
+            rh1.setFontFamily("Courier");
+
+            tableRowOne.getCell(count).setText(headers[count]);
+        }
+    }
+    private void addVariablesToVariablesTable(XWPFTable table, String[] headers, ArrayList<ResourceBean> resourceBeans){
+        int rowCounter = 1;
+
+        for(ResourceBean resourceBean : resourceBeans){
+            XWPFTableRow tableRowOneTI = table.getRow(rowCounter);
+            for(int colNum = 0; colNum < headers.length; colNum++){
+                XWPFTableCell cell = tableRowOneTI.getCell(colNum);
+                String prop;
+                if (resourceBean.isVariableTI()){
+                    prop = getPropertiesResourceBeanTI(resourceBean).get(colNum);
+                }else{
+                    prop = getPropertiesResourceBean(resourceBean).get(colNum);
+                }
+                cell.setText(prop);
+            }
+            rowCounter++;
+        }
+    }
+
+    private void createXlsTableTitlePanel(HSSFWorkbook document, ReportPanelTitle reportPanelTitle) {
+
+        LinkedHashMap titleTable = createHeadersTitle(reportPanelTitle);
+        Sheet sheet = document.getSheet("Report");
+
+        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
+        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
+
+        titleTable.forEach((key, value) -> {
+            Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+
+            Cell cell;
+            int colNumber = 0;
+            for(; colNumber < 3; colNumber++){
+                cell = row.createCell(colNumber);
+                cell.setCellValue((String)key);
+                cell.setCellStyle(headerStyle);
+            }
+            sheet.addMergedRegion(new CellRangeAddress(sheet.getLastRowNum(), sheet.getLastRowNum(), 0, 2));
+
+            cell = row.createCell(colNumber);
+            cell.setCellValue((String)titleTable.get(key));
+            cell.setCellStyle(baseStyle);
+        });
+
+        sheet.createRow(sheet.getLastRowNum() + 1);
+    }
+    private void createXlsTableVariablesPanel(HSSFWorkbook document, ArrayList<ResourceBean> resourceBeans){
+        Sheet sheet = document.getSheet("Report");
+
+        splitBeansToTSTI(resourceBeans);
+
+        if (!resourcebeansOfTS.isEmpty()) {
+            addHeadersToVariablesTableXls(document, createHeadersVariables());
+            addVariablesToVariablesTableXls(document, createHeadersVariables(), resourcebeansOfTS);
+        }
+
+        if (!resourcebeansOfTI.isEmpty()) {
+            sheet.createRow(sheet.getLastRowNum() + rowsOffset);
+            addHeadersToVariablesTableXls(document, createHeadersVariablesTI());
+            addVariablesToVariablesTableXls(document, createHeadersVariablesTI(), resourcebeansOfTI);
+        }
+        resourcebeansOfTS.clear();
+        resourcebeansOfTI.clear();
+
+        sheet.createRow(sheet.getLastRowNum() + rowsFromPrevPointTable);
+
+        for(int i = 0; i < createHeadersVariables().length; i++) {
+            //sheet.setRepeatingRows(region);
+            sheet.autoSizeColumn(i);
+        }
+
+    }
     private void addHeadersToVariablesTableXls(HSSFWorkbook document, String[] headers){
         Sheet sheet = document.getSheet("Report");
         Row tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
@@ -242,49 +295,6 @@ public class IecReportStrategy implements ReportStrategy{
             }
         }
 
-    }
-    private void createXlsTableVariablesPanel(HSSFWorkbook document, ArrayList<ResourceBean> resourceBeans){
-        Sheet sheet = document.getSheet("Report");
-
-        splitBeansToTSTI(resourceBeans);
-
-        if (!resourcebeansOfTS.isEmpty()) {
-            addHeadersToVariablesTableXls(document, createHeadersVariables());
-            addVariablesToVariablesTableXls(document, createHeadersVariables(), resourcebeansOfTS);
-        }
-
-        if (!resourcebeansOfTI.isEmpty()) {
-            sheet.createRow(sheet.getLastRowNum() + rowsOffset);
-            addHeadersToVariablesTableXls(document, createHeadersVariablesTI());
-            addVariablesToVariablesTableXls(document, createHeadersVariablesTI(), resourcebeansOfTI);
-        }
-        resourcebeansOfTS.clear();
-        resourcebeansOfTI.clear();
-
-        sheet.createRow(sheet.getLastRowNum() + rowsFromPrevPointTable);
-
-        for(int i = 0; i < createHeadersVariables().length; i++) {
-            //sheet.setRepeatingRows(region);
-            sheet.autoSizeColumn(i);
-        }
-
-    }
-    private void createXlsTableTitlePanel(HSSFWorkbook document, ReportPanelTitle reportPanelTitle) {
-
-        LinkedHashMap titleTable = createHeadersTitle(reportPanelTitle);
-        Sheet sheet = document.getSheet("Report");
-
-        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
-
-        titleTable.forEach((key, value) -> {
-            Row row = sheet.createRow(sheet.getLastRowNum() + 1);
-            Cell cell = row.createCell(0);
-            cell.setCellValue((String)key);
-            cell.setCellStyle(headerStyle);
-            row.createCell(1).setCellValue((String)titleTable.get(key));
-        });
-
-        sheet.createRow(sheet.getLastRowNum() + 1);
     }
 
     ArrayList<String> getPropertiesResourceBean(ResourceBean resourceBean){
