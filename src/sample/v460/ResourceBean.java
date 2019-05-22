@@ -77,8 +77,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
         //return driverType;
     }
     public void setDriverType(String driverType) {
-        setLodicDriverType();
         this.driverType = driverType;
+        setLodicDriverType();
     }
 
     public String getUnit() {

@@ -37,6 +37,17 @@ public class ResourceBeanTest {
         bean.setDriverType("IEC850");
         Assert.assertEquals(DriverType.IEC850, bean.getDriverType());
     }
+    @Test
+    public void getDriverType_IEC870() {
+        bean.setRecourcesLabel("");
+        bean.setDriverType("IEC870");
+        Assert.assertEquals(DriverType.IEC870, bean.getDriverType());
+    }
+    @Test
+    public void getDriverType_SPRECON870() {
+        bean.setDriverType("IEC870");
+        Assert.assertEquals(DriverType.SPRECON870, bean.getDriverType());
+    }
 
     @Test
     public void getAlarmClass_GM1() {
