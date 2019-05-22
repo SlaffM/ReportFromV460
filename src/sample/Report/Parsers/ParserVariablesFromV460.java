@@ -4,7 +4,6 @@ package sample.Report.Parsers;
 import com.opencsv.bean.*;
 import sample.v460.PointParam;
 import sample.v460.ResourceBean;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,6 +16,11 @@ public class ParserVariablesFromV460 {
     private String file;
     private ArrayList<EnipObject> enipObjects;
 
+
+    public ParserVariablesFromV460(String file){
+        new ParserVariablesFromV460(file, EnipObject.getAllEnips());
+    }
+
     public ParserVariablesFromV460(String file, ArrayList<EnipObject> enipObjects){
         this.file = file;
         this.enipObjects = enipObjects;
@@ -25,7 +29,7 @@ public class ParserVariablesFromV460 {
     public ArrayList<PointParam> buildPoints() throws Exception {
         List<ResourceBean> resourceBeans = getBeansFromCsv(getFile());
         Map<String, ArrayList<ResourceBean>> points = getSrcPoints(resourceBeans);
-        return getPointsTable(points);
+        return getFinishedPoints(points);
     }
 
     private String getFile() {
@@ -109,7 +113,7 @@ public class ParserVariablesFromV460 {
         return resourceBean.getNetAddr().equals(enipObject.getNetAddress());
     }
 
-    private ArrayList<PointParam> getPointsTable(Map<String, ArrayList<ResourceBean>> points){
+    private ArrayList<PointParam> getFinishedPoints(Map<String, ArrayList<ResourceBean>> points){
 
         ArrayList<PointParam> pointParams = new ArrayList<>();
 

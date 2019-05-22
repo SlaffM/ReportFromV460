@@ -1,5 +1,11 @@
 package sample.Report.Strategy;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import sample.Helpers.StyleDocument;
 import sample.v460.ResourceBean;
 import java.util.ArrayList;
 

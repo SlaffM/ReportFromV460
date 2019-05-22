@@ -2,22 +2,27 @@ package sample;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.ParallelCamera;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import sample.Helpers.LogInfo;
 import sample.Helpers.OpenFileFilter;
 import sample.Report.Parsers.EnipObject;
-import sample.Report.Parsers.ParserJSON;
+import sample.Report.Parsers.ParserEnipJSON;
 import sample.Report.ReportCreator;
 import sample.v460.PointParam;
 import sample.Report.Parsers.ParserVariablesFromV460;
 
 import javax.swing.*;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ResourceBundle;
 
-public class Controller {
+public class Controller implements Initializable {
     @FXML public Label lblPathTxt;
     @FXML public Label lblPathDoc;
     @FXML public Button btnGenerate;
@@ -28,6 +33,7 @@ public class Controller {
     @FXML public Button btnReadJSON;
     @FXML public Button btnLoadPathToEnip;
     @FXML public Label lblPathEnip;
+    @FXML public TextArea txtLog;
 
     private File txtFile;
     private String extensionTxt = ".txt";
@@ -35,39 +41,48 @@ public class Controller {
     private String extensionWord = ".docx";
     private String postfixNewFile = "_new";
     private File dirOfEnip = new File("./enips");
+    private String logLine = "";
 
     private ArrayList<EnipObject> enipObjects = new ArrayList<>();
 
-
-
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
-        if (dirOfEnip.exists()){
-            enipObjects = ParserJSON.getListOfEnips(dirOfEnip);
-            enipObjects.forEach(System.out::println);
-        }
+
+        enipObjects = ParserEnipJSON.getListOfEnips(dirOfEnip);
+        LogInfo.setLogDataWithTitle("Прочитаны конфигурации ЭНИПов",
+                String.valueOf(enipObjects.size()));
+
         String txtPath = lblPathTxt.textProperty().getValue();
         ArrayList<PointParam> listPointParams = new ParserVariablesFromV460(txtPath, enipObjects).buildPoints();
+        LogInfo.setLogDataWithTitle("Количество устройств для создания протокола",String.valueOf(listPointParams.size()));
 
         if (rButExcel.selectedProperty().getValue()){
-            ReportCreator.CreateXlsFile(listPointParams, lblPathDoc.textProperty().getValue());
+            ReportCreator.CreateXlsFile(listPointParams, getlblPathDoc());
         }else{
-            ReportCreator.CreateDocFile(listPointParams, lblPathDoc.textProperty().getValue());
+            ReportCreator.CreateDocFile(listPointParams, getlblPathDoc());
         }
     }
+
+    private String getlblPathDoc(){
+        return lblPathDoc.textProperty().getValue();
+    }
+
+    private void setLblText(Label lbl, String text){
+        lbl.textProperty().setValue(text);
+    }
+
 
     @FXML public void btnLoadTxtFileClick(ActionEvent event){
         JFileChooser fileopen = new JFileChooser();
         fileopen.setCurrentDirectory(new File("."));
-        //fileopen.addChoosableFileFilter(new OpenFileFilter(".txt", "Text files"));
         fileopen.setFileFilter(new OpenFileFilter(extensionTxt, "Text files"));
 
         int ret = fileopen.showOpenDialog(null);
 
         if (ret == JFileChooser.APPROVE_OPTION) {
             txtFile = fileopen.getSelectedFile();
-            lblPathTxt.textProperty().setValue(txtFile.getAbsolutePath());
-            lblPathEnip.textProperty().setValue(dirOfEnip.getAbsolutePath());
+            setLblText(lblPathTxt, txtFile.getAbsolutePath());
+            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
             actualizingStateFormatFile();
         }
     }
@@ -88,9 +103,9 @@ public class Controller {
 
     private void actualizingStateFormatFile(){
         if (rButExcel.selectedProperty().getValue()){
-            lblPathDoc.textProperty().setValue(getChangedFileName(txtFile, extensionExcel));
+            setLblText(lblPathDoc, getChangedFileName(txtFile, extensionExcel));
         }else{
-            lblPathDoc.textProperty().setValue(getChangedFileName(txtFile, extensionWord));
+            setLblText(lblPathDoc, getChangedFileName(txtFile, extensionWord));
         }
     }
 
@@ -126,9 +141,11 @@ public class Controller {
 
         if (ret == JFileChooser.APPROVE_OPTION) {
             file = filesave.getSelectedFile();
-            lblPathDoc.textProperty().setValue(getChangedFileName(file, curExtension));
+            setLblText(lblPathDoc, getChangedFileName(file, curExtension));
         }
+
     }
+
 
     public void btnLoadPathToEnipClick(ActionEvent event) {
         JFileChooser fileopen = new JFileChooser();
@@ -140,8 +157,14 @@ public class Controller {
 
         if (ret == JFileChooser.APPROVE_OPTION) {
             dirOfEnip = fileopen.getSelectedFile();
-            lblPathEnip.textProperty().setValue(dirOfEnip.getAbsolutePath());
+            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
         }
     }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        txtLog.textProperty().bind(LogInfo.logDataProperty());
+    }
+
 }
 

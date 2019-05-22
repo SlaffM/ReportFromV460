@@ -21,7 +21,7 @@ import java.util.Map;
 public class IecReportStrategy implements ReportStrategy{
 
     private int rowsFromPrevPointTable = 2;
-    private int rowsOffset = 1;
+    public int rowsOffset = 1;
     private int colsForTitlePanel = 2;
 
 
@@ -110,27 +110,6 @@ public class IecReportStrategy implements ReportStrategy{
         }
     }
 
-    private void createTableVariablesPanel(XWPFDocument document, ArrayList<ResourceBean> resourceBeans){
-        XWPFParagraph para = document.createParagraph();
-        XWPFRun run = para.createRun();
-        run.addBreak();
-
-        splitBeansToTSTI(resourceBeans);
-
-        if (!resourcebeansOfTS.isEmpty()) {
-            XWPFTable tableTS = document.createTable(resourcebeansOfTS.size()+1,createHeadersVariables().length);
-            addHeadersToVariablesTable(tableTS, createHeadersVariables());
-            addVariablesToVariablesTable(tableTS, createHeadersVariables(), resourcebeansOfTS);
-        }
-
-        if (!resourcebeansOfTI.isEmpty()) {
-            XWPFTable tableTI = document.createTable(resourcebeansOfTI.size()+1,createHeadersVariablesTI().length);
-            addHeadersToVariablesTable(tableTI, createHeadersVariablesTI());
-            addVariablesToVariablesTable(tableTI, createHeadersVariablesTI(), resourcebeansOfTI);
-        }
-        resourcebeansOfTS.clear();
-        resourcebeansOfTI.clear();
-    }
     private void createTableTitlePanel(XWPFDocument document, ReportPanelTitle reportPanelTitle){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
@@ -175,9 +154,44 @@ public class IecReportStrategy implements ReportStrategy{
 
 
     }
+    private void createTableVariablesPanel(XWPFDocument document, ArrayList<ResourceBean> resourceBeans){
+        XWPFParagraph para = document.createParagraph();
+        XWPFRun run = para.createRun();
+        run.addBreak();
+
+        splitBeansToTSTI(resourceBeans);
+
+        if (!resourcebeansOfTS.isEmpty()) {
+            XWPFTable tableTS = document.createTable(resourcebeansOfTS.size()+1,createHeadersVariables().length);
+            addHeadersToVariablesTable(tableTS, createHeadersVariables());
+            addVariablesToVariablesTable(tableTS, createHeadersVariables(), resourcebeansOfTS);
+        }
+
+        if (!resourcebeansOfTI.isEmpty()) {
+            XWPFTable tableTI = document.createTable(resourcebeansOfTI.size()+1,createHeadersVariablesTI().length);
+            addHeadersToVariablesTable(tableTI, createHeadersVariablesTI());
+            addVariablesToVariablesTable(tableTI, createHeadersVariablesTI(), resourcebeansOfTI);
+        }
+        resourcebeansOfTS.clear();
+        resourcebeansOfTI.clear();
+    }
     private void addHeadersToVariablesTable(XWPFTable table, String[] headers){
         XWPFTableRow tableRowOne = table.getRow(0);
         for(int count=0; count<headers.length; count++){
+
+            XWPFParagraph para = tableRowOne.getCell(count).getParagraphs().get(0);
+            para.setAlignment(ParagraphAlignment.CENTER);
+
+            XWPFRun rh = para.createRun();
+            rh.setFontSize(16);
+            rh.setFontFamily("Courier");
+            rh.setColor("779BFF");
+
+            tableRowOne.getCell(count).setText(headers[count]);
+
+/*
+
+
             tableRowOne.getCell(count).setColor("779BFF");
             tableRowOne.getCell(count).getParagraphs().get(0).setAlignment(ParagraphAlignment.CENTER);
 
@@ -188,9 +202,16 @@ public class IecReportStrategy implements ReportStrategy{
             rh1.setFontSize(16);
             rh1.setFontFamily("Courier");
 
-            tableRowOne.getCell(count).setText(headers[count]);
+            tableRowOne.getCell(count).setText(headers[count]);*/
         }
+
+
     }
+
+    private void createStyleForParagraph(){
+
+    }
+
     private void addVariablesToVariablesTable(XWPFTable table, String[] headers, ArrayList<ResourceBean> resourceBeans){
         int rowCounter = 1;
 
@@ -213,7 +234,7 @@ public class IecReportStrategy implements ReportStrategy{
     private void createXlsTableTitlePanel(HSSFWorkbook document, ReportPanelTitle reportPanelTitle) {
 
         LinkedHashMap titleTable = createHeadersTitle(reportPanelTitle);
-        Sheet sheet = document.getSheet("Report");
+        Sheet sheet = document.getSheetAt(0);
 
         CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
         CellStyle baseStyle = StyleDocument.createBaseStyle(document);
@@ -229,6 +250,7 @@ public class IecReportStrategy implements ReportStrategy{
                 cell.setCellStyle(headerStyle);
             }
             sheet.addMergedRegion(new CellRangeAddress(sheet.getLastRowNum(), sheet.getLastRowNum(), 0, 2));
+            //sheet.setRepeatingRows(CellRangeAddress.valueOf("0:2"));
 
             cell = row.createCell(colNumber);
             cell.setCellValue((String)titleTable.get(key));
@@ -238,7 +260,7 @@ public class IecReportStrategy implements ReportStrategy{
         sheet.createRow(sheet.getLastRowNum() + 1);
     }
     private void createXlsTableVariablesPanel(HSSFWorkbook document, ArrayList<ResourceBean> resourceBeans){
-        Sheet sheet = document.getSheet("Report");
+        Sheet sheet = document.getSheetAt(0);
 
         splitBeansToTSTI(resourceBeans);
 
@@ -264,7 +286,7 @@ public class IecReportStrategy implements ReportStrategy{
 
     }
     private void addHeadersToVariablesTableXls(HSSFWorkbook document, String[] headers){
-        Sheet sheet = document.getSheet("Report");
+        Sheet sheet = document.getSheetAt(0);
         Row tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
 
         CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
@@ -276,7 +298,7 @@ public class IecReportStrategy implements ReportStrategy{
         }
     }
     private void addVariablesToVariablesTableXls(HSSFWorkbook document, String[] headers, ArrayList<ResourceBean> resourceBeans) {
-        Sheet sheet = document.getSheet("Report");
+        Sheet sheet = document.getSheetAt(0);
 
         CellStyle baseStyle = StyleDocument.createBaseStyle(document);
 

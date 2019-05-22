@@ -1,5 +1,6 @@
 package sample.Helpers;
 
+import org.apache.poi.hssf.usermodel.HSSFHeader;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
@@ -7,7 +8,7 @@ public class StyleDocument {
 
     public static CellStyle createBaseStyle(HSSFWorkbook book) {
         Font font = book.createFont();
-        font.setFontHeightInPoints((short) 10);
+        font.setFontHeightInPoints((short) 8);
 
         CellStyle style = book.createCellStyle();
         style.setBorderTop(BorderStyle.THIN);
@@ -23,7 +24,7 @@ public class StyleDocument {
     public static CellStyle createHeadingStyle(HSSFWorkbook book) {
         Font headerFont = book.createFont();
         headerFont.setBold(true);
-        headerFont.setFontHeightInPoints((short) 10);
+        headerFont.setFontHeightInPoints((short) 8);
         headerFont.setColor(IndexedColors.BLACK.getIndex());
 
         CellStyle headerCellStyle = book.createCellStyle();
@@ -38,6 +39,15 @@ public class StyleDocument {
 
         return headerCellStyle;
     }
+
+    public static String setFont(){
+        return HSSFHeader.font("Arial", "regular");
+    }
+
+    public static String setBold(String text){
+        return HSSFHeader.startBold() + text + HSSFHeader.endBold();
+    }
+
 
 
 

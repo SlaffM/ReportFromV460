@@ -33,6 +33,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
     String coefficientTransform;
 
 
+
+
     public DriverType getLodicDriverType() {
         return lodicDriverType;
     }
@@ -75,6 +77,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
         //return driverType;
     }
     public void setDriverType(String driverType) {
+        setLodicDriverType();
         this.driverType = driverType;
     }
 
@@ -123,6 +126,9 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public String getIec870_type() {
         return iec870_type;
     }
+    public void setIec870_type(String iec870_type) {
+        this.iec870_type = iec870_type;
+    }
 
     public String getIec870_coa1() {
         return iec870_coa1;
@@ -136,6 +142,10 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
     public void setIec870_ioa1(String iec870_ioa1) {
         this.iec870_ioa1 = iec870_ioa1;
+    }
+
+    public Enum getAlarmClassEnum(){
+        return getAlarmTypeByRules(getMatrix());
     }
 
     public String getAlarmClass(){
@@ -223,16 +233,22 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public boolean isAdditionalVariable() {
         return getDriverType().equals(MATHDR32) || getDriverType().equals(Intern) || getDriverType().equals(SNMP32);
     }
-    public boolean isIec870Variable() {
+    private boolean isIec870Variable() {
         return getDriverType().equals(SPRECON870) || getDriverType().equals(IEC870);
     }
-    public boolean isIec850Variable() {
+    private boolean isIec850Variable() {
         return getDriverType().equals(SPRECON850) || getDriverType().equals(IEC850);
     }
     public boolean isIecVariable(){return this.isIec870Variable() || this.isIec850Variable();}
     public boolean isVariableTI(){
-        String findTI = Helpers.getTextWithPattern(this.getSymbAddr(), "(mag)");
-        return !findTI.isEmpty();
+        switch (this.getDriverType()){
+            case SPRECON870: case IEC870:
+                return this.getIec870_type().contains("36");
+            case SPRECON850: case IEC850:
+                return this.getSymbAddr().contains("mag");
+            default:
+                return false;
+        }
     }
 
     private AlarmClassType getAlarmTypeByRules(String srcMatrix){
@@ -308,5 +324,67 @@ public class ResourceBean implements Comparable<ResourceBean>{
             default:
                 return 0;
         }
+    }
+
+    public static ResourceBean copy(ResourceBean bean){
+        return bean.copy();
+    }
+
+    public ResourceBean copy(){
+        return new ResourceBean(this);
+    }
+
+    public ResourceBean(ResourceBean bean){
+        this(
+                bean.getDriverType().toString(),
+                bean.getTypeName(),
+                bean.getMatrix(),
+                bean.getTagname(),
+                bean.getRecourcesLabel(),
+                bean.getNetAddr(),
+                bean.getSymbAddr(),
+                bean.getIec870_type(),
+                bean.getIec870_coa1(),
+                bean.getIec870_ioa1()
+        );
+    }
+
+    public ResourceBean(){
+        this(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+        );
+    }
+
+    public ResourceBean(
+            String driverType,
+            String typeName,
+            String matrix,
+            String tagname,
+            String recourcesLabel,
+            String netAddr,
+            String symbAddr,
+            String iec870_type,
+            String iec870_coa1,
+            String iec870_ioa1
+    ) {
+        this.driverType = driverType;
+        this.typeName = typeName;
+        this.matrix = matrix;
+        this.tagname = tagname;
+        this.recourcesLabel = recourcesLabel;
+        this.netAddr = netAddr;
+        this.symbAddr = symbAddr;
+        this.iec870_type = iec870_type;
+        this.iec870_coa1 = iec870_coa1;
+        this.iec870_ioa1 = iec870_ioa1;
     }
 }
