@@ -16,9 +16,8 @@ public class ParserVariablesFromV460 {
     private String file;
     private ArrayList<EnipObject> enipObjects;
 
-
-    public ParserVariablesFromV460(String file){
-        new ParserVariablesFromV460(file, EnipObject.getAllEnips());
+    public ParserVariablesFromV460(String file) {
+        this(file, new ArrayList<EnipObject>());
     }
 
     public ParserVariablesFromV460(String file, ArrayList<EnipObject> enipObjects){
@@ -26,17 +25,18 @@ public class ParserVariablesFromV460 {
         this.enipObjects = enipObjects;
     }
 
-    public ArrayList<PointParam> buildPoints() throws Exception {
+    /*public ArrayList<PointParam> buildPoints() throws Exception {
         List<ResourceBean> resourceBeans = getBeansFromCsv(getFile());
-        Map<String, ArrayList<ResourceBean>> points = getSrcPoints(resourceBeans);
-        return getFinishedPoints(points);
-    }
+        Map<String, ArrayList<ResourceBean>> points = PointParam.distributeBeansToPoints(resourceBeans);
+        //getMapPointsByDeviceType(resourceBeans);
+        return getReadyPoints(points);
+    }*/
 
     private String getFile() {
         return file;
     }
 
-    private ArrayList getBeansFromCsv(String file) throws IOException {
+    public ArrayList getBeansFromCsv() throws IOException {
 
         Path path = Paths.get(file);
         ColumnPositionMappingStrategy ms = new ColumnPositionMappingStrategy();
@@ -51,26 +51,28 @@ public class ParserVariablesFromV460 {
                 .build();
 
         ArrayList resourceBeans = new ArrayList<>(cb.parse());
+
+        ResourceBean.validateDriverType(resourceBeans);
+
         reader.close();
 
         return resourceBeans;
     }
 
-    private Map<String, ArrayList<ResourceBean>> getSrcPoints(List<ResourceBean> resourceBeans){
+
+/*
+    private Map<String, ArrayList<ResourceBean>> getMapPointsByDeviceType(List<ResourceBean> resourceBeans){
         Hashtable<String, ArrayList<ResourceBean>> dictionary = new Hashtable<>();
 
         int oldCountPanelPoints = 0;
         ArrayList<ResourceBean> variablesInPoint = new ArrayList<>();
         for(ResourceBean resourceBean : resourceBeans){
-            resourceBean.setLodicDriverType();
             if(resourceBean.isIecVariable()){
                 oldCountPanelPoints = dictionary.size();
                 if (dictionary.containsKey(resourceBean.getNetAddr())) {
-                    correctCoefficientsForVariable(resourceBean);
                     dictionary.get(resourceBean.getNetAddr()).add(resourceBean);
                 } else {
                     ArrayList<ResourceBean> beansInPoint = new ArrayList<>();
-                    correctCoefficientsForVariable(resourceBean);
                     beansInPoint.add(resourceBean);
                     dictionary.put(resourceBean.getNetAddr(), beansInPoint);
                 }
@@ -79,54 +81,22 @@ public class ParserVariablesFromV460 {
             }
         }
         return dictionary;
-    }
+    }*/
+/*
 
-    private void correctCoefficientsForVariable(ResourceBean resourceBean){
-        if (resourceBean.isVariableTI()){
-            for(EnipObject enipObject: enipObjects){
-                if (isEnipObjectCorrect(resourceBean, enipObject)){
-                    if (resourceBean.isVariableU()) {
-                        resourceBean.setCoefficientTransform(enipObject.getVoltageCoefficient() + "/1");
-                        break;
-                    }else if(resourceBean.isVariableI()){
-                        try {
-                            int coef = Integer.parseInt(enipObject.getCurrentCoefficient());
-                            if (coef < 400) {
-                                resourceBean.setCoefficientTransform(String.format("%s/5", coef * 5));
-                            } else {
-                                resourceBean.setCoefficientTransform(String.format("%s/1", coef));
-                            }
-                            break;
-                        }catch (NumberFormatException e){
-                            System.out.println(e.getMessage());
-                        }
-                    }else{
-                        resourceBean.setCoefficientTransform("");
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean isEnipObjectCorrect(ResourceBean resourceBean, EnipObject enipObject){
-        return resourceBean.getNetAddr().equals(enipObject.getNetAddress());
-    }
-
-    private ArrayList<PointParam> getFinishedPoints(Map<String, ArrayList<ResourceBean>> points){
+    private ArrayList<PointParam> getReadyPoints(Map<String, ArrayList<ResourceBean>> points){
 
         ArrayList<PointParam> pointParams = new ArrayList<>();
 
-        for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
-            ResourceBean resourceBean = entry.getValue().get(0);
+        //for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
             PointParam pointParam = new PointParam.Builder()
-                    .driverType(resourceBean.getLodicDriverType())
-                    .reportPanelTitle(resourceBean)
+                    .enipObjects(enipObjects)
                     .resourceBeans(entry.getValue())
                     .build();
             pointParams.add(pointParam);
         }
-        return pointParams;
+        //return pointParams;
     }
+*/
 
 }

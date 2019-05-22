@@ -14,12 +14,14 @@ import sample.Report.Parsers.ParserEnipJSON;
 import sample.Report.ReportCreator;
 import sample.v460.PointParam;
 import sample.Report.Parsers.ParserVariablesFromV460;
+import sample.v460.ResourceBean;
 
 import javax.swing.*;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -50,11 +52,14 @@ public class Controller implements Initializable {
 
         enipObjects = ParserEnipJSON.getListOfEnips(dirOfEnip);
         LogInfo.setLogDataWithTitle("Прочитаны конфигурации ЭНИПов",
-                String.valueOf(enipObjects.size()));
+                String.valueOf(EnipObject.getEnipsCount()));
 
         String txtPath = lblPathTxt.textProperty().getValue();
-        ArrayList<PointParam> listPointParams = new ParserVariablesFromV460(txtPath, enipObjects).buildPoints();
-        LogInfo.setLogDataWithTitle("Количество устройств для создания протокола",String.valueOf(listPointParams.size()));
+
+        ArrayList<ResourceBean> resourceBeans = new ParserVariablesFromV460(txtPath).getBeansFromCsv();
+        ArrayList<PointParam> listPointParams = PointParam.buildPoints(resourceBeans, enipObjects);
+        //ArrayList<PointParam> listPointParams = new ParserVariablesFromV460(txtPath, enipObjects).buildPoints();
+        LogInfo.setLogDataWithTitle("Количество устройств для создания протокола",String.valueOf(PointParam.getPointsCount()));
 
         if (rButExcel.selectedProperty().getValue()){
             ReportCreator.CreateXlsFile(listPointParams, getlblPathDoc());

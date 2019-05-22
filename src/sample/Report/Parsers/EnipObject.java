@@ -30,7 +30,12 @@ public class EnipObject {
         );
     }
 
-    public EnipObject(String voltageCoefficient, String currentCoefficient, String powerCoefficient, String iPAddress, String iedName) {
+    public EnipObject(
+            String voltageCoefficient,
+            String currentCoefficient,
+            String powerCoefficient,
+            String iPAddress,
+            String iedName) {
 
         VoltageCoefficient = voltageCoefficient;
         CurrentCoefficient = currentCoefficient;
@@ -59,16 +64,13 @@ public class EnipObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EnipObject that = (EnipObject) o;
-        return  VoltageCoefficient.equals(that.VoltageCoefficient) &&
-                CurrentCoefficient.equals(that.CurrentCoefficient) &&
-                PowerCoefficient.equals(that.PowerCoefficient) &&
-                IPAddress.equals(that.IPAddress) &&
-                IedName.equals(that.IedName);
+        return  getNetAddress().equals(that.getNetAddress());
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(VoltageCoefficient, CurrentCoefficient, PowerCoefficient, IPAddress, IedName);
+        return Objects.hash(IPAddress, IedName);
     }
 
     public static ArrayList<EnipObject> getAllEnips(){
@@ -129,6 +131,9 @@ public class EnipObject {
     }
 
     public static void clearAllEnips(){
+        if (allEnips == null){
+            allEnips = new HashMap<>();
+        }
         allEnips.clear();
     }
 

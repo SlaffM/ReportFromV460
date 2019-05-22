@@ -4,6 +4,9 @@ import com.opencsv.bean.CsvBindByPosition;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import sample.Helpers.Helpers;
 
+import java.sql.Driver;
+import java.util.ArrayList;
+
 import static sample.v460.DriverType.*;
 
 public class ResourceBean implements Comparable<ResourceBean>{
@@ -29,40 +32,37 @@ public class ResourceBean implements Comparable<ResourceBean>{
     String iec870_coa1;
     @CsvBindByPosition(position = 78)
     String iec870_ioa1;
-    DriverType lodicDriverType;
     String coefficientTransform;
 
 
-
-
-    public DriverType getLodicDriverType() {
-        return lodicDriverType;
-    }
-
-    public void setLodicDriverType() {
+    public void validationDriverType(){
         switch(driverType){
             case "SPRECON870":
-                lodicDriverType = SPRECON870;
+                driverType = SPRECON870.name();
                 break;
             case "IEC870":
-                lodicDriverType = isSpreconDriver() ? SPRECON870 : IEC870;
+                driverType = isSpreconDriver() ? SPRECON870.name() : IEC870.name();
                 break;
             case "IEC850":
-                lodicDriverType = isSpreconDriver() ? SPRECON850 : IEC850;
+                driverType = isSpreconDriver() ? SPRECON850.name() : IEC850.name();
                 break;
             case "SNMP32":
-                lodicDriverType = SNMP32;
+                driverType = SNMP32.name();
                 break;
             case "Intern":
-                lodicDriverType = Intern;
+                driverType = Intern.name();
                 break;
             case "MATHDR32":
-                lodicDriverType = MATHDR32;
+                driverType = MATHDR32.name();
                 break;
             default:
-                lodicDriverType = UNKNOWN;
+                driverType = UNKNOWN.name();
                 break;
         }
+    }
+
+    public DriverType getDriverType() {
+        return DriverType.valueOf(driverType);
     }
 
     public String getTagname() {
@@ -72,13 +72,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
         this.tagname = tagname;
     }
 
-    public DriverType getDriverType() {
-        return getLodicDriverType();
-        //return driverType;
-    }
     public void setDriverType(String driverType) {
         this.driverType = driverType;
-        setLodicDriverType();
     }
 
     public String getUnit() {
@@ -192,7 +187,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
 
     private String setDefaultCoefficient() {
         if (isVariableU()) {
-            if (tryParseInt(getVoltageClass())) {
+            if (Helpers.tryParseInt(getVoltageClass())) {
                 String num = Helpers.getTextWithPattern(getVoltageClass(), "(\\d+)");
                 return String.format("%s0/1", Integer.parseInt(num));
             }
@@ -217,17 +212,6 @@ public class ResourceBean implements Comparable<ResourceBean>{
 
     public void setCoefficientTransform(String coefficientTransform) {
         this.coefficientTransform = coefficientTransform;
-    }
-
-    boolean tryParseInt(String value){
-        try{
-            String num = Helpers.getTextWithPattern(value, "(\\d+)");
-            if (num.isEmpty()) { return false;}
-            Integer.parseInt(num);
-            return true;
-        }catch (NumberFormatException e){
-            return false;
-        }
     }
 
     public boolean isAdditionalVariable() {
@@ -276,7 +260,9 @@ public class ResourceBean implements Comparable<ResourceBean>{
         }
     }
     private String getFormattedIec850Address(String symAddress){
-        return Helpers.getTextWithPattern(symAddress, "!(\\w.*)").replace("[ST]","").replace("[MX]","");
+        return Helpers.getTextWithPattern(symAddress, "!(\\w.*)")
+                .replace("[ST]","")
+                .replace("[MX]","");
     }
 
     private String getSpreconSymbPrefix(String symAddress){
@@ -284,12 +270,16 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
 
     private boolean isSpreconDriver(){
-        String findHex = Helpers.getTextWithPattern(getRecourcesLabel(), "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})");
+        String findHex = Helpers.getTextWithPattern(
+                getRecourcesLabel(),
+                "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})");
         return !findHex.isEmpty();
     }
 
     private Long getResourceAddressHex(){
-        String findHex = Helpers.getTextWithPattern(getRecourcesLabel(), "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})").replace(".","");
+        String findHex = Helpers.getTextWithPattern(
+                getRecourcesLabel(),
+                "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})").replace(".","");
         if(!findHex.isEmpty()){ return Long.valueOf(findHex, 16); }
         return 0L;
     }
@@ -310,7 +300,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
 
     @Override
     public int compareTo(ResourceBean o) {
-        switch (getLodicDriverType()){
+        switch (getDriverType()){
             case SPRECON850:
                 return this.getResourceAddressHex().compareTo(o.getResourceAddressHex());
             case IEC850:
@@ -326,6 +316,13 @@ public class ResourceBean implements Comparable<ResourceBean>{
         }
     }
 
+    public static void validateDriverType(ArrayList<ResourceBean> resourceBeans){
+        for(ResourceBean resourceBean: resourceBeans){
+            resourceBean.validationDriverType();
+        }
+    }
+
+
     public static ResourceBean copy(ResourceBean bean){
         return bean.copy();
     }
@@ -336,7 +333,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
 
     public ResourceBean(ResourceBean bean){
         this(
-                bean.getDriverType().toString(),
+                bean.getDriverType().name(),
                 bean.getTypeName(),
                 bean.getMatrix(),
                 bean.getTagname(),

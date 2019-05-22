@@ -15,10 +15,8 @@ public class EnipObjectTest {
     private EnipObject enip2;
     private EnipObject enip3;
 
-    //private ArrayList<EnipObject> expected;
 
-    @Before
-    public void setUp() {
+    private void createEnips(){
         enip1 = new EnipObject(
                 "1100",
                 "120",
@@ -44,7 +42,7 @@ public class EnipObjectTest {
 
     @Test
     public void getAllEnips() {
-
+        createEnips();
         List<EnipObject> actual = new ArrayList<>();
         ArrayList<EnipObject> expected = EnipObject.getAllEnips();
         actual.add(enip1);
@@ -56,17 +54,20 @@ public class EnipObjectTest {
 
     @Test
     public void getAllEnips_NO_NULL() {
+        createEnips();
         ArrayList<EnipObject> expected = EnipObject.getAllEnips();
         Assert.assertNotNull(expected);
     }
 
     @Test
     public void getEnipsCount() {
+        createEnips();
         Assert.assertEquals(3, EnipObject.getEnipsCount());
     }
 
     @Test
     public void getEmptyListEnips_NO_NULL(){
+        createEnips();
         EnipObject.clearAllEnips();
         Assert.assertEquals(0, EnipObject.getEnipsCount());
     }

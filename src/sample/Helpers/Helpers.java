@@ -42,6 +42,17 @@ public class Helpers {
         return !findHex.isEmpty();
     }
 
+    public static boolean tryParseInt(String value){
+        try{
+            String num = Helpers.getTextWithPattern(value, "(\\d+)");
+            if (num.isEmpty()) { return false;}
+            Integer.parseInt(num);
+            return true;
+        }catch (NumberFormatException e){
+            return false;
+        }
+    }
+
 
 
 }
