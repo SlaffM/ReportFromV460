@@ -173,7 +173,7 @@ public class ReportCreator {
     private static ReportContext setReportStrategy(DriverType driverType){
         ReportContext reportContext = new ReportContext();
         switch (driverType){
-            case IEC870: case SPRECON870:
+            case IEC870:
                 reportContext.setReportStrategy(new Iec870ReportStrategy());
                 break;
             case IEC850:
@@ -181,6 +181,9 @@ public class ReportCreator {
                 break;
             case SPRECON850:
                 reportContext.setReportStrategy(new Iec850SpreconReportStrategy());
+                break;
+            case SPRECON870:
+                reportContext.setReportStrategy(new Iec870SpreconReportStrategy());
                 break;
             default:
                 break;

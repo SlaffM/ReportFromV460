@@ -60,6 +60,8 @@ public class ParserEnipJSON {
             for (File file : files) {
                 new EnipObject(getEnipFromJSON(file));
             }
+            LogInfo.setLogDataWithTitle("Прочитаны конфигурации ЭНИПов",
+                    String.valueOf(EnipObject.getEnipsCount()));
             return EnipObject.getAllEnips();
         }
         LogInfo.setErrorData("Директория с конфигурациями ENIP отсутствует!");

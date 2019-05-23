@@ -17,6 +17,7 @@ import sample.Report.Parsers.ParserVariablesFromV460;
 import sample.v460.ResourceBean;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -49,11 +50,10 @@ public class Controller implements Initializable {
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
+        EnipObject.clearAllEnips();
+        PointParam.clearPoints();
 
         enipObjects = ParserEnipJSON.getListOfEnips(dirOfEnip);
-        LogInfo.setLogDataWithTitle("Прочитаны конфигурации ЭНИПов",
-                String.valueOf(EnipObject.getEnipsCount()));
-
         String txtPath = lblPathTxt.textProperty().getValue();
 
         ArrayList<ResourceBean> resourceBeans = new ParserVariablesFromV460(txtPath).getBeansFromCsv();

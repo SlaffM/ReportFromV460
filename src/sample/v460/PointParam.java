@@ -18,14 +18,8 @@ public class PointParam {
 
     private static Map<Integer, PointParam> allPoints;
 
-
-
-
-
     private PointParam(Builder builder) {
-        //setDriverType(builder.driverType);
         setResourceBeans(builder.resourceBeans);
-        //setReportPanelTitle(builder.resourceBean);
         setEnipObjects(builder.enipObjects);
 
         addNetAddr();
@@ -141,30 +135,25 @@ public class PointParam {
         allPoints.clear();
     }
 
-
-
     public static ArrayList<PointParam> buildPoints(ArrayList<ResourceBean> resourceBeans,
                                                     ArrayList<EnipObject> enipObjects){
 
-        Hashtable<String, ArrayList<ResourceBean>> points = distributeBeansToPoints(resourceBeans);
+        Hashtable<String, ArrayList<ResourceBean>> points = writeBeansToPointsByNetAddr(resourceBeans);
         for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
             new PointParam.Builder()
                     .enipObjects(enipObjects)
                     .resourceBeans(entry.getValue())
                     .build();
-            //pointParams.add(pointParam);
         }
-
         return getAllPoints();
-
     }
 
-    public static Hashtable<String, ArrayList<ResourceBean>> distributeBeansToPoints(List<ResourceBean> resourceBeans){
+    public static Hashtable<String, ArrayList<ResourceBean>> writeBeansToPointsByNetAddr(List<ResourceBean> resourceBeans){
         Hashtable<String, ArrayList<ResourceBean>> dictionary = new Hashtable<>();
 
         int oldCountPanelPoints = 0;
         ArrayList<ResourceBean> variablesInPoint = new ArrayList<>();
-        for(ResourceBean resourceBean : resourceBeans){
+        for(ResourceBean resourceBean: resourceBeans){
             if(resourceBean.isIecVariable()){
                 oldCountPanelPoints = dictionary.size();
                 if (dictionary.containsKey(resourceBean.getNetAddr())) {
@@ -179,10 +168,6 @@ public class PointParam {
             }
         }
         return dictionary;
-    }
-
-    public ArrayList<EnipObject> getEnipObjects() {
-        return enipObjects;
     }
 
     public void setEnipObjects(ArrayList<EnipObject> enipObjects) {
@@ -226,29 +211,11 @@ public class PointParam {
         return getDriverType().equals(DriverType.SPRECON850) || getDriverType().equals(DriverType.SPRECON870);
     }
 
-
-
-
-
-
-
     public static final class Builder {
-        /*private ResourceBean resourceBean;
-        private DriverType driverType;*/
         private ArrayList<ResourceBean> resourceBeans;
         private ArrayList<EnipObject> enipObjects;
 
         public Builder(){}
-/*
-        public Builder driverType(DriverType val) {
-            driverType = val;
-            return this;
-        }
-
-        public Builder reportPanelTitle(ResourceBean val) {
-            resourceBean = val;
-            return this;
-        }*/
 
         public Builder resourceBeans(ArrayList<ResourceBean> val) {
             resourceBeans = val;
