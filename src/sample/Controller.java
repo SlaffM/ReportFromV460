@@ -3,26 +3,24 @@ package sample;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import sample.Helpers.LogInfo;
 import sample.Helpers.OpenFileFilter;
 import sample.Report.Parsers.EnipObject;
 import sample.Report.Parsers.ParserEnipJSON;
+import sample.Report.Parsers.ParserVariablesV460;
 import sample.Report.ReportCreator;
+import sample.v460.GrouperPoints;
 import sample.v460.PointParam;
-import sample.Report.Parsers.ParserVariablesFromV460;
 import sample.v460.ResourceBean;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -46,26 +44,31 @@ public class Controller implements Initializable {
     private File dirOfEnip = new File("./enips");
     private String logLine = "";
 
-    private ArrayList<EnipObject> enipObjects = new ArrayList<>();
-
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
         EnipObject.clearAllEnips();
         PointParam.clearPoints();
 
-        enipObjects = ParserEnipJSON.getListOfEnips(dirOfEnip);
+        ParserEnipJSON.getListOfEnips(dirOfEnip);
         String txtPath = lblPathTxt.textProperty().getValue();
 
-        ArrayList<ResourceBean> resourceBeans = new ParserVariablesFromV460(txtPath).getBeansFromCsv();
-        ArrayList<PointParam> listPointParams = PointParam.buildPoints(resourceBeans, enipObjects);
-        //ArrayList<PointParam> listPointParams = new ParserVariablesFromV460(txtPath, enipObjects).buildPoints();
-        LogInfo.setLogDataWithTitle("Количество устройств для создания протокола",String.valueOf(PointParam.getPointsCount()));
+        //for(File file: txtFile){
 
-        if (rButExcel.selectedProperty().getValue()){
-            ReportCreator.CreateXlsFile(listPointParams, getlblPathDoc());
-        }else{
-            ReportCreator.CreateDocFile(listPointParams, getlblPathDoc());
-        }
+            ArrayList<ResourceBean> resourceBeans = new ParserVariablesV460(txtPath).getBeansFromCsv();
+            ArrayList<PointParam> listPointParams = PointParam.buildPoints(
+                    resourceBeans,
+                    EnipObject.getAllEnips(),
+                    GrouperPoints.GROUP_BY_NETADDR);
+
+            if (rButExcel.selectedProperty().getValue()){
+                ReportCreator.CreateXlsFile(listPointParams, getlblPathDoc());
+            }else{
+                ReportCreator.CreateDocFile(listPointParams, getlblPathDoc());
+            }
+
+        //}
+
+
     }
 
     private String getlblPathDoc(){
@@ -82,13 +85,18 @@ public class Controller implements Initializable {
         fileopen.setCurrentDirectory(new File("."));
         fileopen.setFileFilter(new OpenFileFilter(extensionTxt, "Text files"));
 
+
         int ret = fileopen.showOpenDialog(null);
 
         if (ret == JFileChooser.APPROVE_OPTION) {
             txtFile = fileopen.getSelectedFile();
-            setLblText(lblPathTxt, txtFile.getAbsolutePath());
-            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
-            actualizingStateFormatFile();
+            //txtFile = fileopen.getSelectedFiles();
+            //if(txtFile != null || txtFile.length == 0){
+                setLblText(lblPathTxt, txtFile.getAbsolutePath());
+                setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
+                actualizingStateFormatFile();
+            //}
+
         }
     }
 
@@ -108,8 +116,10 @@ public class Controller implements Initializable {
 
     private void actualizingStateFormatFile(){
         if (rButExcel.selectedProperty().getValue()){
+            //lblPathDoc.textProperty().setValue(txtFile.getPath());
             setLblText(lblPathDoc, getChangedFileName(txtFile, extensionExcel));
         }else{
+
             setLblText(lblPathDoc, getChangedFileName(txtFile, extensionWord));
         }
     }

@@ -153,7 +153,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
         }
     }
     public String getStatusText() {
-        return getStatusTextByRules(getMatrix());
+        return getStatusTextByRules(getMatrix()).replace("_", "/");
     }
     public String getPanelLocation(){
         return getTagname().substring(0,8).trim();

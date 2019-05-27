@@ -15,12 +15,14 @@ public class PointParam {
     private ArrayList<ResourceBean> resourceBeans;
     private ArrayList<EnipObject> enipObjects;
     private int netAddr;
+    private GrouperPoints grouperPoints;
 
     private static Map<Integer, PointParam> allPoints;
 
     private PointParam(Builder builder) {
         setResourceBeans(builder.resourceBeans);
         setEnipObjects(builder.enipObjects);
+        setGrouperPoints(builder.grouperPoints);
 
         addNetAddr();
         addDriverType();
@@ -61,6 +63,11 @@ public class PointParam {
             allPoints = new HashMap<>();
         }
         return new ArrayList<>(allPoints.values());
+    }
+
+
+    public void setGrouperPoints(GrouperPoints grouperPoints) {
+        this.grouperPoints = grouperPoints;
     }
 
     public static int getPointsCount(){
@@ -136,32 +143,51 @@ public class PointParam {
     }
 
     public static ArrayList<PointParam> buildPoints(ArrayList<ResourceBean> resourceBeans,
-                                                    ArrayList<EnipObject> enipObjects){
+                                                    ArrayList<EnipObject> enipObjects,
+                                                    GrouperPoints grouperPoints){
 
-        Hashtable<String, ArrayList<ResourceBean>> points = writeBeansToPointsByNetAddr(resourceBeans);
+        Hashtable<String, ArrayList<ResourceBean>> points = distributeBeansToPoints(
+                resourceBeans,
+                grouperPoints);
         for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
             new PointParam.Builder()
                     .enipObjects(enipObjects)
                     .resourceBeans(entry.getValue())
+                    .grouperParameter(grouperPoints)
                     .build();
         }
+
+        LogInfo.setLogDataWithTitle(
+                "Количество устройств для создания протокола",
+                String.valueOf(PointParam.getPointsCount()));
         return getAllPoints();
     }
 
-    public static Hashtable<String, ArrayList<ResourceBean>> writeBeansToPointsByNetAddr(List<ResourceBean> resourceBeans){
+    public static Hashtable<String, ArrayList<ResourceBean>> distributeBeansToPoints(List<ResourceBean> resourceBeans,
+                                                                                     GrouperPoints grouperPoints){
         Hashtable<String, ArrayList<ResourceBean>> dictionary = new Hashtable<>();
 
         int oldCountPanelPoints = 0;
         ArrayList<ResourceBean> variablesInPoint = new ArrayList<>();
         for(ResourceBean resourceBean: resourceBeans){
             if(resourceBean.isIecVariable()){
+                String groupParameter = resourceBean.getNetAddr();
+                switch (grouperPoints){
+                    case GROUP_BY_NETADDR:
+                        groupParameter = resourceBean.getNetAddr();
+                        break;
+                    case GROUP_BY_PANEL:
+                        groupParameter = resourceBean.getConnectionTitle();
+                        break;
+                }
+
                 oldCountPanelPoints = dictionary.size();
-                if (dictionary.containsKey(resourceBean.getNetAddr())) {
-                    dictionary.get(resourceBean.getNetAddr()).add(resourceBean);
+                if (dictionary.containsKey(groupParameter)) {
+                    dictionary.get(groupParameter).add(resourceBean);
                 } else {
                     ArrayList<ResourceBean> beansInPoint = new ArrayList<>();
                     beansInPoint.add(resourceBean);
-                    dictionary.put(resourceBean.getNetAddr(), beansInPoint);
+                    dictionary.put(groupParameter, beansInPoint);
                 }
                 if (dictionary.size() > oldCountPanelPoints) { variablesInPoint = new ArrayList<>(); }
                 variablesInPoint.add(resourceBean);
@@ -214,6 +240,7 @@ public class PointParam {
     public static final class Builder {
         private ArrayList<ResourceBean> resourceBeans;
         private ArrayList<EnipObject> enipObjects;
+        private GrouperPoints grouperPoints;
 
         public Builder(){}
 
@@ -227,6 +254,11 @@ public class PointParam {
                 val = new ArrayList<EnipObject>();
             }
             enipObjects = val;
+            return this;
+        }
+        
+        public Builder grouperParameter(GrouperPoints val){
+            grouperPoints = val;
             return this;
         }
 

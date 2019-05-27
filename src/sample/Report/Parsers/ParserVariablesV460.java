@@ -2,7 +2,6 @@ package sample.Report.Parsers;
 
 
 import com.opencsv.bean.*;
-import sample.v460.PointParam;
 import sample.v460.ResourceBean;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -11,16 +10,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class ParserVariablesFromV460 {
+public class ParserVariablesV460 {
 
     private String file;
     private ArrayList<EnipObject> enipObjects;
 
-    public ParserVariablesFromV460(String file) {
+    public ParserVariablesV460(String file) {
         this(file, new ArrayList<EnipObject>());
     }
 
-    public ParserVariablesFromV460(String file, ArrayList<EnipObject> enipObjects){
+    public ParserVariablesV460(String file, ArrayList<EnipObject> enipObjects){
         this.file = file;
         this.enipObjects = enipObjects;
     }

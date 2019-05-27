@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sample.Report.Parsers.EnipObject;
-import sample.Report.Parsers.ParserVariablesFromV460;
+import sample.Report.Parsers.ParserVariablesV460;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,17 +25,16 @@ public class PointParamTest {
     public void setUp() throws Exception {
         txtPath = new File("." + "/tests/v460.txt").getAbsolutePath();
         EnipObject.clearAllEnips();
-        enips = EnipObject.getAllEnips();
 
-        ArrayList<ResourceBean> resourceBeans = new ParserVariablesFromV460(txtPath).getBeansFromCsv();
-        PointParam.buildPoints(resourceBeans, enips);
-        points = PointParam.getAllPoints();
-        //points = new ParserVariablesFromV460(txtPath);
+        ArrayList<ResourceBean> resourceBeans = new ParserVariablesV460(txtPath).getBeansFromCsv();
+        PointParam.buildPoints(resourceBeans, EnipObject.getAllEnips(), GrouperPoints.GROUP_BY_NETADDR);
+
+        //points = new ParserVariablesV460(txtPath);
     }
 
     @Test
     public void points_should_NOT_NULL() {
-        Assert.assertNotNull(points);
+        Assert.assertNotNull(PointParam.getAllPoints());
     }
 
     @Test
@@ -106,13 +105,12 @@ public class PointParamTest {
     }
 
     private void changeEnipAndSetPoints() throws Exception {
-        enips = EnipObject.getAllEnips();
+
         PointParam.clearPoints();
-        ArrayList<ResourceBean> resourceBeans = new ParserVariablesFromV460(txtPath).getBeansFromCsv();
+        ArrayList<ResourceBean> resourceBeans = new ParserVariablesV460(txtPath).getBeansFromCsv();
 
-        PointParam.buildPoints(resourceBeans, enips);
+        PointParam.buildPoints(resourceBeans, EnipObject.getAllEnips(), GrouperPoints.GROUP_BY_NETADDR);
 
-        points = PointParam.getAllPoints();
     }
 
     private void createEnip() {

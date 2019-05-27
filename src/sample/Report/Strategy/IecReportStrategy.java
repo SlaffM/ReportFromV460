@@ -208,9 +208,6 @@ public class IecReportStrategy implements ReportStrategy{
 
     }
 
-    private void createStyleForParagraph(){
-
-    }
 
     private void addVariablesToVariablesTable(XWPFTable table, String[] headers, ArrayList<ResourceBean> resourceBeans){
         int rowCounter = 1;
