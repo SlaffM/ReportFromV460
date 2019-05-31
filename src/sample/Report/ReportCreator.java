@@ -94,14 +94,12 @@ public class ReportCreator {
         }
     }
 
-
     private static void copyRow(HSSFWorkbook srcWorkbook, HSSFWorkbook dstWorkbook) {
 
         HSSFSheet dstWorksheet = dstWorkbook.getSheetAt(0);
         HSSFSheet srcWorksheet = srcWorkbook.getSheetAt(0);
 
         CellRangeAddress srcRangeAddress = CellRangeAddress.valueOf("A1:J20");
-
 
         int oldRowNum = dstWorksheet.getLastRowNum();
 
@@ -164,10 +162,7 @@ public class ReportCreator {
                     )
             );
         }
-
     }
-
-
 
     private static ReportContext setReportStrategy(DriverType driverType){
         ReportContext reportContext = new ReportContext();

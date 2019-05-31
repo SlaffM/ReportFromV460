@@ -21,8 +21,8 @@ import java.util.Map;
 
 public class IecReportStrategy implements ReportStrategy{
 
-    private int rowsFromPrevPointTable = 2;
-    public int rowsOffset = 1;
+    private int twoRowsFromPrevPointTable = 2;
+    public int oneRowOffset = 1;
     private int colsForTitlePanel = 2;
 
 
@@ -238,7 +238,7 @@ public class IecReportStrategy implements ReportStrategy{
         CellStyle baseStyle = StyleDocument.createBaseStyle(document);
 
         titleTable.forEach((key, value) -> {
-            Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+            Row row = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
 
             Cell cell;
             int colNumber = 0;
@@ -255,7 +255,7 @@ public class IecReportStrategy implements ReportStrategy{
             cell.setCellStyle(baseStyle);
         });
 
-        sheet.createRow(sheet.getLastRowNum() + 1);
+        sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
     }
     private void createXlsTableVariablesPanel(HSSFWorkbook document, List<ResourceBean> resourceBeans){
         Sheet sheet = document.getSheetAt(0);
@@ -268,24 +268,28 @@ public class IecReportStrategy implements ReportStrategy{
         }
 
         if (!resourcebeansOfTI.isEmpty()) {
-            sheet.createRow(sheet.getLastRowNum() + rowsOffset);
+            sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
             addHeadersToVariablesTableXls(document, createHeadersVariablesTI());
             addVariablesToVariablesTableXls(document, createHeadersVariablesTI(), resourcebeansOfTI);
         }
         resourcebeansOfTS.clear();
         resourcebeansOfTI.clear();
 
-        sheet.createRow(sheet.getLastRowNum() + rowsFromPrevPointTable);
+        addRowAndResizeCollumns(sheet);
+    }
+
+    private void addRowAndResizeCollumns(Sheet sheet){
+        sheet.createRow(sheet.getLastRowNum() + twoRowsFromPrevPointTable);
 
         for(int i = 0; i < createHeadersVariables().length; i++) {
             //sheet.setRepeatingRows(region);
             sheet.autoSizeColumn(i);
         }
-
     }
+
     private void addHeadersToVariablesTableXls(HSSFWorkbook document, String[] headers){
         Sheet sheet = document.getSheetAt(0);
-        Row tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
+        Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
 
         CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
 
@@ -301,7 +305,7 @@ public class IecReportStrategy implements ReportStrategy{
         CellStyle baseStyle = StyleDocument.createBaseStyle(document);
 
         for(ResourceBean resourceBean : resourceBeans){
-            Row tableRow = sheet.createRow(sheet.getLastRowNum() + rowsOffset);
+            Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
             for(int colNum = 0; colNum < headers.length; colNum++){
                 Cell cell = tableRow.createCell(colNum);
                 String prop;

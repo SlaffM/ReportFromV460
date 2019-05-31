@@ -33,6 +33,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
     @CsvBindByPosition(position = 78)
     String iec870_ioa1;
     String coefficientTransform;
+    AlarmClassType alarmClassType;
+    String statusText;
 
 
     public void validationDriverType(){
@@ -95,6 +97,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
     public void setMatrix(String matrix) {
         this.matrix = matrix;
+        setAlarmClassEnum(getAlarmTypeByRules(getMatrix()));
+        setStatusText(getMatrix());
     }
 
     public String getRecourcesLabel() {
@@ -140,7 +144,10 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
 
     public Enum getAlarmClassEnum(){
-        return getAlarmTypeByRules(getMatrix());
+        return alarmClassType;
+    }
+    private void setAlarmClassEnum(AlarmClassType alarmClassEnum){
+        this.alarmClassType = alarmClassEnum;
     }
 
     public String getAlarmClass(){
@@ -153,7 +160,10 @@ public class ResourceBean implements Comparable<ResourceBean>{
         }
     }
     public String getStatusText() {
-        return getStatusTextByRules(getMatrix()).replace("_", "/");
+        return statusText;
+    }
+    private void setStatusText(String statusText){
+        this.statusText = getStatusTextByRules(statusText).replace("_", "/");
     }
     public String getPanelLocation(){
         return getTagname().substring(0,8).trim();
@@ -318,18 +328,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
 
     public static void validateDriverType(ArrayList<ResourceBean> resourceBeans){
-        for(ResourceBean resourceBean: resourceBeans){
-            resourceBean.validationDriverType();
-        }
-    }
-
-
-    public static ResourceBean copy(ResourceBean bean){
-        return bean.copy();
-    }
-
-    public ResourceBean copy(){
-        return new ResourceBean(this);
+        resourceBeans.forEach(ResourceBean::validationDriverType);
     }
 
     public ResourceBean(ResourceBean bean){
