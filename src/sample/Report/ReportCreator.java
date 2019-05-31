@@ -14,28 +14,27 @@ import sample.Helpers.LogInfo;
 import sample.Helpers.StyleDocument;
 import sample.Report.Strategy.*;
 import sample.v460.DriverType;
-import sample.v460.PointParam;
-
+import sample.v460.Point;
 
 
 public class ReportCreator {
 
-    public static void CreateDocFile(ArrayList<PointParam> pointParams, String docFile) throws IOException {
+    public static void CreateDocFile(ArrayList<Point> points, String docFile) throws IOException {
         XWPFDocument document = new XWPFDocument();
 
-        for(PointParam point: pointParams){
+        for(Point point: points){
             ReportContext reportContext = setReportStrategy(point.getDriverType());
             reportContext.createDocTable(document, point);
         }
         writeDataToFile(document, docFile);
     }
 
-    public static void CreateXlsFile(ArrayList<PointParam> pointParams, String xlsFile) throws IOException {
+    public static void CreateXlsFile(ArrayList<Point> points, String xlsFile) throws IOException {
         HSSFWorkbook book = new HSSFWorkbook();
 
         initPropertiesSheetAndHeaderFooter(book);
 
-        for(PointParam point: pointParams){
+        for(Point point: points){
             ReportContext reportContext = setReportStrategy(point.getDriverType());
             reportContext.createXlsTable(book, point);
         }

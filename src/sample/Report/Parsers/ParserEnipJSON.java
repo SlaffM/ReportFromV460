@@ -55,7 +55,6 @@ public class ParserEnipJSON {
 
     public static ArrayList<EnipObject> getListOfEnips(File folder){
         if (folder.isDirectory() && folder.exists()){
-            System.out.println(folder.getAbsolutePath());
             File[] files = folder.listFiles();
             for (File file : files) {
                 new EnipObject(getEnipFromJSON(file));

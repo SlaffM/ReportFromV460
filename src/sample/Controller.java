@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -13,14 +14,16 @@ import sample.Report.Parsers.EnipObject;
 import sample.Report.Parsers.ParserEnipJSON;
 import sample.Report.Parsers.ParserVariablesV460;
 import sample.Report.ReportCreator;
+import sample.v460.DistributerToPoints;
 import sample.v460.GrouperPoints;
-import sample.v460.PointParam;
+import sample.v460.Point;
 import sample.v460.ResourceBean;
 
 import javax.swing.*;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -35,6 +38,8 @@ public class Controller implements Initializable {
     @FXML public Button btnLoadPathToEnip;
     @FXML public Label lblPathEnip;
     @FXML public TextArea txtLog;
+    @FXML public ComboBox<GrouperPoints> selectTypeGroup = new ComboBox<>();
+    @FXML public ProgressBar progress = new ProgressBar();
 
     private File txtFile;
     private String extensionTxt = ".txt";
@@ -47,29 +52,38 @@ public class Controller implements Initializable {
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
         EnipObject.clearAllEnips();
-        PointParam.clearPoints();
+        Point.clearPoints();
 
         ParserEnipJSON.getListOfEnips(dirOfEnip);
         String txtPath = lblPathTxt.textProperty().getValue();
 
         //for(File file: txtFile){
 
-            ArrayList<ResourceBean> resourceBeans = new ParserVariablesV460(txtPath).getBeansFromCsv();
-            ArrayList<PointParam> listPointParams = PointParam.buildPoints(
+        List<ResourceBean> resourceBeans = new ParserVariablesV460(txtPath).getBeansFromCsv();
+
+        ArrayList<Point> listPoints = Point.buildPoints(
+                resourceBeans,
+                EnipObject.getAllEnips(),
+                selectTypeGroup.getSelectionModel().getSelectedItem()
+        );
+
+            /*ArrayList<Point> listPoints = Point.buildPoints(
                     resourceBeans,
                     EnipObject.getAllEnips(),
-                    GrouperPoints.GROUP_BY_NETADDR);
+                    (GrouperPoints) selectTypeGroup.getSelectionModel().getSelectedItem());*/
 
             if (rButExcel.selectedProperty().getValue()){
-                ReportCreator.CreateXlsFile(listPointParams, getlblPathDoc());
+                ReportCreator.CreateXlsFile(listPoints, getlblPathDoc());
             }else{
-                ReportCreator.CreateDocFile(listPointParams, getlblPathDoc());
+                ReportCreator.CreateDocFile(listPoints, getlblPathDoc());
             }
 
         //}
 
 
     }
+
+
 
     private String getlblPathDoc(){
         return lblPathDoc.textProperty().getValue();
@@ -84,7 +98,6 @@ public class Controller implements Initializable {
         JFileChooser fileopen = new JFileChooser();
         fileopen.setCurrentDirectory(new File("."));
         fileopen.setFileFilter(new OpenFileFilter(extensionTxt, "Text files"));
-
 
         int ret = fileopen.showOpenDialog(null);
 
@@ -119,7 +132,6 @@ public class Controller implements Initializable {
             //lblPathDoc.textProperty().setValue(txtFile.getPath());
             setLblText(lblPathDoc, getChangedFileName(txtFile, extensionExcel));
         }else{
-
             setLblText(lblPathDoc, getChangedFileName(txtFile, extensionWord));
         }
     }
@@ -158,9 +170,7 @@ public class Controller implements Initializable {
             file = filesave.getSelectedFile();
             setLblText(lblPathDoc, getChangedFileName(file, curExtension));
         }
-
     }
-
 
     public void btnLoadPathToEnipClick(ActionEvent event) {
         JFileChooser fileopen = new JFileChooser();
@@ -179,6 +189,8 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         txtLog.textProperty().bind(LogInfo.logDataProperty());
+        selectTypeGroup.getItems().addAll(GrouperPoints.values());
+        selectTypeGroup.getSelectionModel().select(GrouperPoints.GROUP_BY_NETADDR);
     }
 
 }

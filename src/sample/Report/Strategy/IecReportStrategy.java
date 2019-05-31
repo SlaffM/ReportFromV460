@@ -10,12 +10,13 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import sample.Helpers.StyleDocument;
 import sample.Report.ReportPanelTitle.ReportPanelTitle;
-import sample.v460.PointParam;
+import sample.v460.Point;
 import sample.v460.ResourceBean;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class IecReportStrategy implements ReportStrategy{
@@ -29,7 +30,7 @@ public class IecReportStrategy implements ReportStrategy{
     private ArrayList<ResourceBean>resourcebeansOfTI = new ArrayList<>();
 
     @Override
-    public void createDocTable(XWPFDocument document, PointParam pointParam) {
+    public void createDocTable(XWPFDocument document, Point point) {
 
         CTBody body = document.getDocument().getBody();
         if(!body.isSetSectPr()){
@@ -60,8 +61,8 @@ public class IecReportStrategy implements ReportStrategy{
             pageSize.setW(BigInteger.valueOf(16840));
         }*/
 
-        createTableTitlePanel(document, pointParam.getReportPanelTitle());
-        createTableVariablesPanel(document, pointParam.getResourceBeans());
+        createTableTitlePanel(document, point.getReportPanelTitle());
+        createTableVariablesPanel(document, point.getResourceBeans());
 
         //XWPFParagraph para = document.createParagraph();
         //XWPFRun run = para.createRun();
@@ -76,9 +77,9 @@ public class IecReportStrategy implements ReportStrategy{
 
     }
     @Override
-    public void createXlsTable(HSSFWorkbook document, PointParam pointParam) {
-        createXlsTableTitlePanel(document, pointParam.getReportPanelTitle());
-        createXlsTableVariablesPanel(document, pointParam.getResourceBeans());
+    public void createXlsTable(HSSFWorkbook document, Point point) {
+        createXlsTableTitlePanel(document, point.getReportPanelTitle());
+        createXlsTableVariablesPanel(document, point.getResourceBeans());
     }
 
     private LinkedHashMap createHeadersTitle(ReportPanelTitle reportPanelTitle){
@@ -100,7 +101,7 @@ public class IecReportStrategy implements ReportStrategy{
         throw new ArrayIndexOutOfBoundsException();
     }
 
-    private void splitBeansToTSTI(ArrayList<ResourceBean> resourceBeans){
+    private void splitBeansToTSTI(List<ResourceBean> resourceBeans){
         for(ResourceBean resourceBean : resourceBeans) {
             if (resourceBean.isVariableTI()) {
                 resourcebeansOfTI.add(resourceBean);
@@ -154,7 +155,7 @@ public class IecReportStrategy implements ReportStrategy{
 
 
     }
-    private void createTableVariablesPanel(XWPFDocument document, ArrayList<ResourceBean> resourceBeans){
+    private void createTableVariablesPanel(XWPFDocument document, List<ResourceBean> resourceBeans){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
         run.addBreak();
@@ -256,7 +257,7 @@ public class IecReportStrategy implements ReportStrategy{
 
         sheet.createRow(sheet.getLastRowNum() + 1);
     }
-    private void createXlsTableVariablesPanel(HSSFWorkbook document, ArrayList<ResourceBean> resourceBeans){
+    private void createXlsTableVariablesPanel(HSSFWorkbook document, List<ResourceBean> resourceBeans){
         Sheet sheet = document.getSheetAt(0);
 
         splitBeansToTSTI(resourceBeans);

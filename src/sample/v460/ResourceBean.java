@@ -312,8 +312,9 @@ public class ResourceBean implements Comparable<ResourceBean>{
                         .append(Integer.parseInt(this.getIec870_ioa1()), Integer.parseInt(o.getIec870_ioa1()))
                         .toComparison();
             default:
-                return 0;
+                return 1;
         }
+
     }
 
     public static void validateDriverType(ArrayList<ResourceBean> resourceBeans){

@@ -3,7 +3,7 @@ package sample.Report;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import sample.Report.Strategy.ReportStrategy;
-import sample.v460.PointParam;
+import sample.v460.Point;
 
 public class ReportContext {
 
@@ -13,12 +13,12 @@ public class ReportContext {
         this.reportStrategy = reportStrategy;
     }
 
-    public void createDocTable(XWPFDocument document, PointParam pointParam){
-        reportStrategy.createDocTable(document, pointParam);
+    public void createDocTable(XWPFDocument document, Point point){
+        reportStrategy.createDocTable(document, point);
     }
 
-    public void createXlsTable(HSSFWorkbook document, PointParam pointParam){
-        reportStrategy.createXlsTable(document, pointParam);
+    public void createXlsTable(HSSFWorkbook document, Point point){
+        reportStrategy.createXlsTable(document, point);
     }
 
 

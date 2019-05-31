@@ -8,30 +8,29 @@ import sample.Report.ReportPanelTitle.ReportPanelTitle;
 
 import java.util.*;
 
-public class PointParam {
+public class Point {
 
     private ReportPanelTitle reportPanelTitle;
     private DriverType driverType;
-    private ArrayList<ResourceBean> resourceBeans;
+    private List<ResourceBean> resourceBeans;
     private ArrayList<EnipObject> enipObjects;
-    private int netAddr;
+    private String grouppingParameter;
     private GrouperPoints grouperPoints;
 
-    private static Map<Integer, PointParam> allPoints;
+    private static Map<String, Point> allPoints;
 
-    private PointParam(Builder builder) {
+    private Point(Builder builder) {
         setResourceBeans(builder.resourceBeans);
         setEnipObjects(builder.enipObjects);
         setGrouperPoints(builder.grouperPoints);
 
-        addNetAddr();
+        addGrouppingParameter();
         addDriverType();
         addReportPanelTitle();
         addCoefficientTransform();
 
-
         if (!hasPoint()){
-            allPoints.put(getNetAddr(), this);
+            allPoints.put(getGrouppingParameter(), this);
         }else{
             LogInfo.setErrorData("Устройство уже есть в базе: \n" +
                     this.toString() + "\n" +
@@ -40,8 +39,8 @@ public class PointParam {
     }
 
     private boolean hasPoint(){
-        for (PointParam pointParam : getAllPoints()){
-            if (pointParam.equals(this) && pointParam.hashCode() == this.hashCode()){
+        for (Point point : getAllPoints()){
+            if (point.equals(this) && point.hashCode() == this.hashCode()){
                 return true;
             }
         }
@@ -50,21 +49,20 @@ public class PointParam {
 
     @Override
     public String toString() {
-        return "PointParam{" +
+        return "Point{" +
                 ", driverType=" + driverType +
                 ", resourceBeansCount=" + resourceBeans.size() +
-                ", netAddr=" + netAddr +
+                ", grouppingParameter=" + grouppingParameter +
                 '}';
     }
 
 
-    public static ArrayList<PointParam> getAllPoints(){
+    public static ArrayList<Point> getAllPoints(){
         if (allPoints == null){
             allPoints = new HashMap<>();
         }
         return new ArrayList<>(allPoints.values());
     }
-
 
     public void setGrouperPoints(GrouperPoints grouperPoints) {
         this.grouperPoints = grouperPoints;
@@ -74,11 +72,25 @@ public class PointParam {
         return getAllPoints().size();
     }
 
-    private void addNetAddr(){
-        if(!(resourceBeans.get(0) == null)){
-            String addr = resourceBeans.get(0).getNetAddr();
-            if (Helpers.tryParseInt(addr)) setNetAddr(Integer.parseInt(addr));
+    private void addGrouppingParameter(){
+        String groupParam = "";
+        ResourceBean typeBean = resourceBeans.get(0);
+        switch (getGrouperPoints()){
+            case GROUP_BY_NETADDR:
+                groupParam = typeBean.getNetAddr();
+                break;
+            case GROUP_BY_PANEL:
+                groupParam = typeBean.getPanelLocation();
+                break;
+            default:
+                groupParam = typeBean.getNetAddr();
         }
+        setGrouppingParameter(groupParam);
+
+        /*if(!(resourceBeans.get(0) == null)){
+            String addr = resourceBeans.get(0).getNetAddr();
+            if (Helpers.tryParseInt(addr)) setGrouppingParameter(Integer.parseInt(addr));
+        }*/
     }
 
     private void addReportPanelTitle(){
@@ -93,30 +105,34 @@ public class PointParam {
         for (ResourceBean resourceBean : resourceBeans) {
             if (resourceBean.isVariableTI()) {
                 if (!enipObjects.isEmpty()) {
-                    for (EnipObject enipObject : enipObjects) {
-                        if (isEnipObjectCorrect(resourceBean, enipObject)) {
-                            if (resourceBean.isVariableU()) {
-                                resourceBean.setCoefficientTransform(enipObject.getVoltageCoefficient() + "/1");
-                                break;
-                            } else if (resourceBean.isVariableI()) {
-                                try {
-                                    int coef = Integer.parseInt(enipObject.getCurrentCoefficient());
-                                    if (coef < 400) {
-                                        resourceBean.setCoefficientTransform(String.format("%s/5", coef * 5));
-                                    } else {
-                                        resourceBean.setCoefficientTransform(String.format("%s/1", coef));
-                                    }
-                                    break;
-                                } catch (NumberFormatException e) {
-                                    System.out.println(e.getMessage());
-                                }
-                            } else {
-                                break;
-                            }
-                        }
-                    }
+                    setCoefficientTransformWithEnip(resourceBean);
                 }else{
                     resourceBean.setDefaultCoefficientTransform();
+                }
+            }
+        }
+    }
+
+    private void setCoefficientTransformWithEnip(ResourceBean resourceBean){
+        for (EnipObject enipObject : enipObjects) {
+            if (isEnipObjectCorrect(resourceBean, enipObject)) {
+                if (resourceBean.isVariableU()) {
+                    resourceBean.setCoefficientTransform(enipObject.getVoltageCoefficient() + "/1");
+                    break;
+                } else if (resourceBean.isVariableI()){
+                    try {
+                        int coef = Integer.parseInt(enipObject.getCurrentCoefficient());
+                        if (coef < 400) {
+                            resourceBean.setCoefficientTransform(String.format("%s/5", coef * 5));
+                        } else {
+                            resourceBean.setCoefficientTransform(String.format("%s/1", coef));
+                        }
+                        break;
+                    } catch (NumberFormatException e) {
+                        LogInfo.setErrorData(resourceBean.getSignalName() +"\t" + e.getMessage());
+                    }
+                } else {
+                    break;
                 }
             }
         }
@@ -126,10 +142,10 @@ public class PointParam {
         return resourceBean.getNetAddr().equals(enipObject.getNetAddress());
     }
 
-    public static PointParam getPointByNetAddr(int netAddr){
-        for(PointParam pointParam: getAllPoints()){
-            if (pointParam.getNetAddr() == netAddr){
-                return pointParam;
+    public static Point getPointByNetAddr(int netAddr){
+        for(Point point : getAllPoints()){
+            if (point.getGrouppingParameter().equals(String.valueOf(netAddr))){
+                return point;
             }
         }
         return null;
@@ -142,28 +158,47 @@ public class PointParam {
         allPoints.clear();
     }
 
-    public static ArrayList<PointParam> buildPoints(ArrayList<ResourceBean> resourceBeans,
-                                                    ArrayList<EnipObject> enipObjects,
-                                                    GrouperPoints grouperPoints){
+    public static ArrayList<Point> buildPoints(List<ResourceBean> resourceBeans,
+                                               ArrayList<EnipObject> enipObjects,
+                                               GrouperPoints grouperPoints){
 
-        Hashtable<String, ArrayList<ResourceBean>> points = distributeBeansToPoints(
+        /*Hashtable<String, ArrayList<ResourceBean>> points = distributeBeansToPoints(
                 resourceBeans,
-                grouperPoints);
-        for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
-            new PointParam.Builder()
+                grouperPoints);*/
+        /*ArrayList<List<ResourceBean>> points = DistributerToPoints.buildPoints(resourceBeans, grouperPoints);
+
+        points.forEach(resourceBeans1 ->
+                new Builder()
+                .enipObjects(enipObjects)
+                .resourceBeans(resourceBeans1)
+                .grouperParameter(grouperPoints)
+                .build()
+        );*/
+
+        DistributerToPoints.buildPoints(resourceBeans, grouperPoints).forEach(resourceBeans1 ->
+                        new Builder()
+                                .enipObjects(enipObjects)
+                                .resourceBeans(resourceBeans1)
+                                .grouperParameter(grouperPoints)
+                                .build()
+                );
+
+
+        /*for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
+            new Point.Builder()
                     .enipObjects(enipObjects)
                     .resourceBeans(entry.getValue())
                     .grouperParameter(grouperPoints)
                     .build();
-        }
+        }*/
 
         LogInfo.setLogDataWithTitle(
                 "Количество устройств для создания протокола",
-                String.valueOf(PointParam.getPointsCount()));
+                String.valueOf(Point.getPointsCount()));
         return getAllPoints();
     }
 
-    public static Hashtable<String, ArrayList<ResourceBean>> distributeBeansToPoints(List<ResourceBean> resourceBeans,
+    /*public static Hashtable<String, ArrayList<ResourceBean>> distributeBeansToPoints(List<ResourceBean> resourceBeans,
                                                                                      GrouperPoints grouperPoints){
         Hashtable<String, ArrayList<ResourceBean>> dictionary = new Hashtable<>();
 
@@ -171,10 +206,10 @@ public class PointParam {
         ArrayList<ResourceBean> variablesInPoint = new ArrayList<>();
         for(ResourceBean resourceBean: resourceBeans){
             if(resourceBean.isIecVariable()){
-                String groupParameter = resourceBean.getNetAddr();
+                String groupParameter = resourceBean.getGrouppingParameter();
                 switch (grouperPoints){
                     case GROUP_BY_NETADDR:
-                        groupParameter = resourceBean.getNetAddr();
+                        groupParameter = resourceBean.getGrouppingParameter();
                         break;
                     case GROUP_BY_PANEL:
                         groupParameter = resourceBean.getConnectionTitle();
@@ -194,7 +229,7 @@ public class PointParam {
             }
         }
         return dictionary;
-    }
+    }*/
 
     public void setEnipObjects(ArrayList<EnipObject> enipObjects) {
         this.enipObjects = enipObjects;
@@ -216,21 +251,24 @@ public class PointParam {
         this.driverType = driverType;
     }
 
-    public ArrayList<ResourceBean> getResourceBeans() {
+    public List<ResourceBean> getResourceBeans() {
         return resourceBeans;
     }
 
-    private void setResourceBeans(ArrayList<ResourceBean> resourceBeans) {
-        Collections.sort(resourceBeans);
+    public GrouperPoints getGrouperPoints() {
+        return grouperPoints;
+    }
+
+    private void setResourceBeans(List<ResourceBean> resourceBeans) {
         this.resourceBeans = resourceBeans;
     }
 
-    public int getNetAddr() {
-        return netAddr;
+    public String getGrouppingParameter() {
+        return grouppingParameter;
     }
 
-    public void setNetAddr(int netAddr) {
-        this.netAddr = netAddr;
+    public void setGrouppingParameter(String grouppingParameter) {
+        this.grouppingParameter = grouppingParameter;
     }
 
     private boolean isSpreconTable(){
@@ -238,13 +276,13 @@ public class PointParam {
     }
 
     public static final class Builder {
-        private ArrayList<ResourceBean> resourceBeans;
+        private List<ResourceBean> resourceBeans;
         private ArrayList<EnipObject> enipObjects;
         private GrouperPoints grouperPoints;
 
         public Builder(){}
 
-        public Builder resourceBeans(ArrayList<ResourceBean> val) {
+        public Builder resourceBeans(List<ResourceBean> val) {
             resourceBeans = val;
             return this;
         }
@@ -262,8 +300,8 @@ public class PointParam {
             return this;
         }
 
-        public PointParam build() {
-            return new PointParam(this);
+        public Point build() {
+            return new Point(this);
         }
     }
 
@@ -271,12 +309,12 @@ public class PointParam {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PointParam that = (PointParam) o;
-        return netAddr == that.netAddr && driverType == that.driverType;
+        Point that = (Point) o;
+        return grouppingParameter == that.grouppingParameter && driverType == that.driverType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(driverType, netAddr);
+        return Objects.hash(driverType, grouppingParameter);
     }
 }
