@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -24,6 +25,7 @@ import sample.v460.ResourceBean;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileFilter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -66,21 +68,17 @@ public class Controller implements Initializable {
 
         List<ResourceBean> resourceBeans = new ParserVariablesV460(txtPath).getBeansFromCsv();
 
-        ArrayList<Point> listPoints = Point.buildPoints(
+
+        Point.buildPoints(
                 resourceBeans,
                 EnipObject.getAllEnips(),
                 selectTypeGroup.getSelectionModel().getSelectedItem()
         );
 
-            /*ArrayList<Point> listPoints = Point.buildPoints(
-                    resourceBeans,
-                    EnipObject.getAllEnips(),
-                    (GrouperPoints) selectTypeGroup.getSelectionModel().getSelectedItem());*/
-
             if (rButExcel.selectedProperty().getValue()){
-                ReportCreator.CreateXlsFile(listPoints, getlblPathDoc());
+                ReportCreator.CreateXlsFile(Point.getAllPoints(), getlblPathDoc());
             }else{
-                ReportCreator.CreateDocFile(listPoints, getlblPathDoc());
+                ReportCreator.CreateDocFile(Point.getAllPoints(), getlblPathDoc());
             }
 
         //}
@@ -173,11 +171,6 @@ public class Controller implements Initializable {
         }*/
     }
 
-    void actionPerformed(ActionEvent e) {
-        // do something
-        System.out.println(e.getEventType());
-    }
-
 
     @FXML public void rBtnExcelClicked(ActionEvent event){
         if (rButExcel.selectedProperty().getValue()) {
@@ -195,7 +188,6 @@ public class Controller implements Initializable {
 
     private void actualizingStateFormatFile(){
         if (rButExcel.selectedProperty().getValue()){
-            //lblPathDoc.textProperty().setValue(txtFile.getPath());
             setLblText(lblPathDoc, getChangedFileName(txtFile, extensionExcel));
         }else{
             setLblText(lblPathDoc, getChangedFileName(txtFile, extensionWord));
@@ -214,18 +206,53 @@ public class Controller implements Initializable {
     }
 
     @FXML public void btnSaveDocFileClick(ActionEvent event){
-        File file;
+        /*File file;
         JFileChooser filesave = new JFileChooser();
         filesave.setCurrentDirectory(new File("."));
         OpenFileFilter wordFilter = new OpenFileFilter(extensionWord, "Microsoft Word files (*.docx)");
         OpenFileFilter excelFilter = new OpenFileFilter(extensionExcel, "Microsoft Excel files (*.xls)");
+*/
+        FileChooser fileopen = new FileChooser();
+        fileopen.setInitialDirectory(new File("."));
+        //fileopen.setSelectedExtensionFilter(new OpenFileFilter());
 
+        FileChooser.ExtensionFilter wordFilter = new FileChooser.ExtensionFilter(
+                "Microsoft Word files (*.docx)",
+                extensionWord);
+        FileChooser.ExtensionFilter excelFilter = new FileChooser.ExtensionFilter(
+                "Microsoft Excel files (*.xls)",
+                extensionExcel);
+
+        String curExtension;
+        if (rButExcel.selectedProperty().getValue()){
+            fileopen.getExtensionFilters().addAll(excelFilter);
+            curExtension = extensionExcel;
+        }else{
+            fileopen.getExtensionFilters().addAll(wordFilter);
+            curExtension = extensionWord;
+        }
+
+        File selectedFile = fileopen.showSaveDialog(stage.getScene().getWindow());
+
+        /*int ret = filesave.showOpenDialog(null);
+
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            file = filesave.getSelectedFile();*/
+            setLblText(lblPathDoc, getChangedFileName(selectedFile, curExtension));
+        //}*/
+
+
+        /*
         String curExtension;
 
         if (rButExcel.selectedProperty().getValue()){
+            fileopen.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("TXT files", "*.txt"));
             filesave.setFileFilter(excelFilter);
             curExtension = extensionExcel;
         }else{
+            fileopen.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("TXT files", "*.txt"));
             filesave.setFileFilter(wordFilter);
             curExtension = extensionWord;
         }
@@ -235,11 +262,31 @@ public class Controller implements Initializable {
         if (ret == JFileChooser.APPROVE_OPTION) {
             file = filesave.getSelectedFile();
             setLblText(lblPathDoc, getChangedFileName(file, curExtension));
-        }
+        }*/
     }
 
     public void btnLoadPathToEnipClick(ActionEvent event) {
-        JFileChooser fileopen = new JFileChooser();
+
+
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setInitialDirectory(new File("."));
+        File dir = directoryChooser.showDialog(stage.getScene().getWindow());
+        if (dir != null){
+            dirOfEnip = dir;
+            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
+        }
+
+        /*
+        FileChooser fileopen = new FileChooser();
+        fileopen.setInitialDirectory(new File("."));
+
+        File selectedFile = fileopen.showOpenDialog(stage.getScene().getWindow());
+        if (selectedFile.isDirectory()){
+            dirOfEnip = selectedFile;
+            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
+        }*/
+
+        /*JFileChooser fileopen = new JFileChooser();
         fileopen.setCurrentDirectory(new File("."));
         fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileopen.setAcceptAllFileFilterUsed(false);
@@ -250,10 +297,11 @@ public class Controller implements Initializable {
             dirOfEnip = fileopen.getSelectedFile();
             setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
         }
-
+*/
 
 
     }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

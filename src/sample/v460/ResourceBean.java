@@ -3,6 +3,8 @@ package sample.v460;
 import com.opencsv.bean.CsvBindByPosition;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import sample.Helpers.Helpers;
+import sample.Helpers.LogInfo;
+import sample.Report.Parsers.EnipObject;
 
 import java.sql.Driver;
 import java.util.ArrayList;
@@ -141,6 +143,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
     public void setIec870_ioa1(String iec870_ioa1) {
         this.iec870_ioa1 = iec870_ioa1;
+        validationDriverType();
     }
 
     public Enum getAlarmClassEnum(){
@@ -195,6 +198,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
         return coefficientTransform;
     }
 
+
+
     private String setDefaultCoefficient() {
         if (isVariableU()) {
             if (Helpers.tryParseInt(getVoltageClass())) {
@@ -207,21 +212,50 @@ public class ResourceBean implements Comparable<ResourceBean>{
         return "";
     }
 
-    public boolean isVariableU(){
+    private boolean isVariableU(){
         String lowSymbols = getSignalName().toLowerCase();
         return lowSymbols.contains("напряж") && (getUnit().equals("кВ"));
     }
-    public boolean isVariableI(){
+    private boolean isVariableI(){
         String lowSymbols = getSignalName().toLowerCase();
         return lowSymbols.contains("ток") && (getUnit().equals("А"));
     }
 
-    public void setDefaultCoefficientTransform(){
+    void setDefaultCoefficientTransform(){
         setCoefficientTransform(setDefaultCoefficient());
     }
 
-    public void setCoefficientTransform(String coefficientTransform) {
+    private void setCoefficientTransform(String coefficientTransform) {
         this.coefficientTransform = coefficientTransform;
+    }
+
+    void setCoefficientTransformWithEnips(ArrayList<EnipObject> enipObjects){
+        for (EnipObject enipObject : enipObjects) {
+            if (isEnipObjectCorrect(enipObject)) {
+                if (this.isVariableU()) {
+                    this.setCoefficientTransform(enipObject.getVoltageCoefficient() + "/1");
+                    break;
+                } else if (this.isVariableI()){
+                    try {
+                        int coef = Integer.parseInt(enipObject.getCurrentCoefficient());
+                        if (coef < 400) {
+                            this.setCoefficientTransform(String.format("%s/5", coef * 5));
+                        } else {
+                            this.setCoefficientTransform(String.format("%s/1", coef));
+                        }
+                        break;
+                    } catch (NumberFormatException e) {
+                        LogInfo.setErrorData(this.getSignalName() +"\t" + e.getMessage());
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean isEnipObjectCorrect(EnipObject enipObject){
+        return this.getNetAddr().equals(enipObject.getNetAddress());
     }
 
     public boolean isAdditionalVariable() {
@@ -327,10 +361,6 @@ public class ResourceBean implements Comparable<ResourceBean>{
 
     }
 
-    public static void validateDriverType(ArrayList<ResourceBean> resourceBeans){
-        resourceBeans.forEach(ResourceBean::validationDriverType);
-    }
-
     public ResourceBean(ResourceBean bean){
         this(
                 bean.getDriverType().name(),
@@ -383,5 +413,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
         this.iec870_type = iec870_type;
         this.iec870_coa1 = iec870_coa1;
         this.iec870_ioa1 = iec870_ioa1;
+
     }
+
 }

@@ -16,7 +16,7 @@ public class ParserVariablesV460 {
     private ArrayList<EnipObject> enipObjects;
 
     public ParserVariablesV460(String file) {
-        this(file, new ArrayList<EnipObject>());
+        this(file, new ArrayList<>());
     }
 
     public ParserVariablesV460(String file, ArrayList<EnipObject> enipObjects){
@@ -36,18 +36,19 @@ public class ParserVariablesV460 {
 
         Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_16);
 
-        CsvToBean cb = new CsvToBeanBuilder(reader)
+
+        CsvToBean<ResourceBean> cb = new CsvToBeanBuilder(reader)
                 .withType(ResourceBean.class)
                 .withMappingStrategy(ms)
                 .withSeparator('\t')
                 .withSkipLines(1)
                 .build();
 
-        ArrayList resourceBeans = new ArrayList<>(cb.parse());
-
-        ResourceBean.validateDriverType(resourceBeans);
+        ArrayList<ResourceBean> resourceBeans = new ArrayList<>(cb.parse());
 
         reader.close();
+
+        //resourceBeans.forEach(ResourceBean::validationDriverType);
 
         return resourceBeans;
     }

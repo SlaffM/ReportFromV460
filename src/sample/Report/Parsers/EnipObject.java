@@ -5,12 +5,13 @@ import java.util.*;
 
 public class EnipObject {
 
-    private int id;
+
     private String VoltageCoefficient;
     private String CurrentCoefficient;
     private String PowerCoefficient;
     private String IPAddress;
     private String IedName;
+    private int id;
     private static Map<Integer, EnipObject> allEnips;
     private static int countId = 0;
 

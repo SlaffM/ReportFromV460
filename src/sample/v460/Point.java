@@ -1,6 +1,5 @@
 package sample.v460;
 
-import sample.Helpers.Helpers;
 import sample.Helpers.LogInfo;
 import sample.Report.Parsers.EnipObject;
 import sample.Report.ReportPanelTitle.ReportPanelSprTitle;
@@ -73,24 +72,15 @@ public class Point {
     }
 
     private void addGrouppingParameter(){
-        String groupParam = "";
         ResourceBean typeBean = resourceBeans.get(0);
         switch (getGrouperPoints()){
-            case GROUP_BY_NETADDR:
-                groupParam = typeBean.getNetAddr();
-                break;
             case GROUP_BY_PANEL:
-                groupParam = typeBean.getPanelLocation();
+                setGrouppingParameter(typeBean.getPanelLocation());
                 break;
+            case GROUP_BY_NETADDR:
             default:
-                groupParam = typeBean.getNetAddr();
+                setGrouppingParameter(typeBean.getNetAddr());
         }
-        setGrouppingParameter(groupParam);
-
-        /*if(!(resourceBeans.get(0) == null)){
-            String addr = resourceBeans.get(0).getNetAddr();
-            if (Helpers.tryParseInt(addr)) setGrouppingParameter(Integer.parseInt(addr));
-        }*/
     }
 
     private void addReportPanelTitle(){
@@ -102,44 +92,15 @@ public class Point {
     }
 
     private void addCoefficientTransform() {
+
         for (ResourceBean resourceBean : resourceBeans) {
-            if (resourceBean.isVariableTI()) {
-                if (!enipObjects.isEmpty()) {
-                    setCoefficientTransformWithEnip(resourceBean);
-                }else{
-                    resourceBean.setDefaultCoefficientTransform();
-                }
+            if (resourceBean.isVariableTI() && !enipObjects.isEmpty()) {
+                resourceBean.setCoefficientTransformWithEnips(enipObjects);
+            }else {
+                resourceBean.setDefaultCoefficientTransform();
             }
-        }
-    }
 
-    private void setCoefficientTransformWithEnip(ResourceBean resourceBean){
-        for (EnipObject enipObject : enipObjects) {
-            if (isEnipObjectCorrect(resourceBean, enipObject)) {
-                if (resourceBean.isVariableU()) {
-                    resourceBean.setCoefficientTransform(enipObject.getVoltageCoefficient() + "/1");
-                    break;
-                } else if (resourceBean.isVariableI()){
-                    try {
-                        int coef = Integer.parseInt(enipObject.getCurrentCoefficient());
-                        if (coef < 400) {
-                            resourceBean.setCoefficientTransform(String.format("%s/5", coef * 5));
-                        } else {
-                            resourceBean.setCoefficientTransform(String.format("%s/1", coef));
-                        }
-                        break;
-                    } catch (NumberFormatException e) {
-                        LogInfo.setErrorData(resourceBean.getSignalName() +"\t" + e.getMessage());
-                    }
-                } else {
-                    break;
-                }
-            }
         }
-    }
-
-    private boolean isEnipObjectCorrect(ResourceBean resourceBean, EnipObject enipObject){
-        return resourceBean.getNetAddr().equals(enipObject.getNetAddress());
     }
 
     public static Point getPointByNetAddr(int netAddr){
@@ -162,19 +123,6 @@ public class Point {
                                                ArrayList<EnipObject> enipObjects,
                                                GrouperPoints grouperPoints){
 
-        /*Hashtable<String, ArrayList<ResourceBean>> points = distributeBeansToPoints(
-                resourceBeans,
-                grouperPoints);*/
-        /*ArrayList<List<ResourceBean>> points = DistributerToPoints.buildPoints(resourceBeans, grouperPoints);
-
-        points.forEach(resourceBeans1 ->
-                new Builder()
-                .enipObjects(enipObjects)
-                .resourceBeans(resourceBeans1)
-                .grouperParameter(grouperPoints)
-                .build()
-        );*/
-
         DistributerToPoints.buildPoints(resourceBeans, grouperPoints).forEach(resourceBeans1 ->
                         new Builder()
                                 .enipObjects(enipObjects)
@@ -184,52 +132,11 @@ public class Point {
                 );
 
 
-        /*for(Map.Entry<String, ArrayList<ResourceBean>> entry: points.entrySet()){
-            new Point.Builder()
-                    .enipObjects(enipObjects)
-                    .resourceBeans(entry.getValue())
-                    .grouperParameter(grouperPoints)
-                    .build();
-        }*/
-
         LogInfo.setLogDataWithTitle(
                 "Количество устройств для создания протокола",
                 String.valueOf(Point.getPointsCount()));
         return getAllPoints();
     }
-
-    /*public static Hashtable<String, ArrayList<ResourceBean>> distributeBeansToPoints(List<ResourceBean> resourceBeans,
-                                                                                     GrouperPoints grouperPoints){
-        Hashtable<String, ArrayList<ResourceBean>> dictionary = new Hashtable<>();
-
-        int oldCountPanelPoints = 0;
-        ArrayList<ResourceBean> variablesInPoint = new ArrayList<>();
-        for(ResourceBean resourceBean: resourceBeans){
-            if(resourceBean.isIecVariable()){
-                String groupParameter = resourceBean.getGrouppingParameter();
-                switch (grouperPoints){
-                    case GROUP_BY_NETADDR:
-                        groupParameter = resourceBean.getGrouppingParameter();
-                        break;
-                    case GROUP_BY_PANEL:
-                        groupParameter = resourceBean.getConnectionTitle();
-                        break;
-                }
-
-                oldCountPanelPoints = dictionary.size();
-                if (dictionary.containsKey(groupParameter)) {
-                    dictionary.get(groupParameter).add(resourceBean);
-                } else {
-                    ArrayList<ResourceBean> beansInPoint = new ArrayList<>();
-                    beansInPoint.add(resourceBean);
-                    dictionary.put(groupParameter, beansInPoint);
-                }
-                if (dictionary.size() > oldCountPanelPoints) { variablesInPoint = new ArrayList<>(); }
-                variablesInPoint.add(resourceBean);
-            }
-        }
-        return dictionary;
-    }*/
 
     public void setEnipObjects(ArrayList<EnipObject> enipObjects) {
         this.enipObjects = enipObjects;
