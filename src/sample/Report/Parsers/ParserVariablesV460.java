@@ -31,10 +31,11 @@ public class ParserVariablesV460 {
     public ArrayList getBeansFromCsv() throws IOException {
 
         Path path = Paths.get(getFile());
-        ColumnPositionMappingStrategy ms = new ColumnPositionMappingStrategy();
+        ColumnPositionMappingStrategy<ResourceBean> ms = new ColumnPositionMappingStrategy<ResourceBean>();
         ms.setType(ResourceBean.class);
 
         Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_16);
+
         CsvToBean cb = new CsvToBeanBuilder(reader)
                 .withType(ResourceBean.class)
                 .withMappingStrategy(ms)

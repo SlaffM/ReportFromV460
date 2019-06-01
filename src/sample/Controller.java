@@ -1,26 +1,30 @@
 package sample;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import sample.Helpers.LogInfo;
 import sample.Helpers.OpenFileFilter;
 import sample.Report.Parsers.EnipObject;
 import sample.Report.Parsers.ParserEnipJSON;
 import sample.Report.Parsers.ParserVariablesV460;
 import sample.Report.ReportCreator;
-import sample.v460.DistributerToPoints;
 import sample.v460.GrouperPoints;
 import sample.v460.Point;
 import sample.v460.ResourceBean;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +52,7 @@ public class Controller implements Initializable {
     private String postfixNewFile = "_new";
     private File dirOfEnip = new File("./enips");
     private String logLine = "";
+    private Stage stage;
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
@@ -93,15 +98,31 @@ public class Controller implements Initializable {
         lbl.textProperty().setValue(text);
     }
 
+    public void setStage(Stage stage){
+        this.stage = stage;
+    }
 
-    @FXML public void btnLoadTxtFileClick(ActionEvent event){
-        JFileChooser fileopen = new JFileChooser();
-        fileopen.setCurrentDirectory(new File("."));
-        fileopen.setFileFilter(new OpenFileFilter(extensionTxt, "Text files"));
 
-        int ret = fileopen.showOpenDialog(null);
+    @FXML public void btnLoadTxtFileClick(ActionEvent event) throws InvocationTargetException, InterruptedException {
+        FileChooser fileopen = new FileChooser();
+        fileopen.setInitialDirectory(new File("."));
+        //fileopen.setSelectedExtensionFilter(new OpenFileFilter());
+        fileopen.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("TXT files", "*.txt"));
+/*
 
-        if (ret == JFileChooser.APPROVE_OPTION) {
+        fileopen.setSelectedExtensionFilter(new OpenFileFilter(extensionTxt, "Text files"));
+*/
+        txtFile = fileopen.showOpenDialog(stage.getScene().getWindow());
+        setLblText(lblPathTxt, txtFile.getAbsolutePath());
+        setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
+        actualizingStateFormatFile();
+
+
+
+        /*int ret = fileopen.showOpenDialog(null);
+
+        if (ret == FileChooser.APPROVE_OPTION) {
             txtFile = fileopen.getSelectedFile();
             //txtFile = fileopen.getSelectedFiles();
             //if(txtFile != null || txtFile.length == 0){
@@ -110,8 +131,53 @@ public class Controller implements Initializable {
                 actualizingStateFormatFile();
             //}
 
-        }
+        }*/
+/*
+
+        FileChooser fileChooser = new FileChooser();
+        File selectedFile = fileChooser.showOpenDialog(null);
+        */
+/*FileDialog fileDialog = new FileDialog(new Frame());
+        fileDialog.setVisible(true);*//*
+
+
+// Set back the property to file chooser.
+
+
+/*
+        EventQueue.invokeAndWait(() -> {
+            *//*String folder = System.getProperty("user.dir");
+            JFileChooser fc = new JFileChooser(folder);
+            result = fc.showOpenDialog(null);*//*
+
+            String folder = System.getProperty("user.dir");
+            JFileChooser fileopen = new JFileChooser(folder);
+            //fileopen.setCurrentDirectory(new File("."));
+            fileopen.setFileFilter(new OpenFileFilter(extensionTxt, "Text files"));
+
+            int ret = fileopen.showOpenDialog(null);
+
+
+
+        });*/
+
+        /*if (ret == JFileChooser.APPROVE_OPTION) {
+            txtFile = ret.getSelectedFile();
+            //txtFile = fileopen.getSelectedFiles();
+            //if(txtFile != null || txtFile.length == 0){
+            setLblText(lblPathTxt, txtFile.getAbsolutePath());
+            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
+            actualizingStateFormatFile();
+            //}
+
+        }*/
     }
+
+    void actionPerformed(ActionEvent e) {
+        // do something
+        System.out.println(e.getEventType());
+    }
+
 
     @FXML public void rBtnExcelClicked(ActionEvent event){
         if (rButExcel.selectedProperty().getValue()) {
@@ -184,6 +250,9 @@ public class Controller implements Initializable {
             dirOfEnip = fileopen.getSelectedFile();
             setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
         }
+
+
+
     }
 
     @Override
