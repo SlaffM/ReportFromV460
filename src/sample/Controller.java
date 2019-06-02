@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.beans.property.SimpleListProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,6 +13,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Callback;
 import sample.Helpers.LogInfo;
 import sample.Helpers.OpenFileFilter;
 import sample.Report.Parsers.EnipObject;
@@ -316,6 +318,10 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         //txtLog.textProperty().bind(LogInfo.logDataProperty());
         listLog.itemsProperty().bind(LogInfo.logDataProperty());
+
+        LogInfo.logDataProperty().addListener((observableValue, observableList, t1) ->
+                listLog.scrollTo(LogInfo.logDataProperty().getSize()));
+
         selectTypeGroup.getItems().addAll(GrouperPoints.values());
         selectTypeGroup.getSelectionModel().select(GrouperPoints.GROUP_BY_NETADDR);
     }
