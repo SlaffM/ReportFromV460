@@ -315,8 +315,8 @@ public class Controller implements Initializable {
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) {
-        //txtLog.textProperty().bind(LogInfo.logDataProperty());
         listLog.itemsProperty().bind(LogInfo.logDataProperty());
 
         LogInfo.logDataProperty().addListener((observableValue, observableList, t1) ->
