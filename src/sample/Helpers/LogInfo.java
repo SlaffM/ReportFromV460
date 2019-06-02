@@ -1,25 +1,39 @@
 package sample.Helpers;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+
+import javax.naming.Binding;
+import java.util.List;
 
 public final class LogInfo {
 
-    private static StringProperty logData = new SimpleStringProperty();
+    private static SimpleListProperty logData = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     // methods that set/format logData based on changes from your UI
 
     // provide public access to the property
-    public static StringProperty logDataProperty() {
+    public static SimpleListProperty logDataProperty() {
         return logData;
     }
 
+
     public static void setLogData(String data) {
+        //if (getLogData() == null) { logData.add(new SimpleStringProperty(data));}
+        //else {logData.add(new SimpleStringProperty(data));}
+        logData.add(new SimpleStringProperty(data).getValue());
+
+        /*
         if (getLogData() == null) { logData.set(data);}
-        else {logData.set(getLogData() + "\n" + data);}
+        else {logData.set(getLogData() + "\n" + data);}*/
+
     }
 
-    private static String getLogData() {
+    private static List getLogData() {
         return logData.get();
     }
 

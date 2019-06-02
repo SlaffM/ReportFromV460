@@ -47,6 +47,7 @@ public class Controller implements Initializable {
     @FXML public TextArea txtLog;
     @FXML public ComboBox<GrouperPoints> selectTypeGroup = new ComboBox<>();
     @FXML public ProgressBar progress = new ProgressBar();
+    @FXML public ListView listLog;
 
     private File txtFile;
     private String extensionTxt = ".txt";
@@ -59,17 +60,19 @@ public class Controller implements Initializable {
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
-        EnipObject.clearAllEnips();
-        Point.clearPoints();
+        ReportCreator reportCreator = new ReportCreator.ReportCreatorBuilder()
+                .withPathV460Variables(txtFile.getAbsolutePath())
+                .withPathEnipConfigurations(dirOfEnip)
+                .withGrouperPoints(selectTypeGroup.getSelectionModel().getSelectedItem())
+                .withSelectedExtension(rButExcel.isSelected())
+                .withPathSavedFile(getlblPathDoc())
+                .build();
+
+        reportCreator.createReport();
 /*
 
-        ParserEnipJSON.getListOfEnips(dirOfEnip);
-        String txtPath = lblPathTxt.textProperty().getValue();
-
-        List<ResourceBean> srcResourceBeans =
-                new ParserVariablesV460(txtPath, EnipObject.getAllEnips()).getBeansFromCsv();
-*/
-
+        EnipObject.clearAllEnips();
+        Point.clearPoints();
         //for(File file: txtFile){
 
             List<ResourceBean> resourceBeans =
@@ -88,10 +91,10 @@ public class Controller implements Initializable {
             }
 
         //}
+*/
 
 
     }
-
 
 
     private String getlblPathDoc(){
@@ -311,7 +314,8 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        txtLog.textProperty().bind(LogInfo.logDataProperty());
+        //txtLog.textProperty().bind(LogInfo.logDataProperty());
+        listLog.itemsProperty().bind(LogInfo.logDataProperty());
         selectTypeGroup.getItems().addAll(GrouperPoints.values());
         selectTypeGroup.getSelectionModel().select(GrouperPoints.GROUP_BY_NETADDR);
     }

@@ -1,10 +1,9 @@
 package sample.Report.Strategy;
 
 import sample.v460.ResourceBean;
-
 import java.util.ArrayList;
 
-public class Iec870SpreconReportStrategy extends IecReportStrategy {
+public class Iec870Strategy extends IecStrategy {
 
     @Override
     String[] createHeadersVariables(){
@@ -17,7 +16,6 @@ public class Iec870SpreconReportStrategy extends IecReportStrategy {
                 "Наименование сигнала",
                 "Текс состояния",
                 "Класс тревог",
-                "Адрес Sprecon",
                 "Тип АСДУ",
                 "Адрес АСДУ",
                 "Адрес объекта"
@@ -35,7 +33,6 @@ public class Iec870SpreconReportStrategy extends IecReportStrategy {
                 "Наименование сигнала",
                 "Ед. измерения",
                 "Ктт, Ктн",
-                "Адрес Sprecon",
                 "Тип АСДУ",
                 "Адрес АСДУ",
                 "Адрес объекта"
@@ -54,7 +51,6 @@ public class Iec870SpreconReportStrategy extends IecReportStrategy {
         props.add(resourceBean.getSignalName());
         props.add(resourceBean.getStatusText());
         props.add(resourceBean.getAlarmClass());
-        props.add(resourceBean.getRecourcesLabel());
         props.add(resourceBean.getIec870_type());
         props.add(resourceBean.getIec870_coa1());
         props.add(resourceBean.getIec870_ioa1());
@@ -74,7 +70,6 @@ public class Iec870SpreconReportStrategy extends IecReportStrategy {
         props.add(resourceBean.getSignalName());
         props.add(resourceBean.getUnit());
         props.add(resourceBean.getCoefficientTransform());
-        props.add(resourceBean.getRecourcesLabel());
         props.add(resourceBean.getIec870_type());
         props.add(resourceBean.getIec870_coa1());
         props.add(resourceBean.getIec870_ioa1());

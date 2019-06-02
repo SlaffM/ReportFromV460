@@ -13,17 +13,10 @@ import java.util.*;
 public class ParserVariablesV460 {
 
     private String file;
-    //private ArrayList<EnipObject> enipObjects;
 
     public ParserVariablesV460(String file) {
-        //this(file, new ArrayList<>());
         this.file = file;
     }
-/*
-    public ParserVariablesV460(String file, ArrayList<EnipObject> enipObjects){
-        this.file = file;
-        this.enipObjects = enipObjects;
-    }*/
 
     private String getFile() {
         return file;

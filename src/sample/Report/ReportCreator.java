@@ -4,6 +4,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javafx.util.Builder;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.usermodel.HeaderFooter;
 import org.apache.poi.ss.usermodel.*;
@@ -12,14 +13,47 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xwpf.usermodel.*;
 import sample.Helpers.LogInfo;
 import sample.Helpers.StyleDocument;
+import sample.Report.Parsers.EnipObject;
+import sample.Report.Parsers.ValidatorResourceBeans;
 import sample.Report.Strategy.*;
 import sample.v460.DriverType;
+import sample.v460.GrouperPoints;
 import sample.v460.Point;
+import sample.v460.ResourceBean;
 
 
 public class ReportCreator {
+    private String pathV460Variables;
+    private String pathEnipConfigurations;
+    private GrouperPoints grouperPoints;
+    private boolean selectedExtension;
+    private String pathSavedFile;
 
-    public static void CreateDocFile(ArrayList<Point> points, String docFile) throws IOException {
+    public ReportCreator(ReportCreatorBuilder reportCreatorBuilder) throws IOException {
+        setPathV460Variables(reportCreatorBuilder.pathV460Variables);
+        setPathEnipConfigurations(reportCreatorBuilder.pathEnipConfigurations);
+        setGrouperPoints(reportCreatorBuilder.grouperPoints);
+        setSelectedExtension(reportCreatorBuilder.selectedExtension);
+        setPathSavedFile(reportCreatorBuilder.pathSavedFile);
+
+        EnipObject.clearAllEnips();
+        Point.clearPoints();
+
+        List<ResourceBean> resourceBeans =
+                new ValidatorResourceBeans(getPathV460Variables(), getPathEnipConfigurations())
+                        .getReadyBeans();
+
+        Point.buildPoints(
+                resourceBeans,
+                getGrouperPoints()
+        );
+
+
+
+    }
+
+
+    public void createDocFile(ArrayList<Point> points, String docFile) throws IOException {
         XWPFDocument document = new XWPFDocument();
 
         for(Point point: points){
@@ -29,7 +63,7 @@ public class ReportCreator {
         writeDataToFile(document, docFile);
     }
 
-    public static void CreateXlsFile(ArrayList<Point> points, String xlsFile) throws IOException {
+    public void createXlsFile(ArrayList<Point> points, String xlsFile) throws IOException {
         HSSFWorkbook book = new HSSFWorkbook();
 
         initPropertiesSheetAndHeaderFooter(book);
@@ -168,16 +202,16 @@ public class ReportCreator {
         ReportContext reportContext = new ReportContext();
         switch (driverType){
             case IEC870:
-                reportContext.setReportStrategy(new Iec870ReportStrategy());
+                reportContext.setReportStrategy(new Iec870Strategy());
                 break;
             case IEC850:
-                reportContext.setReportStrategy(new Iec850ReportStrategy());
+                reportContext.setReportStrategy(new Iec850Strategy());
                 break;
             case SPRECON850:
-                reportContext.setReportStrategy(new Iec850SpreconReportStrategy());
+                reportContext.setReportStrategy(new Iec850SpreconStrategy());
                 break;
             case SPRECON870:
-                reportContext.setReportStrategy(new Iec870SpreconReportStrategy());
+                reportContext.setReportStrategy(new Iec870SpreconStrategy());
                 break;
             default:
                 break;
@@ -206,4 +240,89 @@ public class ReportCreator {
         }
     }
 
+    public void createReport() throws IOException {
+        if(isSelectedExtension())
+            createXlsFile(Point.getAllPoints(), getPathSavedFile());
+        else
+            createDocFile(Point.getAllPoints(), getPathSavedFile());
+    }
+
+    public String getPathV460Variables() {
+        return pathV460Variables;
+    }
+
+    public void setPathV460Variables(String pathV460Variables) {
+        this.pathV460Variables = pathV460Variables;
+    }
+
+    public String getPathEnipConfigurations() {
+        return pathEnipConfigurations;
+    }
+
+    public void setPathEnipConfigurations(String pathEnipConfigurations) {
+        this.pathEnipConfigurations = pathEnipConfigurations;
+    }
+
+    public GrouperPoints getGrouperPoints() {
+        return grouperPoints;
+    }
+
+    public void setGrouperPoints(GrouperPoints grouperPoints) {
+        this.grouperPoints = grouperPoints;
+    }
+
+    public boolean isSelectedExtension() {
+        return selectedExtension;
+    }
+
+    public void setSelectedExtension(boolean selectedExtension) {
+        this.selectedExtension = selectedExtension;
+    }
+
+    public String getPathSavedFile() {
+        return pathSavedFile;
+    }
+
+    public void setPathSavedFile(String pathSavedFile) {
+        this.pathSavedFile = pathSavedFile;
+    }
+
+    public static final class ReportCreatorBuilder {
+        private String pathV460Variables;
+        private String pathEnipConfigurations;
+        private GrouperPoints grouperPoints;
+        private boolean selectedExtension;
+        private String pathSavedFile;
+
+        public ReportCreatorBuilder() { }
+
+        public ReportCreatorBuilder withPathV460Variables(String pathV460Variables) {
+            this.pathV460Variables = pathV460Variables;
+            return this;
+        }
+
+        public ReportCreatorBuilder withPathEnipConfigurations(String pathEnipConfigurations) {
+            this.pathEnipConfigurations = pathEnipConfigurations;
+            return this;
+        }
+
+        public ReportCreatorBuilder withGrouperPoints(GrouperPoints grouperPoints) {
+            this.grouperPoints = grouperPoints;
+            return this;
+        }
+
+        public ReportCreatorBuilder withSelectedExtension(boolean selectedExtension) {
+            this.selectedExtension = selectedExtension;
+            return this;
+        }
+
+        public ReportCreatorBuilder withPathSavedFile(String pathSavedFile) {
+            this.pathSavedFile = pathSavedFile;
+            return this;
+        }
+
+        public ReportCreator build() throws IOException {
+            return new ReportCreator(this);
+        }
+    }
 }

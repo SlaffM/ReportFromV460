@@ -1,6 +1,6 @@
 package sample.Report.Strategy;
 
-public class Iec850ReportStrategy extends IecReportStrategy {
+public class Iec850SpreconStrategy extends IecStrategy {
 
     @Override
     String[] createHeadersVariables(){
@@ -13,8 +13,8 @@ public class Iec850ReportStrategy extends IecReportStrategy {
                 "Наименование сигнала",
                 "Текс состояния",
                 "Класс тревог",
-                "Адрес внутр.",
-                "Адрес МЭК 61850"
+                "Адрес Sprecon",
+                "Адрес МЕК 61850"
         };
     }
 
@@ -29,8 +29,10 @@ public class Iec850ReportStrategy extends IecReportStrategy {
                 "Наименование сигнала",
                 "Ед. измерения",
                 "Ктт, Ктн",
-                "Адрес внутр.",
-                "Адрес МЭК 61850"
+                "Адрес Sprecon",
+                "Адрес МЕК 61850"
         };
     }
+
+
 }

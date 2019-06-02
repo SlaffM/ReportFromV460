@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class IecReportStrategy implements ReportStrategy{
+public class IecStrategy implements ReportStrategy{
 
     private int twoRowsFromPrevPointTable = 2;
     public int oneRowOffset = 1;
