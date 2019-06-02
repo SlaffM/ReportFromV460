@@ -17,6 +17,7 @@ import sample.Helpers.OpenFileFilter;
 import sample.Report.Parsers.EnipObject;
 import sample.Report.Parsers.ParserEnipJSON;
 import sample.Report.Parsers.ParserVariablesV460;
+import sample.Report.Parsers.ValidatorResourceBeans;
 import sample.Report.ReportCreator;
 import sample.v460.GrouperPoints;
 import sample.v460.Point;
@@ -52,7 +53,7 @@ public class Controller implements Initializable {
     private String extensionExcel = ".xls";
     private String extensionWord = ".docx";
     private String postfixNewFile = "_new";
-    private File dirOfEnip = new File("./enips");
+    private String dirOfEnip = new File("./enips").getAbsolutePath();
     private String logLine = "";
     private Stage stage;
 
@@ -60,20 +61,25 @@ public class Controller implements Initializable {
 
         EnipObject.clearAllEnips();
         Point.clearPoints();
+/*
 
         ParserEnipJSON.getListOfEnips(dirOfEnip);
         String txtPath = lblPathTxt.textProperty().getValue();
 
+        List<ResourceBean> srcResourceBeans =
+                new ParserVariablesV460(txtPath, EnipObject.getAllEnips()).getBeansFromCsv();
+*/
+
         //for(File file: txtFile){
 
-        List<ResourceBean> resourceBeans = new ParserVariablesV460(txtPath).getBeansFromCsv();
+            List<ResourceBean> resourceBeans =
+                    new ValidatorResourceBeans(txtFile.getAbsolutePath(), dirOfEnip)
+                    .getReadyBeans();
 
-
-        Point.buildPoints(
-                resourceBeans,
-                EnipObject.getAllEnips(),
-                selectTypeGroup.getSelectionModel().getSelectedItem()
-        );
+            Point.buildPoints(
+                    resourceBeans,
+                    selectTypeGroup.getSelectionModel().getSelectedItem()
+            );
 
             if (rButExcel.selectedProperty().getValue()){
                 ReportCreator.CreateXlsFile(Point.getAllPoints(), getlblPathDoc());
@@ -113,7 +119,7 @@ public class Controller implements Initializable {
 */
         txtFile = fileopen.showOpenDialog(stage.getScene().getWindow());
         setLblText(lblPathTxt, txtFile.getAbsolutePath());
-        setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
+        setLblText(lblPathEnip, dirOfEnip);
         actualizingStateFormatFile();
 
 
@@ -272,8 +278,8 @@ public class Controller implements Initializable {
         directoryChooser.setInitialDirectory(new File("."));
         File dir = directoryChooser.showDialog(stage.getScene().getWindow());
         if (dir != null){
-            dirOfEnip = dir;
-            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
+            dirOfEnip = dir.getAbsolutePath();
+            setLblText(lblPathEnip, dirOfEnip);
         }
 
         /*

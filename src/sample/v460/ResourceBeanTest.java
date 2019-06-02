@@ -29,7 +29,7 @@ public class ResourceBeanTest {
     private ResourceBean getValidatedBean(){
         ArrayList<ResourceBean> resourceBeans = new ArrayList<ResourceBean>();
         resourceBeans.add(sourceBean);
-        resourceBeans.forEach(ResourceBean::validationDriverType);
+        resourceBeans.forEach(ResourceBean::setCorrectDriverTypeAfterInitAllFields);
         return resourceBeans.get(0);
     }
 

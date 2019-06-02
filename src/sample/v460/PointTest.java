@@ -5,15 +5,18 @@ import org.junit.Before;
 import org.junit.Test;
 import sample.Report.Parsers.EnipObject;
 import sample.Report.Parsers.ParserVariablesV460;
+import sample.Report.Parsers.ValidatorResourceBeans;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PointTest {
 
 
     private String txtPath;
+    private String pathEnipConfig;
     private ArrayList<Point> points;
 
     private EnipObject enip1;
@@ -25,6 +28,7 @@ public class PointTest {
     @Before
     public void setUp() throws Exception {
         txtPath = new File("." + "/tests/v460.txt").getAbsolutePath();
+        pathEnipConfig = new File("." + "/tests").getAbsolutePath();
         EnipObject.clearAllEnips();
         buildPoints();
     }
@@ -83,7 +87,8 @@ public class PointTest {
     public void TI_should_coefTransform_600_5() throws Exception {
         createEnip();
         enip1.setCurrentCoefficient("120");
-        buildPoints();
+        buildPointsWithEnip();
+
 
         Point point = Point.getPointByNetAddr(6);
         ResourceBean resourceBean = point.getResourceBeans().get(2);                     //Коэффициент тока
@@ -94,7 +99,7 @@ public class PointTest {
     public void TI_should_coefTransform_1500_1() throws Exception {
         createEnip();
         //enip1.setCurrentCoefficient("1500");
-        buildPoints();
+        buildPointsWithEnip();
 
         Point point = Point.getPointByNetAddr(6);
         ResourceBean resourceBean = point.getResourceBeans().get(2);                     //Коэффициент тока
@@ -103,8 +108,14 @@ public class PointTest {
 
     private void buildPoints() throws IOException {
         Point.clearPoints();
-        ArrayList<ResourceBean> resourceBeans = new ParserVariablesV460(txtPath).getBeansFromCsv();
-        Point.buildPoints(resourceBeans, EnipObject.getAllEnips(), GrouperPoints.GROUP_BY_NETADDR);
+        List<ResourceBean> resourceBeans = new ValidatorResourceBeans(txtPath, new ArrayList<>()).getReadyBeans();
+        Point.buildPoints(resourceBeans, GrouperPoints.GROUP_BY_NETADDR);
+    }
+
+    private void buildPointsWithEnip() throws IOException {
+        Point.clearPoints();
+        List<ResourceBean> resourceBeans = new ValidatorResourceBeans(txtPath, EnipObject.getAllEnips()).getReadyBeans();
+        Point.buildPoints(resourceBeans, GrouperPoints.GROUP_BY_NETADDR);
     }
 
     private void createEnip() {

@@ -53,7 +53,8 @@ public class ParserEnipJSON {
         return new EnipObject();
     }
 
-    public static ArrayList<EnipObject> getListOfEnips(File folder){
+    public static ArrayList<EnipObject> getListOfEnips(String dir){
+        File folder = new File(dir);
         if (folder.isDirectory() && folder.exists()){
             File[] files = folder.listFiles();
             for (File file : files) {

@@ -12,7 +12,6 @@ public class Point {
     private ReportPanelTitle reportPanelTitle;
     private DriverType driverType;
     private List<ResourceBean> resourceBeans;
-    private ArrayList<EnipObject> enipObjects;
     private String grouppingParameter;
     private GrouperPoints grouperPoints;
 
@@ -20,13 +19,11 @@ public class Point {
 
     private Point(Builder builder) {
         setResourceBeans(builder.resourceBeans);
-        setEnipObjects(builder.enipObjects);
         setGrouperPoints(builder.grouperPoints);
 
         addGrouppingParameter();
         addDriverType();
         addReportPanelTitle();
-        addCoefficientTransform();
 
         if (!hasPoint()){
             allPoints.put(getGrouppingParameter(), this);
@@ -91,18 +88,6 @@ public class Point {
         setDriverType(resourceBeans.get(0).getDriverType());
     }
 
-    private void addCoefficientTransform() {
-
-        for (ResourceBean resourceBean : resourceBeans) {
-            if (resourceBean.isVariableTI() && !enipObjects.isEmpty()) {
-                resourceBean.setCoefficientTransformWithEnips(enipObjects);
-            }else {
-                resourceBean.setDefaultCoefficientTransform();
-            }
-
-        }
-    }
-
     public static Point getPointByNetAddr(int netAddr){
         for(Point point : getAllPoints()){
             if (point.getGrouppingParameter().equals(String.valueOf(netAddr))){
@@ -120,12 +105,10 @@ public class Point {
     }
 
     public static ArrayList<Point> buildPoints(List<ResourceBean> resourceBeans,
-                                               ArrayList<EnipObject> enipObjects,
                                                GrouperPoints grouperPoints){
 
         DistributerToPoints.buildPoints(resourceBeans, grouperPoints).forEach(resourceBeans1 ->
                         new Builder()
-                                .enipObjects(enipObjects)
                                 .resourceBeans(resourceBeans1)
                                 .grouperParameter(grouperPoints)
                                 .build()
@@ -137,10 +120,10 @@ public class Point {
                 String.valueOf(Point.getPointsCount()));
         return getAllPoints();
     }
-
+/*
     public void setEnipObjects(ArrayList<EnipObject> enipObjects) {
         this.enipObjects = enipObjects;
-    }
+    }*/
 
     public ReportPanelTitle getReportPanelTitle() {
         return reportPanelTitle;
@@ -184,7 +167,7 @@ public class Point {
 
     public static final class Builder {
         private List<ResourceBean> resourceBeans;
-        private ArrayList<EnipObject> enipObjects;
+        //private ArrayList<EnipObject> enipObjects;
         private GrouperPoints grouperPoints;
 
         public Builder(){}
@@ -193,14 +176,14 @@ public class Point {
             resourceBeans = val;
             return this;
         }
-
+/*
         public Builder enipObjects(ArrayList<EnipObject> val) {
             if (val == null){
                 val = new ArrayList<EnipObject>();
             }
             enipObjects = val;
             return this;
-        }
+        }*/
         
         public Builder grouperParameter(GrouperPoints val){
             grouperPoints = val;

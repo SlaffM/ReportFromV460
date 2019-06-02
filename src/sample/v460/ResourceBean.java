@@ -6,8 +6,8 @@ import sample.Helpers.Helpers;
 import sample.Helpers.LogInfo;
 import sample.Report.Parsers.EnipObject;
 
-import java.sql.Driver;
 import java.util.ArrayList;
+import java.util.List;
 
 import static sample.v460.DriverType.*;
 
@@ -39,7 +39,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     String statusText;
 
 
-    public void validationDriverType(){
+    public void setCorrectDriverTypeAfterInitAllFields(){
         switch(driverType){
             case "SPRECON870":
                 driverType = SPRECON870.name();
@@ -143,7 +143,6 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
     public void setIec870_ioa1(String iec870_ioa1) {
         this.iec870_ioa1 = iec870_ioa1;
-        validationDriverType();
     }
 
     public Enum getAlarmClassEnum(){
@@ -198,7 +197,14 @@ public class ResourceBean implements Comparable<ResourceBean>{
         return coefficientTransform;
     }
 
-
+    private boolean isVariableU(){
+        String lowSymbols = getSignalName().toLowerCase();
+        return lowSymbols.contains("напряж") && (getUnit().equals("кВ"));
+    }
+    private boolean isVariableI(){
+        String lowSymbols = getSignalName().toLowerCase();
+        return lowSymbols.contains("ток") && (getUnit().equals("А"));
+    }
 
     private String setDefaultCoefficient() {
         if (isVariableU()) {
@@ -212,16 +218,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
         return "";
     }
 
-    private boolean isVariableU(){
-        String lowSymbols = getSignalName().toLowerCase();
-        return lowSymbols.contains("напряж") && (getUnit().equals("кВ"));
-    }
-    private boolean isVariableI(){
-        String lowSymbols = getSignalName().toLowerCase();
-        return lowSymbols.contains("ток") && (getUnit().equals("А"));
-    }
-
-    void setDefaultCoefficientTransform(){
+    public void setDefaultCoefficientTransform(){
         setCoefficientTransform(setDefaultCoefficient());
     }
 
@@ -229,7 +226,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
         this.coefficientTransform = coefficientTransform;
     }
 
-    void setCoefficientTransformWithEnips(ArrayList<EnipObject> enipObjects){
+    public void setCoefficientTransformWithEnips(List<EnipObject> enipObjects){
         for (EnipObject enipObject : enipObjects) {
             if (isEnipObjectCorrect(enipObject)) {
                 if (this.isVariableU()) {

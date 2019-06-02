@@ -13,21 +13,23 @@ import java.util.*;
 public class ParserVariablesV460 {
 
     private String file;
-    private ArrayList<EnipObject> enipObjects;
+    //private ArrayList<EnipObject> enipObjects;
 
     public ParserVariablesV460(String file) {
-        this(file, new ArrayList<>());
+        //this(file, new ArrayList<>());
+        this.file = file;
     }
-
+/*
     public ParserVariablesV460(String file, ArrayList<EnipObject> enipObjects){
         this.file = file;
         this.enipObjects = enipObjects;
-    }
+    }*/
 
     private String getFile() {
         return file;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public ArrayList getBeansFromCsv() throws IOException {
 
         Path path = Paths.get(getFile());
@@ -48,10 +50,10 @@ public class ParserVariablesV460 {
 
         reader.close();
 
-        //resourceBeans.forEach(ResourceBean::validationDriverType);
-
         return resourceBeans;
     }
+
+
 
 
 }
