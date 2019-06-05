@@ -31,7 +31,6 @@ public class ParserVariablesV460 {
 
         Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_16);
 
-
         CsvToBean<ResourceBean> cb = new CsvToBeanBuilder(reader)
                 .withType(ResourceBean.class)
                 .withMappingStrategy(ms)

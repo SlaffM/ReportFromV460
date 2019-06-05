@@ -4,7 +4,6 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import javafx.util.Builder;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.usermodel.HeaderFooter;
 import org.apache.poi.ss.usermodel.*;
@@ -40,16 +39,9 @@ public class ReportCreator {
         Point.clearPoints();
 
         List<ResourceBean> resourceBeans =
-                new ValidatorResourceBeans(getPathV460Variables(), getPathEnipConfigurations())
-                        .getReadyBeans();
+                new ValidatorResourceBeans(getPathV460Variables(), getPathEnipConfigurations()).getReadyBeans();
 
-        Point.buildPoints(
-                resourceBeans,
-                getGrouperPoints()
-        );
-
-
-
+        Point.buildPoints(resourceBeans, getGrouperPoints());
     }
 
 
@@ -60,6 +52,7 @@ public class ReportCreator {
             ReportContext reportContext = setReportStrategy(point.getDriverType());
             reportContext.createDocTable(document, point);
         }
+
         writeDataToFile(document, docFile);
     }
 
@@ -74,11 +67,8 @@ public class ReportCreator {
         }
 
         addSignaturesToLastPage(book);
-
         writeDataToFile(book, xlsFile);
     }
-
-
 
     private static void initPropertiesSheetAndHeaderFooter(HSSFWorkbook book){
         book.createSheet("Report");
@@ -208,10 +198,10 @@ public class ReportCreator {
                 reportContext.setReportStrategy(new Iec850Strategy());
                 break;
             case SPRECON850:
-                reportContext.setReportStrategy(new Iec850SpreconStrategy());
+                reportContext.setReportStrategy(new Iec850SprStrategy());
                 break;
             case SPRECON870:
-                reportContext.setReportStrategy(new Iec870SpreconStrategy());
+                reportContext.setReportStrategy(new Iec870SprStrategy());
                 break;
             default:
                 break;
@@ -234,7 +224,7 @@ public class ReportCreator {
                 throw new IOException();
             }
             fos.close();
-            LogInfo.setLogDataWithTitle("Сохранен файл:", filePath);
+            LogInfo.setLogDataWithTitle("Сохранен файл", filePath);
         }catch (FileNotFoundException e){
             LogInfo.setErrorData(e.getMessage());
         }

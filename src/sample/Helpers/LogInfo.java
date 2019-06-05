@@ -38,7 +38,7 @@ public final class LogInfo {
     }
 
     public static void setLogDataWithTitle(String title, String data){
-        setLogData(title + ":\n\t" + data);
+        setLogData(title + ":\t" + data);
     }
 
     public static void setErrorData(String data){

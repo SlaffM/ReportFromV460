@@ -61,7 +61,6 @@ public class Controller implements Initializable {
     private Stage stage;
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
-
         ReportCreator reportCreator = new ReportCreator.ReportCreatorBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
                 .withPathEnipConfigurations(dirOfEnip)
@@ -71,31 +70,6 @@ public class Controller implements Initializable {
                 .build();
 
         reportCreator.createReport();
-/*
-
-        EnipObject.clearAllEnips();
-        Point.clearPoints();
-        //for(File file: txtFile){
-
-            List<ResourceBean> resourceBeans =
-                    new ValidatorResourceBeans(txtFile.getAbsolutePath(), dirOfEnip)
-                    .getReadyBeans();
-
-            Point.buildPoints(
-                    resourceBeans,
-                    selectTypeGroup.getSelectionModel().getSelectedItem()
-            );
-
-            if (rButExcel.selectedProperty().getValue()){
-                ReportCreator.CreateXlsFile(Point.getAllPoints(), getlblPathDoc());
-            }else{
-                ReportCreator.CreateDocFile(Point.getAllPoints(), getlblPathDoc());
-            }
-
-        //}
-*/
-
-
     }
 
 
@@ -115,73 +89,13 @@ public class Controller implements Initializable {
     @FXML public void btnLoadTxtFileClick(ActionEvent event) throws InvocationTargetException, InterruptedException {
         FileChooser fileopen = new FileChooser();
         fileopen.setInitialDirectory(new File("."));
-        //fileopen.setSelectedExtensionFilter(new OpenFileFilter());
         fileopen.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("TXT files", "*.txt"));
-/*
-
-        fileopen.setSelectedExtensionFilter(new OpenFileFilter(extensionTxt, "Text files"));
-*/
         txtFile = fileopen.showOpenDialog(stage.getScene().getWindow());
         setLblText(lblPathTxt, txtFile.getAbsolutePath());
         setLblText(lblPathEnip, dirOfEnip);
         actualizingStateFormatFile();
-
-
-
-        /*int ret = fileopen.showOpenDialog(null);
-
-        if (ret == FileChooser.APPROVE_OPTION) {
-            txtFile = fileopen.getSelectedFile();
-            //txtFile = fileopen.getSelectedFiles();
-            //if(txtFile != null || txtFile.length == 0){
-                setLblText(lblPathTxt, txtFile.getAbsolutePath());
-                setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
-                actualizingStateFormatFile();
-            //}
-
-        }*/
-/*
-
-        FileChooser fileChooser = new FileChooser();
-        File selectedFile = fileChooser.showOpenDialog(null);
-        */
-/*FileDialog fileDialog = new FileDialog(new Frame());
-        fileDialog.setVisible(true);*//*
-
-
-// Set back the property to file chooser.
-
-
-/*
-        EventQueue.invokeAndWait(() -> {
-            *//*String folder = System.getProperty("user.dir");
-            JFileChooser fc = new JFileChooser(folder);
-            result = fc.showOpenDialog(null);*//*
-
-            String folder = System.getProperty("user.dir");
-            JFileChooser fileopen = new JFileChooser(folder);
-            //fileopen.setCurrentDirectory(new File("."));
-            fileopen.setFileFilter(new OpenFileFilter(extensionTxt, "Text files"));
-
-            int ret = fileopen.showOpenDialog(null);
-
-
-
-        });*/
-
-        /*if (ret == JFileChooser.APPROVE_OPTION) {
-            txtFile = ret.getSelectedFile();
-            //txtFile = fileopen.getSelectedFiles();
-            //if(txtFile != null || txtFile.length == 0){
-            setLblText(lblPathTxt, txtFile.getAbsolutePath());
-            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
-            actualizingStateFormatFile();
-            //}
-
-        }*/
     }
-
 
     @FXML public void rBtnExcelClicked(ActionEvent event){
         if (rButExcel.selectedProperty().getValue()) {
@@ -217,68 +131,24 @@ public class Controller implements Initializable {
     }
 
     @FXML public void btnSaveDocFileClick(ActionEvent event){
-        /*File file;
-        JFileChooser filesave = new JFileChooser();
-        filesave.setCurrentDirectory(new File("."));
-        OpenFileFilter wordFilter = new OpenFileFilter(extensionWord, "Microsoft Word files (*.docx)");
-        OpenFileFilter excelFilter = new OpenFileFilter(extensionExcel, "Microsoft Excel files (*.xls)");
-*/
         FileChooser fileopen = new FileChooser();
         fileopen.setInitialDirectory(new File("."));
-        //fileopen.setSelectedExtensionFilter(new OpenFileFilter());
-
-        FileChooser.ExtensionFilter wordFilter = new FileChooser.ExtensionFilter(
-                "Microsoft Word files (*.docx)",
-                extensionWord);
-        FileChooser.ExtensionFilter excelFilter = new FileChooser.ExtensionFilter(
-                "Microsoft Excel files (*.xls)",
-                extensionExcel);
 
         String curExtension;
         if (rButExcel.selectedProperty().getValue()){
-            fileopen.getExtensionFilters().addAll(excelFilter);
+            new FileChooser.ExtensionFilter("Microsoft Excel files (*.xls)", extensionExcel);
             curExtension = extensionExcel;
         }else{
-            fileopen.getExtensionFilters().addAll(wordFilter);
+            new FileChooser.ExtensionFilter("Microsoft Word files (*.docx)", extensionWord);
             curExtension = extensionWord;
         }
 
         File selectedFile = fileopen.showSaveDialog(stage.getScene().getWindow());
+        setLblText(lblPathDoc, getChangedFileName(selectedFile, curExtension));
 
-        /*int ret = filesave.showOpenDialog(null);
-
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            file = filesave.getSelectedFile();*/
-            setLblText(lblPathDoc, getChangedFileName(selectedFile, curExtension));
-        //}*/
-
-
-        /*
-        String curExtension;
-
-        if (rButExcel.selectedProperty().getValue()){
-            fileopen.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("TXT files", "*.txt"));
-            filesave.setFileFilter(excelFilter);
-            curExtension = extensionExcel;
-        }else{
-            fileopen.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("TXT files", "*.txt"));
-            filesave.setFileFilter(wordFilter);
-            curExtension = extensionWord;
-        }
-
-        int ret = filesave.showOpenDialog(null);
-
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            file = filesave.getSelectedFile();
-            setLblText(lblPathDoc, getChangedFileName(file, curExtension));
-        }*/
     }
 
     public void btnLoadPathToEnipClick(ActionEvent event) {
-
-
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(new File("."));
         File dir = directoryChooser.showDialog(stage.getScene().getWindow());
@@ -286,31 +156,6 @@ public class Controller implements Initializable {
             dirOfEnip = dir.getAbsolutePath();
             setLblText(lblPathEnip, dirOfEnip);
         }
-
-        /*
-        FileChooser fileopen = new FileChooser();
-        fileopen.setInitialDirectory(new File("."));
-
-        File selectedFile = fileopen.showOpenDialog(stage.getScene().getWindow());
-        if (selectedFile.isDirectory()){
-            dirOfEnip = selectedFile;
-            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
-        }*/
-
-        /*JFileChooser fileopen = new JFileChooser();
-        fileopen.setCurrentDirectory(new File("."));
-        fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileopen.setAcceptAllFileFilterUsed(false);
-
-        int ret = fileopen.showOpenDialog(null);
-
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            dirOfEnip = fileopen.getSelectedFile();
-            setLblText(lblPathEnip, dirOfEnip.getAbsolutePath());
-        }
-*/
-
-
     }
 
 
@@ -325,6 +170,5 @@ public class Controller implements Initializable {
         selectTypeGroup.getItems().addAll(GrouperPoints.values());
         selectTypeGroup.getSelectionModel().select(GrouperPoints.GROUP_BY_NETADDR);
     }
-
 }
 

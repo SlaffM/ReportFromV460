@@ -25,14 +25,12 @@ public class ValidatorResourceBeans {
     }
 
     public ValidatorResourceBeans(List<ResourceBean> resourceBeans, List<EnipObject> enips){
-        this.enipObjects = enips;
         this.resourceBeans = resourceBeans;
+        this.enipObjects = enips;
 
         addCorrectedDriverType();
         addCoefficientTransform();
     }
-
-
 
     public List<ResourceBean> getReadyBeans(){
         return resourceBeans;
@@ -43,14 +41,12 @@ public class ValidatorResourceBeans {
     }
 
     private void addCoefficientTransform() {
-
         for (ResourceBean resourceBean : resourceBeans) {
             if (resourceBean.isVariableTI() && !enipObjects.isEmpty()) {
                 resourceBean.setCoefficientTransformWithEnips(enipObjects);
             }else {
                 resourceBean.setDefaultCoefficientTransform();
             }
-
         }
     }
 }
