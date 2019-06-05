@@ -12,6 +12,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xwpf.usermodel.*;
 import sample.Helpers.LogInfo;
 import sample.Helpers.StyleDocument;
+import sample.Report.Formats.DocumentFacade;
 import sample.Report.Parsers.EnipObject;
 import sample.Report.Parsers.ValidatorResourceBeans;
 import sample.Report.Strategy.*;
@@ -57,9 +58,13 @@ public class ReportCreator {
     }
 
     public void createXlsFile(ArrayList<Point> points, String xlsFile) throws IOException {
-        HSSFWorkbook book = new HSSFWorkbook();
 
-        initPropertiesSheetAndHeaderFooter(book);
+        DocumentFacade documentFacade = new DocumentFacade();
+        documentFacade.createFile(xlsFile,);
+
+        //HSSFWorkbook book = new HSSFWorkbook();
+
+        /*initPropertiesSheetAndHeaderFooter(book);
 
         for(Point point: points){
             ReportContext reportContext = setReportStrategy(point.getDriverType());
@@ -67,8 +72,9 @@ public class ReportCreator {
         }
 
         addSignaturesToLastPage(book);
-        writeDataToFile(book, xlsFile);
+        writeDataToFile(book, xlsFile);*/
     }
+/*
 
     private static void initPropertiesSheetAndHeaderFooter(HSSFWorkbook book){
         book.createSheet("Report");
@@ -187,7 +193,8 @@ public class ReportCreator {
             );
         }
     }
-
+*/
+/*
     private static ReportContext setReportStrategy(DriverType driverType){
         ReportContext reportContext = new ReportContext();
         switch (driverType){
@@ -207,7 +214,7 @@ public class ReportCreator {
                 break;
         }
         return reportContext;
-    }
+    }*/
 
     private static void writeDataToFile(Object document, String filePath) throws IOException {
         try {
