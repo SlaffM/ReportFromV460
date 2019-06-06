@@ -24,12 +24,12 @@ import java.util.GregorianCalendar;
 
 public class ExcelDocument implements ExtensionFormat {
     public String type = "xls";
-    private String fileName;
+    private DocumentFile file;
     private HSSFWorkbook document;
 
 
-    public ExcelDocument(ArrayList<Point> points, String fileName) {
-        this.fileName = fileName;
+    public ExcelDocument(ArrayList<Point> points, DocumentFile documentFile) {
+        this.file = documentFile;
         this.document = new HSSFWorkbook();
 
         initPropertiesSheetAndHeaderFooter();
@@ -43,8 +43,8 @@ public class ExcelDocument implements ExtensionFormat {
     }
 
     private void initPropertiesSheetAndHeaderFooter(){
-        book.createSheet("Report");
-        Sheet sheet = book.getSheetAt(0);
+        document.createSheet("Report");
+        Sheet sheet = document.getSheetAt(0);
         sheet.getPrintSetup().setLandscape(true);
         sheet.getPrintSetup().setPaperSize(PrintSetup.A3_PAPERSIZE);
         //sheet.getPrintSetup().setPaperSize(HSSFPrintSetup.A5_PAPERSIZE);
@@ -161,18 +161,15 @@ public class ExcelDocument implements ExtensionFormat {
     }
 
     private String getFileName(){
-        return this.fileName;
+        return this.file.getName();
     }
 
     @Override
     public void writeDocument() {
         try {
             File file = new File(getFileName());
-
             FileOutputStream fos = new FileOutputStream(file);
-
             document.write(fos);
-
             fos.close();
             LogInfo.setLogDataWithTitle("Сохранен файл", file.getAbsolutePath());
         }catch (FileNotFoundException e){

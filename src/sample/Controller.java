@@ -1,10 +1,8 @@
 package sample;
 
-import javafx.beans.property.SimpleListProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,27 +10,13 @@ import javafx.scene.control.TextArea;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.util.Callback;
 import sample.Helpers.LogInfo;
-import sample.Helpers.OpenFileFilter;
-import sample.Report.Parsers.EnipObject;
-import sample.Report.Parsers.ParserEnipJSON;
-import sample.Report.Parsers.ParserVariablesV460;
-import sample.Report.Parsers.ValidatorResourceBeans;
-import sample.Report.ReportCreator;
+import sample.Report.Formats.CreatorPointsAndExtractToFormat;
 import sample.v460.GrouperPoints;
-import sample.v460.Point;
-import sample.v460.ResourceBean;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
-import java.io.FileFilter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -61,18 +45,14 @@ public class Controller implements Initializable {
     private Stage stage;
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
-        ReportCreator reportCreator = new ReportCreator.ReportCreatorBuilder()
+        CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
                 .withPathEnipConfigurations(dirOfEnip)
                 .withGrouperPoints(selectTypeGroup.getSelectionModel().getSelectedItem())
-                .withSelectedExtension(rButExcel.isSelected())
                 .withPathSavedFile(getlblPathDoc())
                 .build();
-
-        reportCreator.createReport();
+        creatorPointsAndExtractToFormat.createFile();
     }
-
-
     private String getlblPathDoc(){
         return lblPathDoc.textProperty().getValue();
     }
