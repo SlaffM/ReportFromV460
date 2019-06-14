@@ -11,6 +11,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
@@ -40,6 +41,23 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>template</directory>
+                <includes>
+                    <include>/*.xls</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>enips</directory>
+                <includes>
+                    <include>/*.json</include>
+                </includes>
+            </resource>
+        </resources>
+
+
     </build>
     <dependencies>
         <dependency>

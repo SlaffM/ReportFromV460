@@ -78,7 +78,13 @@ public class ExcelDocument implements ExtensionFormat {
     }
 
     private HSSFWorkbook getTemplateBook(){
-        String excelFilePath = new File("." + "/template/template_last_page.xls").getAbsolutePath();
+
+        //ClassLoader classLoader = getClass().getClassLoader();
+        //File last_page = new File(classLoader.getResource("template/template_last_page.xls").getPath());
+
+        File last_page = new File("." + "/template/template_last_page.xls");
+
+        String excelFilePath = last_page.getAbsolutePath();
         HSSFWorkbook srcWorkbook;
         try {
             FileInputStream fis = new FileInputStream(excelFilePath.trim());
