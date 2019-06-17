@@ -2,6 +2,8 @@ package reportV460.Report.ReportPanelTitle;
 
 import reportV460.v460.ResourceBean;
 
+import java.util.LinkedHashMap;
+
 public class ReportPanelTitle {
 
     private ResourceBean resourceBean;
@@ -27,5 +29,17 @@ public class ReportPanelTitle {
 
     public ResourceBean getResourceBean() {
         return resourceBean;
+    }
+
+    public LinkedHashMap createHeaders(){
+        LinkedHashMap titleTable = new LinkedHashMap<String,String>();
+
+        titleTable.put("Расположение", getPanelLocation());
+        titleTable.put("Наименование шкафа", getPanelTitle());
+        titleTable.put("Наименование присоединения", getConnectionTitle());
+        titleTable.put("Обозначение контроллера", getControllerTitle());
+        titleTable.put("IP-адрес", getIpAddress());
+
+        return titleTable;
     }
 }

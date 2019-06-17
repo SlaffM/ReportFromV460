@@ -1,50 +1,56 @@
 package reportV460.Report.Formats;
 
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Footer;
-import org.apache.poi.ss.usermodel.Header;
-import org.apache.poi.ss.usermodel.PrintSetup;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.hssf.usermodel.HeaderFooter;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import reportV460.Helpers.LogInfo;
 import reportV460.Helpers.StyleDocument;
 import reportV460.Report.ReportContext;
-import reportV460.Report.Strategy.Iec850SprStrategy;
-import reportV460.Report.Strategy.Iec850Strategy;
-import reportV460.Report.Strategy.Iec870SprStrategy;
-import reportV460.Report.Strategy.Iec870Strategy;
-import reportV460.v460.DriverType;
+import reportV460.Report.ReportPanelTitle.ReportPanelTitle;
+import reportV460.Report.Strategy.*;
 import reportV460.v460.Point;
+import reportV460.v460.ResourceBean;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.*;
 
 public class ExcelDocument implements ExtensionFormat {
     public String type = "xls";
     private DocumentFile file;
-    private HSSFWorkbook document;
+    //private HSSFWorkbook document;
+    private static HSSFWorkbook document;
+    private static Sheet sheet;
+
+    private static int twoRowsFromPrevPointTable = 2;
+    public static int oneRowOffset = 1;
+    private static int colsForTitlePanel = 2;
+/*
+    private static ArrayList<ResourceBean>resourcebeansOfTS = new ArrayList<>();
+    private static ArrayList<ResourceBean>resourcebeansOfTI = new ArrayList<>();*/
 
 
     public ExcelDocument(ArrayList<Point> points, DocumentFile documentFile) {
         this.file = documentFile;
-        this.document = new HSSFWorkbook();
-
         initPropertiesSheetAndHeaderFooter();
 
         for(Point point: points){
-            ReportContext reportContext = setReportStrategy(point.getDriverType());
-            reportContext.createXlsTable(document, point);
+            //point.getDriverContext().createXlsTable(document, point);
+            //point.getDriverContext().setReportStrategy(point.getDriverType());
+            createTable(point);
+
+            /*ReportContext reportContext = setReportStrategy(point.getDriverType());
+            reportContext.createXlsTable(document, point);*/
         }
 
         addSignaturesToLastPage();
     }
 
     private void initPropertiesSheetAndHeaderFooter(){
+        document = new HSSFWorkbook();
         document.createSheet("Report");
-        Sheet sheet = document.getSheetAt(0);
+        sheet = document.getSheetAt(0);
         sheet.getPrintSetup().setLandscape(true);
         sheet.getPrintSetup().setPaperSize(PrintSetup.A3_PAPERSIZE);
         //sheet.getPrintSetup().setPaperSize(HSSFPrintSetup.A5_PAPERSIZE);
@@ -184,6 +190,7 @@ public class ExcelDocument implements ExtensionFormat {
             e.printStackTrace();
         }
     }
+/*
 
     private ReportContext setReportStrategy(DriverType driverType){
         ReportContext reportContext = new ReportContext();
@@ -205,4 +212,185 @@ public class ExcelDocument implements ExtensionFormat {
         }
         return reportContext;
     }
+*/
+
+    public static void createTable(Point point){
+        createXlsTableTitlePanel(point.getReportPanelTitle());
+        createXlsTableVariablesPanel(point);
+    }
+
+    private static void createXlsTableTitlePanel(ReportPanelTitle reportPanelTitle) {
+
+        LinkedHashMap titleTable = reportPanelTitle.createHeaders();
+
+        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
+        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
+
+        titleTable.forEach((key, value) -> {
+            Row row = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+
+            Cell cell;
+            int colNumber = 0;
+            for(; colNumber < 3; colNumber++){
+                cell = row.createCell(colNumber);
+                cell.setCellValue((String)key);
+                cell.setCellStyle(headerStyle);
+            }
+            sheet.addMergedRegion(new CellRangeAddress(sheet.getLastRowNum(), sheet.getLastRowNum(), 0, 2));
+            //sheet.setRepeatingRows(CellRangeAddress.valueOf("0:2"));
+
+            cell = row.createCell(colNumber);
+            cell.setCellValue((String)titleTable.get(key));
+            cell.setCellStyle(baseStyle);
+        });
+
+        sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+    }
+    private static void createXlsTableVariablesPanel(Point point){
+
+        //splitBeansToTSTI(point.getResourceBeans());
+
+        ReportContext reportContext = point.getDriverContext();
+        ReportStrategy reportStrategy = reportContext.getReportStrategy();
+
+        if (!point.getResourcebeansOfTS().isEmpty()) {
+            /*addHeadersToVariablesTableXls(reportStrategy.createHeadersVariablesTS());
+            addVariablesToVariablesTableTS(reportStrategy.createHeadersVariablesTS(), point);*/
+            addHeadersToVariablesTableXls(reportStrategy.getTitleTableTS());
+            addVariablesToVariablesTableTS(point);
+
+        }
+
+        if (!point.getResourcebeansOfTI().isEmpty()) {
+            sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+            addHeadersToVariablesTableXls(reportStrategy.getTitleTableTI());
+            addVariablesToVariablesTableTI(point);
+        }
+
+        point.clearBeansInPoint();
+
+        addRowAndResizeCollumns(point);
+    }
+    private static void addHeadersToVariablesTableXls(LinkedHashMap<String, String> headers){
+        Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+
+        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
+
+        int count = 0;
+        for(Map.Entry<String,String> header: headers.entrySet()){
+            Cell cell = tableRow.createCell(count);
+            cell.setCellValue(header.getKey());
+            cell.setCellStyle(headerStyle);
+            count++;
+        }
+
+        /*
+        for(int count = 0; count < headers.values().size(); count++){
+            Cell cell = tableRow.createCell(count);
+            cell.setCellValue(headers.get()[count]);
+            cell.setCellStyle(headerStyle);
+        }*/
+    }
+    private static void addVariablesToVariablesTableTS(Point point) {
+        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
+
+        for(ResourceBean resourceBean : point.getResourcebeansOfTS()){
+            Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+
+            int colNum = 0;
+
+            ReportContext reportContext = point.getDriverContext();
+            ReportStrategy reportStrategy = reportContext.getReportStrategy();
+            reportStrategy.createDataTemplateTS(resourceBean);
+            Map<String, String> titles = reportStrategy.getTitleTableTS();
+            for (Map.Entry<String, String> title : titles.entrySet()) {
+
+                Cell cell = tableRow.createCell(colNum);
+                String prop = title.getValue();
+
+                cell.setCellValue(prop);
+                cell.setCellStyle(baseStyle);
+                /*XWPFTableRow row = table.getRow(rowNum);
+                row.getCell(0).setText(title.getKey());
+                row.getCell(1).setText(title.getValue());
+*/
+                colNum++;
+            }
+            /*
+            for(int colNum = 0; colNum < headers.length; colNum++){
+                Cell cell = tableRow.createCell(colNum);
+                String prop = point.getDriverContext().getReportStrategy().createDataTemplateTS(resourceBean).get();
+
+                cell.setCellValue(prop);
+                cell.setCellStyle(baseStyle);
+            }*/
+        }
+
+    }
+
+    private static void addVariablesToVariablesTableTI(Point point) {
+        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
+
+        for(ResourceBean resourceBean : point.getResourcebeansOfTI()){
+            Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+
+            int colNum = 0;
+
+            ReportContext reportContext = point.getDriverContext();
+            ReportStrategy reportStrategy = reportContext.getReportStrategy();
+            reportStrategy.createDataTemplateTI(resourceBean);
+            Map<String, String> titles = reportStrategy.getTitleTableTI();
+            for (Map.Entry<String, String> title : titles.entrySet()) {
+
+                Cell cell = tableRow.createCell(colNum);
+                String prop = title.getValue();
+
+                cell.setCellValue(prop);
+                cell.setCellStyle(baseStyle);
+                /*XWPFTableRow row = table.getRow(rowNum);
+                row.getCell(0).setText(title.getKey());
+                row.getCell(1).setText(title.getValue());
+*/
+                colNum++;
+            }
+            /*
+            for(int colNum = 0; colNum < headers.length; colNum++){
+                Cell cell = tableRow.createCell(colNum);
+                String prop = point.getDriverContext().getReportStrategy().createDataTemplateTS(resourceBean).get();
+
+                cell.setCellValue(prop);
+                cell.setCellStyle(baseStyle);
+            }*/
+        }
+
+    }
+
+    private static void addRowAndResizeCollumns(Point point){
+        sheet.createRow(sheet.getLastRowNum() + twoRowsFromPrevPointTable);
+
+        ReportContext reportContext = point.getDriverContext();
+        ReportStrategy reportStrategy = reportContext.getReportStrategy();
+
+
+        for(int i = 0; i < reportStrategy.getTitleTableTI().size(); i++) {
+            //sheet.setRepeatingRows(region);
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    /*private static void splitBeansToTSTI(List<ResourceBean> resourceBeans){
+        for(ResourceBean resourceBean : resourceBeans) {
+            if (resourceBean.isVariableTI()) {
+                resourcebeansOfTI.add(resourceBean);
+            } else {
+                resourcebeansOfTS.add(resourceBean);
+            }
+        }
+    }*/
+
+
+
+
+
+
 }

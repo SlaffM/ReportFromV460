@@ -1,10 +1,25 @@
 package reportV460.Report.Strategy;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import reportV460.v460.Point;
+import reportV460.v460.ResourceBean;
+
+import java.util.LinkedHashMap;
 
 public interface ReportStrategy {
-        void createDocTable(XWPFDocument document, Point point);
-        void createXlsTable(HSSFWorkbook document, Point point);
+        //void createDocTable(XWPFDocument document, Point point);
+        //void createXlsTable(HSSFWorkbook document, Point point);
+
+        /*String[] createHeadersVariablesTS();*/
+        /*String[] createHeadersVariablesTI();*/
+
+        /*ArrayList<String> getPropertiesResourceBeanTS(ResourceBean resourceBean);
+        ArrayList<String> getPropertiesResourceBeanTI(ResourceBean resourceBean);*/
+
+        void createDataTemplateTS(ResourceBean resourceBean);
+        void createDataTemplateTI(ResourceBean resourceBean);
+
+        LinkedHashMap getTitleTableTS();
+        LinkedHashMap getTitleTableTI();
+
+
+
 }

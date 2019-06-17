@@ -9,17 +9,21 @@ public class ReportContext {
 
     ReportStrategy reportStrategy;
 
+    public ReportStrategy getReportStrategy() {
+        return reportStrategy;
+    }
+
     public void setReportStrategy(ReportStrategy reportStrategy){
         this.reportStrategy = reportStrategy;
     }
 
-    public void createDocTable(XWPFDocument document, Point point){
+    /*public void createDocTable(XWPFDocument document, Point point){
         reportStrategy.createDocTable(document, point);
     }
 
     public void createXlsTable(HSSFWorkbook document, Point point){
         reportStrategy.createXlsTable(document, point);
-    }
+    }*/
 
 
 

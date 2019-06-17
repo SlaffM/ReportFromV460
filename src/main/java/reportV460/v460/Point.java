@@ -1,8 +1,13 @@
 package reportV460.v460;
 
 import reportV460.Helpers.LogInfo;
+import reportV460.Report.ReportContext;
 import reportV460.Report.ReportPanelTitle.ReportPanelSprTitle;
 import reportV460.Report.ReportPanelTitle.ReportPanelTitle;
+import reportV460.Report.Strategy.Iec850SprStrategy;
+import reportV460.Report.Strategy.Iec850Strategy;
+import reportV460.Report.Strategy.Iec870SprStrategy;
+import reportV460.Report.Strategy.Iec870Strategy;
 
 import java.util.*;
 
@@ -13,6 +18,9 @@ public class Point {
     private List<ResourceBean> resourceBeans;
     private String grouppingParameter;
     private GrouperPoints grouperPoints;
+    private ReportContext driverContext;
+    private ArrayList<ResourceBean>resourcebeansOfTS = new ArrayList<>();
+    private ArrayList<ResourceBean>resourcebeansOfTI = new ArrayList<>();
 
     private static Map<String, Point> allPoints;
 
@@ -23,6 +31,8 @@ public class Point {
         addGrouppingParameter();
         addDriverType();
         addReportPanelTitle();
+        setDriverStrategy(getDriverType());
+        splitBeansToTSTI();
 
         if (!hasPoint()){
             allPoints.put(getGrouppingParameter(), this);
@@ -51,12 +61,56 @@ public class Point {
                 '}';
     }
 
+    private void setDriverStrategy(DriverType driverType){
+        //ReportContext reportContext = new ReportContext();
+        driverContext = new ReportContext();
+        switch (driverType){
+            case IEC870:
+                driverContext.setReportStrategy(new Iec870Strategy());
+                break;
+            case IEC850:
+                driverContext.setReportStrategy(new Iec850Strategy());
+                break;
+            case SPRECON850:
+                driverContext.setReportStrategy(new Iec850SprStrategy());
+                break;
+            case SPRECON870:
+                driverContext.setReportStrategy(new Iec870SprStrategy());
+                break;
+            default:
+                break;
+        }
+    }
+
+
+
+    public ReportContext getDriverContext(){
+        return driverContext;
+    }
 
     public static ArrayList<Point> getAllPoints(){
         if (allPoints == null){
             allPoints = new HashMap<>();
         }
         return new ArrayList<>(allPoints.values());
+    }
+
+    private void splitBeansToTSTI(){
+        for(ResourceBean resourceBean : getResourceBeans()) {
+            if (resourceBean.isVariableTI()) {
+                resourcebeansOfTI.add(resourceBean);
+            } else {
+                resourcebeansOfTS.add(resourceBean);
+            }
+        }
+    }
+
+    public ArrayList<ResourceBean> getResourcebeansOfTS() {
+        return resourcebeansOfTS;
+    }
+
+    public ArrayList<ResourceBean> getResourcebeansOfTI() {
+        return resourcebeansOfTI;
     }
 
     public void setGrouperPoints(GrouperPoints grouperPoints) {
@@ -162,6 +216,11 @@ public class Point {
 
     private boolean isSpreconTable(){
         return getDriverType().equals(DriverType.SPRECON850) || getDriverType().equals(DriverType.SPRECON870);
+    }
+
+    public void clearBeansInPoint() {
+        resourcebeansOfTI.clear();
+        resourcebeansOfTI.clear();
     }
 
     public static final class Builder {

@@ -1,36 +1,31 @@
 package reportV460.Report.Strategy;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
-import reportV460.Helpers.StyleDocument;
-import reportV460.Report.ReportPanelTitle.ReportPanelTitle;
-import reportV460.v460.Point;
 import reportV460.v460.ResourceBean;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public class IecStrategy implements ReportStrategy{
+    LinkedHashMap titleTableTS = new LinkedHashMap<String,String>();
+    LinkedHashMap titleTableTI = new LinkedHashMap<String,String>();
 
-    private int twoRowsFromPrevPointTable = 2;
+    public LinkedHashMap getTitleTableTS() {
+        return titleTableTS;
+    }
+
+    public LinkedHashMap getTitleTableTI() {
+        return titleTableTI;
+    }
+
+    /*    private int twoRowsFromPrevPointTable = 2;
     public int oneRowOffset = 1;
-    private int colsForTitlePanel = 2;
+    private int colsForTitlePanel = 2;*/
 
 
-    private ArrayList<ResourceBean>resourcebeansOfTS = new ArrayList<>();
-    private ArrayList<ResourceBean>resourcebeansOfTI = new ArrayList<>();
+    /*private ArrayList<ResourceBean>resourcebeansOfTS = new ArrayList<>();
+    private ArrayList<ResourceBean>resourcebeansOfTI = new ArrayList<>();*/
 
     @Override
-    public void createDocTable(XWPFDocument document, Point point) {
+    /*public void createDocTable(XWPFDocument document, Point point) {
 
         CTBody body = document.getDocument().getBody();
         if(!body.isSetSectPr()){
@@ -47,7 +42,7 @@ public class IecStrategy implements ReportStrategy{
         pageSize.setH(BigInteger.valueOf(16840));
         pageSize.setW(BigInteger.valueOf(23820));
 
-        /*if(orientation.equals("landscape")){
+        *//*if(orientation.equals("landscape")){
             pageSize.setOrient(STPageOrientation.LANDSCAPE);
             //A4 = 595x842 -multiply 20 since BigInteger represents 1/20 Point
             //A3 = 842x1191
@@ -59,7 +54,7 @@ public class IecStrategy implements ReportStrategy{
             //A3 = 842x1191
             pageSize.setH(BigInteger.valueOf(23820));
             pageSize.setW(BigInteger.valueOf(16840));
-        }*/
+        }*//*
 
         createTableTitlePanel(document, point.getReportPanelTitle());
         createTableVariablesPanel(document, point.getResourceBeans());
@@ -75,14 +70,17 @@ public class IecStrategy implements ReportStrategy{
         //CTPPr br = ctp.addNewPPr();
         //br.setSectPr(section);
 
-    }
-    @Override
+    }*/
+    /*@Override
     public void createXlsTable(HSSFWorkbook document, Point point) {
-        createXlsTableTitlePanel(document, point.getReportPanelTitle());
-        createXlsTableVariablesPanel(document, point.getResourceBeans());
-    }
 
-    private LinkedHashMap createHeadersTitle(ReportPanelTitle reportPanelTitle){
+        ExcelDocument.createTable(point);
+
+        *//*createXlsTableTitlePanel(document, point.getReportPanelTitle());
+        createXlsTableVariablesPanel(document, point.getResourceBeans());*//*
+    }*/
+
+    /*private LinkedHashMap createHeadersTitle(ReportPanelTitle reportPanelTitle){
         LinkedHashMap titleTable = new LinkedHashMap<String,String>();
 
         titleTable.put("Расположение", reportPanelTitle.getPanelLocation());
@@ -92,16 +90,20 @@ public class IecStrategy implements ReportStrategy{
         titleTable.put("IP-адрес", reportPanelTitle.getIpAddress());
 
         return titleTable;
-    }
+    }*/
+/*
 
-    String[] createHeadersVariables(){
+    public String[] createHeadersVariablesTS(){
         throw new ArrayIndexOutOfBoundsException();
     }
-    String[] createHeadersVariablesTI(){
+    public String[] createHeadersVariablesTI(){
         throw new ArrayIndexOutOfBoundsException();
     }
+*/
 
-    private void splitBeansToTSTI(List<ResourceBean> resourceBeans){
+
+
+    /*private void splitBeansToTSTI(List<ResourceBean> resourceBeans){
         for(ResourceBean resourceBean : resourceBeans) {
             if (resourceBean.isVariableTI()) {
                 resourcebeansOfTI.add(resourceBean);
@@ -109,32 +111,56 @@ public class IecStrategy implements ReportStrategy{
                 resourcebeansOfTS.add(resourceBean);
             }
         }
-    }
+    }*/
+
+
+
+
+
+
+
+/*
 
     private void createTableTitlePanel(XWPFDocument document, ReportPanelTitle reportPanelTitle){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
         run.addBreak();
 
-        /*XWPFParagraph p1 = table.getRow(0).getCell(0).getParagraphs().get(0);
+        */
+/*XWPFParagraph p1 = table.getRow(0).getCell(0).getParagraphs().get(0);
         p1.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun r1 = p1.createRun();
         r1.setBold(true);
         r1.setFontFamily("Times New Roman");
-        r1.setTextPosition(100);*/
+        r1.setTextPosition(100);*//*
+*/
+/*
 
         LinkedHashMap<String, String> titleTable = createHeadersTitle(reportPanelTitle);
         XWPFTable table = document.createTable(titleTable.size(), colsForTitlePanel);
 
         int rowNum = 0;
         for (Map.Entry<String, String> title : titleTable.entrySet()) {
+
             XWPFTableRow row = table.getRow(rowNum);
             row.getCell(0).setText(title.getKey());
             row.getCell(1).setText(title.getValue());
-            rowNum++;
-        }
 
-        /*
+            *//*
+*/
+/*XWPFParagraph p1 = row.getCell(0).getParagraphs().get(0);
+            p1.setAlignment(ParagraphAlignment.CENTER);
+            XWPFRun r1 = p1.createRun();
+            r1.setBold(true);*//*
+*/
+/*
+
+            rowNum++;
+        }*//*
+
+
+        */
+/*
 
         for (XWPFTableRow row : table.getRows()) {
 
@@ -143,15 +169,20 @@ public class IecStrategy implements ReportStrategy{
             XWPFRun r1 = p1.createRun();
             r1.setBold(true);
 
-            *//*for (XWPFTableCell cell : row.getTableCells()) {
+            *//*
+*/
+/*for (XWPFTableCell cell : row.getTableCells()) {
                 for (XWPFParagraph paragraph : cell.getParagraphs()) {
                     for (XWPFRun run_p : paragraph.getRuns()) {
                         //run_p.setBold(true);
                     }
                 }
             }*//*
+*/
+/*
         }
-        */
+        *//*
+
 
 
     }
@@ -163,9 +194,9 @@ public class IecStrategy implements ReportStrategy{
         splitBeansToTSTI(resourceBeans);
 
         if (!resourcebeansOfTS.isEmpty()) {
-            XWPFTable tableTS = document.createTable(resourcebeansOfTS.size()+1,createHeadersVariables().length);
-            addHeadersToVariablesTable(tableTS, createHeadersVariables());
-            addVariablesToVariablesTable(tableTS, createHeadersVariables(), resourcebeansOfTS);
+            XWPFTable tableTS = document.createTable(resourcebeansOfTS.size()+1, createHeadersVariablesTS().length);
+            addHeadersToVariablesTable(tableTS, createHeadersVariablesTS());
+            addVariablesToVariablesTable(tableTS, createHeadersVariablesTS(), resourcebeansOfTS);
         }
 
         if (!resourcebeansOfTI.isEmpty()) {
@@ -190,6 +221,7 @@ public class IecStrategy implements ReportStrategy{
 
             tableRowOne.getCell(count).setText(headers[count]);
 
+*/
 /*
 
 
@@ -203,13 +235,10 @@ public class IecStrategy implements ReportStrategy{
             rh1.setFontSize(16);
             rh1.setFontFamily("Courier");
 
-            tableRowOne.getCell(count).setText(headers[count]);*/
+            tableRowOne.getCell(count).setText(headers[count]);*//*
+
         }
-
-
     }
-
-
     private void addVariablesToVariablesTable(XWPFTable table, String[] headers, ArrayList<ResourceBean> resourceBeans){
         int rowCounter = 1;
 
@@ -221,15 +250,16 @@ public class IecStrategy implements ReportStrategy{
                 if (resourceBean.isVariableTI()){
                     prop = getPropertiesResourceBeanTI(resourceBean).get(colNum);
                 }else{
-                    prop = getPropertiesResourceBean(resourceBean).get(colNum);
+                    prop = getPropertiesResourceBeanTS(resourceBean).get(colNum);
                 }
                 cell.setText(prop);
             }
             rowCounter++;
         }
     }
+*/
 
-    private void createXlsTableTitlePanel(HSSFWorkbook document, ReportPanelTitle reportPanelTitle) {
+    /*private void createXlsTableTitlePanel(HSSFWorkbook document, ReportPanelTitle reportPanelTitle) {
 
         LinkedHashMap titleTable = createHeadersTitle(reportPanelTitle);
         Sheet sheet = document.getSheetAt(0);
@@ -263,8 +293,8 @@ public class IecStrategy implements ReportStrategy{
         splitBeansToTSTI(resourceBeans);
 
         if (!resourcebeansOfTS.isEmpty()) {
-            addHeadersToVariablesTableXls(document, createHeadersVariables());
-            addVariablesToVariablesTableXls(document, createHeadersVariables(), resourcebeansOfTS);
+            addHeadersToVariablesTableXls(document, createHeadersVariablesTS());
+            addVariablesToVariablesTableXls(document, createHeadersVariablesTS(), resourcebeansOfTS);
         }
 
         if (!resourcebeansOfTI.isEmpty()) {
@@ -277,16 +307,6 @@ public class IecStrategy implements ReportStrategy{
 
         addRowAndResizeCollumns(sheet);
     }
-
-    private void addRowAndResizeCollumns(Sheet sheet){
-        sheet.createRow(sheet.getLastRowNum() + twoRowsFromPrevPointTable);
-
-        for(int i = 0; i < createHeadersVariables().length; i++) {
-            //sheet.setRepeatingRows(region);
-            sheet.autoSizeColumn(i);
-        }
-    }
-
     private void addHeadersToVariablesTableXls(HSSFWorkbook document, String[] headers){
         Sheet sheet = document.getSheetAt(0);
         Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
@@ -312,7 +332,7 @@ public class IecStrategy implements ReportStrategy{
                 if (resourceBean.isVariableTI()){
                     prop = getPropertiesResourceBeanTI(resourceBean).get(colNum);
                 }else{
-                    prop = getPropertiesResourceBean(resourceBean).get(colNum);
+                    prop = getPropertiesResourceBeanTS(resourceBean).get(colNum);
                 }
                 cell.setCellValue(prop);
                 cell.setCellStyle(baseStyle);
@@ -320,8 +340,52 @@ public class IecStrategy implements ReportStrategy{
         }
 
     }
+    private void addRowAndResizeCollumns(Sheet sheet){
+        sheet.createRow(sheet.getLastRowNum() + twoRowsFromPrevPointTable);
 
-    ArrayList<String> getPropertiesResourceBean(ResourceBean resourceBean){
+        for(int i = 0; i < createHeadersVariablesTS().length; i++) {
+            //sheet.setRepeatingRows(region);
+            sheet.autoSizeColumn(i);
+        }
+    }*/
+
+    public void createDataTemplateTI(ResourceBean resourceBean){
+
+        titleTableTI.put("№ панели", resourceBean.getPanelLocation());
+        titleTableTI.put("Система", resourceBean.getSystem());
+        titleTableTI.put("Класс напряж.", resourceBean.getVoltageClass());
+        titleTableTI.put("Присоединение", resourceBean.getConnectionTitle());
+        titleTableTI.put("Устройство", resourceBean.getDevice());
+        titleTableTI.put("Наименование сигнала", resourceBean.getSignalName());
+        titleTableTI.put("Ед. измерения", resourceBean.getUnit());
+        titleTableTI.put("Ктт, Ктн", resourceBean.getCoefficientTransform());
+        titleTableTI.put("Тип АСДУ", resourceBean.getIec870_type());
+        titleTableTI.put("Адрес АСДУ", resourceBean.getIec870_coa1());
+        titleTableTI.put("Адрес объекта", resourceBean.getIec870_ioa1());
+
+    }
+
+
+    public void createDataTemplateTS(ResourceBean resourceBean){
+
+        titleTableTS.put("№ панели", resourceBean.getPanelLocation());
+        titleTableTS.put("Система", resourceBean.getSystem());
+        titleTableTS.put("Класс напряж.", resourceBean.getVoltageClass());
+        titleTableTS.put("Присоединение", resourceBean.getConnectionTitle());
+        titleTableTS.put("Устройство", resourceBean.getDevice());
+        titleTableTS.put("Наименование сигнала", resourceBean.getSignalName());
+        titleTableTS.put("Текс состояния", resourceBean.getStatusText());
+        titleTableTS.put("Класс тревог", resourceBean.getAlarmClass());
+        titleTableTS.put("Тип АСДУ", resourceBean.getIec870_type());
+        titleTableTS.put("Адрес АСДУ", resourceBean.getIec870_coa1());
+        titleTableTS.put("Адрес объект", resourceBean.getIec870_ioa1());
+
+    }
+
+
+/*
+
+    public ArrayList<String> getPropertiesResourceBeanTS(ResourceBean resourceBean){
         ArrayList<String> props = new ArrayList<>();
         props.add(resourceBean.getPanelLocation());
         props.add(resourceBean.getSystem());
@@ -335,7 +399,7 @@ public class IecStrategy implements ReportStrategy{
         props.add(resourceBean.getShortSymbAddress());
         return props;
     }
-    ArrayList<String> getPropertiesResourceBeanTI(ResourceBean resourceBean){
+    public ArrayList<String> getPropertiesResourceBeanTI(ResourceBean resourceBean){
         ArrayList<String> props = new ArrayList<>();
         props.add(resourceBean.getPanelLocation());
         props.add(resourceBean.getSystem());
@@ -349,5 +413,6 @@ public class IecStrategy implements ReportStrategy{
         props.add(resourceBean.getShortSymbAddress());
         return props;
     }
+*/
 
 }

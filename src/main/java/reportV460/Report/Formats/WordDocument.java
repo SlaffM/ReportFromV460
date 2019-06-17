@@ -27,9 +27,8 @@ public class WordDocument implements ExtensionFormat {
 
         for(Point point: points){
             ReportContext reportContext = setReportStrategy(point.getDriverType());
-            reportContext.createDocTable(document, point);
+            //reportContext.createDocTable(document, point);
         }
-
     }
 
     public String getFileName() {
