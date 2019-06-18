@@ -5,5 +5,5 @@ import reportV460.v460.ResourceBean;
 import java.util.LinkedHashMap;
 
 public interface ReportStrategy {
-        LinkedHashMap<String, String> createData(ResourceBean resourceBean);
+        LinkedHashMap<String, String> createDataHeaders(ResourceBean resourceBean);
 }

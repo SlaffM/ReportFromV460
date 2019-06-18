@@ -1,6 +1,5 @@
 package reportV460.Report.Formats;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
@@ -31,12 +30,8 @@ public class WordDocument implements ExtensionFormat {
 
     public WordDocument(ArrayList<Point> points, DocumentFile documentFile){
         this.file = documentFile;
-
         initPropertiesDocument();
-
-        for(Point point: points){
-            createTables(point);
-        }
+        points.forEach(this::createTables);
     }
 
     public void initPropertiesDocument() {
@@ -58,21 +53,6 @@ public class WordDocument implements ExtensionFormat {
 
     public String getFileName() {
         return file.getName();
-    }
-
-    @Override
-    public void writeDocument() {
-        try {
-            File file = new File(getFileName());
-            FileOutputStream fos = new FileOutputStream(file);
-            document.write(fos);
-            fos.close();
-            LogInfo.setLogDataWithTitle("Сохранен файл", file.getAbsolutePath());
-        }catch (FileNotFoundException e){
-            LogInfo.setErrorData(e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void createTables(Point point) {
@@ -105,33 +85,26 @@ public class WordDocument implements ExtensionFormat {
         ReportStrategy reportStrategy = reportContext.getReportStrategy();
 
         if (!point.getResourcebeansOfTS().isEmpty()) {
-            //table = document.createTable();//(point.getResourcebeansOfTS().size()+1,createHeadersVariables().length);
-            //addHeadersToVariablesPanel(createHeadersVariables());
-            //addVariablesToVariablesPanel(tableTS, createHeadersVariables(), resourcebeansOfTS);
             addVariablesToVariablesPanel(reportStrategy, point.getResourcebeansOfTS());
-
         }
+
+        para = document.createParagraph();
+        run = para.createRun();
+        run.addBreak();
 
         if (!point.getResourcebeansOfTI().isEmpty()) {
-            //table = document.createTable();//resourcebeansOfTI.size()+1,createHeadersVariablesTI().length);
-            //addHeadersToVariablesPanel(tableTI, createHeadersVariablesTI());
-            //addVariablesToVariablesPanel(tableTI, createHeadersVariablesTI(), resourcebeansOfTI);
-            addVariablesToVariablesPanel(reportStrategy, point.getResourcebeansOfTS());
+            addVariablesToVariablesPanel(reportStrategy, point.getResourcebeansOfTI());
         }
         point.clearBeansInPoint();
+
     }
 
     public void addHeadersToVariablesPanel(Map<String, String> headers){
 
-        table = document.createTable(headers.size(), colsForTitlePanel);
         XWPFTableRow tableRowOne = table.getRow(0);
 
         int count = 0;
         for(Map.Entry<String,String> header: headers.entrySet()){
-            /*Cell cell = tableRow.createCell(count);
-            cell.setCellValue(header.getKey());
-            cell.setCellStyle(headerStyle);
-            count++;*/
 
             XWPFParagraph para = tableRowOne.getCell(count).getParagraphs().get(0);
             para.setAlignment(ParagraphAlignment.CENTER);
@@ -142,32 +115,19 @@ public class WordDocument implements ExtensionFormat {
             rh.setColor("779BFF");
 
             tableRowOne.getCell(count).setText(header.getKey());
+            count++;
         }
-
-        /*
-        for(int count=0; count<headers.length; count++){
-
-            XWPFParagraph para = tableRowOne.getCell(count).getParagraphs().get(0);
-            para.setAlignment(ParagraphAlignment.CENTER);
-
-            XWPFRun rh = para.createRun();
-            rh.setFontSize(16);
-            rh.setFontFamily("Courier");
-            rh.setColor("779BFF");
-
-            tableRowOne.getCell(count).setText(headers[count]);
-        }*/
     }
     public void addVariablesToVariablesPanel(ReportStrategy reportStrategy, ArrayList<ResourceBean> resourceBeans){
         int rowTable = 1;
 
         Map<String, String> titles;
         for(ResourceBean resourceBean : resourceBeans){
-            titles = reportStrategy.createData(resourceBean);
+            titles = reportStrategy.createDataHeaders(resourceBean);
 
             if (rowTable == 1){
+                table = document.createTable(resourceBeans.size()+1, titles.size());
                 addHeadersToVariablesPanel(titles);
-                table = document.createTable(resourceBeans.size(), titles.size());
             }
 
             XWPFTableRow tableRow = table.getRow(rowTable);
@@ -175,29 +135,23 @@ public class WordDocument implements ExtensionFormat {
             for (Map.Entry<String, String> title : titles.entrySet()) {
                 XWPFTableCell cell = tableRow.getCell(colNum);
                 cell.setText(title.getValue());
-
-                /*Cell cell = tableRow.createCell(colNum);
-                cell.setCellValue(title.getValue());
-                cell.setCellStyle(baseStyle);
-                colNum++;*/
+                colNum++;
             }
             rowTable++;
-
-            /*
-            for(int colNum = 0; colNum < headers.length; colNum++){
-                XWPFTableCell cell = tableRowOneTI.getCell(colNum);
-                String prop;
-                if (resourceBean.isVariableTI()){
-                    prop = getPropertiesResourceBeanTI(resourceBean).get(colNum);
-                }else{
-                    prop = getPropertiesResourceBean(resourceBean).get(colNum);
-                }
-                cell.setText(prop);
-            }*/
         }
     }
 
-
-
-
+    public void writeDocument() {
+        try {
+            File file = new File(getFileName());
+            FileOutputStream fos = new FileOutputStream(file);
+            document.write(fos);
+            fos.close();
+            LogInfo.setLogDataWithTitle("Сохранен файл", file.getAbsolutePath());
+        }catch (FileNotFoundException e){
+            LogInfo.setErrorData(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

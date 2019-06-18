@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 
 public class Iec870SprStrategy extends IecStrategy {
 
-    public LinkedHashMap<String,String> createData(ResourceBean resourceBean){
+    public LinkedHashMap<String,String> createDataHeaders(ResourceBean resourceBean){
 
         LinkedHashMap<String, String> titleTable = new LinkedHashMap();
         titleTable.put("№ панели", resourceBean.getPanelLocation());

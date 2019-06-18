@@ -134,7 +134,7 @@ public class ExcelDocument implements ExtensionFormat {
 
         Map<String, String> titles;
         for(ResourceBean resourceBean : resourceBeans){
-            titles = reportStrategy.createData(resourceBean);
+            titles = reportStrategy.createDataHeaders(resourceBean);
 
             if (rowTable == 0){
                 addHeadersToVariablesPanel(titles);
