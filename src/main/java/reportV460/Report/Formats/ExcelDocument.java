@@ -28,12 +28,12 @@ public class ExcelDocument implements ExtensionFormat {
 
     ExcelDocument(ArrayList<Point> points, DocumentFile documentFile) {
         this.file = documentFile;
-        initPropertiesSheetAndHeaderFooter();
+        initPropertiesDocument();
         points.forEach(this::createTables);
         addSignaturesToLastPage();
     }
 
-    private void initPropertiesSheetAndHeaderFooter(){
+    public void initPropertiesDocument(){
         document = new HSSFWorkbook();
         document.createSheet("Report");
         sheet = document.getSheetAt(0);
@@ -60,12 +60,12 @@ public class ExcelDocument implements ExtensionFormat {
         footer.setCenter(StyleDocument.setBold("Страница " + HeaderFooter.page() + " из " + HeaderFooter.numPages()));
     }
 
-    private void createTables(Point point){
+    public void createTables(Point point){
         createTitlePanel(point.getReportPanelTitle());
         createVariablesPanel(point);
     }
 
-    private void createTitlePanel(ReportPanelTitle reportPanelTitle) {
+    public void createTitlePanel(ReportPanelTitle reportPanelTitle) {
 
         LinkedHashMap titleTable = reportPanelTitle.createHeaders();
 
@@ -97,7 +97,7 @@ public class ExcelDocument implements ExtensionFormat {
 
         addRows(oneRowOffset);
     }
-    private void createVariablesPanel(Point point){
+    public void createVariablesPanel(Point point){
 
         ReportContext reportContext = point.getDriverContext();
         ReportStrategy reportStrategy = reportContext.getReportStrategy();
@@ -113,7 +113,7 @@ public class ExcelDocument implements ExtensionFormat {
         addRows(twoRowsFromPrevPointTable);
     }
 
-    private void addHeadersToVariablesPanel(Map<String, String> headers){
+    public void addHeadersToVariablesPanel(Map<String, String> headers){
         Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
 
         CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
@@ -126,7 +126,7 @@ public class ExcelDocument implements ExtensionFormat {
             count++;
         }
     }
-    private void addVariablesToVariablesPanel(ReportStrategy reportStrategy, ArrayList<ResourceBean> resourceBeans) {
+    public void addVariablesToVariablesPanel(ReportStrategy reportStrategy, ArrayList<ResourceBean> resourceBeans) {
         CellStyle baseStyle = StyleDocument.createBaseStyle(document);
 
         int cols = 0;
