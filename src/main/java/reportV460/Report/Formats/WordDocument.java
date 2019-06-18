@@ -26,7 +26,7 @@ public class WordDocument implements ExtensionFormat {
         document = new XWPFDocument();
 
         for(Point point: points){
-            ReportContext reportContext = setReportStrategy(point.getDriverType());
+            //ReportContext reportContext = setReportStrategy(point.getDriverType());
             //reportContext.createDocTable(document, point);
         }
     }
@@ -35,26 +35,26 @@ public class WordDocument implements ExtensionFormat {
         return file.getName();
     }
 
-    private ReportContext setReportStrategy(DriverType driverType){
+    /*private ReportContext setReportStrategy(DriverType driverType){
         ReportContext reportContext = new ReportContext();
         switch (driverType){
             case IEC870:
-                reportContext.setReportStrategy(new Iec870Strategy());
+                reportContext.setReportStrategy(new Iec870Strategy(this));
                 break;
             case IEC850:
-                reportContext.setReportStrategy(new Iec850Strategy());
+                reportContext.setReportStrategy(new Iec850Strategy(this));
                 break;
             case SPRECON850:
-                reportContext.setReportStrategy(new Iec850SprStrategy());
+                reportContext.setReportStrategy(new Iec850SprStrategy(this));
                 break;
             case SPRECON870:
-                reportContext.setReportStrategy(new Iec870SprStrategy());
+                reportContext.setReportStrategy(new Iec870SprStrategy(this));
                 break;
             default:
                 break;
         }
         return reportContext;
-    }
+    }*/
 
     @Override
     public void writeDocument() {

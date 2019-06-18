@@ -1,5 +1,6 @@
 package reportV460.Report.Strategy;
 
+import reportV460.v460.Point;
 import reportV460.v460.ResourceBean;
 
 import java.util.LinkedHashMap;
@@ -39,7 +40,7 @@ public class Iec850SprStrategy extends IecStrategy {
     }*/
 
 
-    public void createDataTemplateTI(ResourceBean resourceBean){
+    public LinkedHashMap<String, String> createDataTemplateTI(ResourceBean resourceBean){
 
         LinkedHashMap titleTableTI = new LinkedHashMap<String,String>();
         titleTableTI.put("№ панели", resourceBean.getPanelLocation());
@@ -52,11 +53,11 @@ public class Iec850SprStrategy extends IecStrategy {
         titleTableTI.put("Ктт, Ктн", resourceBean.getCoefficientTransform());
         titleTableTI.put("Адрес Sprecon", resourceBean.getRecourcesLabel());
         titleTableTI.put("Адрес МЕК 61850", resourceBean.getShortSymbAddress());
-
+        return titleTableTI;
     }
 
 
-    public void createDataTemplateTS(ResourceBean resourceBean){
+    public LinkedHashMap<String, String> createDataTemplateTS(ResourceBean resourceBean){
 
         LinkedHashMap titleTableTS = new LinkedHashMap<String,String>();
         titleTableTS.put("№ панели", resourceBean.getPanelLocation());
@@ -69,7 +70,7 @@ public class Iec850SprStrategy extends IecStrategy {
         titleTableTS.put("Класс тревог", resourceBean.getAlarmClass());
         titleTableTS.put("Адрес Sprecon", resourceBean.getRecourcesLabel());
         titleTableTS.put("Адрес МЕК 61850", resourceBean.getShortSymbAddress());
-
+        return titleTableTS;
     }
 
 

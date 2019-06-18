@@ -1,5 +1,6 @@
 package reportV460.v460;
 
+import jdk.internal.org.objectweb.asm.tree.InsnList;
 import reportV460.Helpers.LogInfo;
 import reportV460.Report.ReportContext;
 import reportV460.Report.ReportPanelTitle.ReportPanelSprTitle;
@@ -19,10 +20,10 @@ public class Point {
     private String grouppingParameter;
     private GrouperPoints grouperPoints;
     private ReportContext driverContext;
-    private ArrayList<ResourceBean>resourcebeansOfTS = new ArrayList<>();
-    private ArrayList<ResourceBean>resourcebeansOfTI = new ArrayList<>();
 
     private static Map<String, Point> allPoints;
+    private ArrayList<ResourceBean> resourcebeansOfTI = new ArrayList<>();
+    private ArrayList<ResourceBean> resourcebeansOfTS = new ArrayList<>();
 
     private Point(Builder builder) {
         setResourceBeans(builder.resourceBeans);
@@ -33,7 +34,7 @@ public class Point {
         addReportPanelTitle();
         splitBeansToTSTI();
         setDriverStrategy();
-        setBeansToTSTIForHeaders();
+
 
         if (!hasPoint()){
             allPoints.put(getGrouppingParameter(), this);
@@ -53,15 +54,6 @@ public class Point {
         return false;
     }
 
-    public void setBeansToTSTIForHeaders() {
-        if (!(getResourcebeansOfTS() == null) && !(getResourcebeansOfTS().size() == 0)) {
-            this.driverContext.setResourceBeanTS(getResourcebeansOfTS().get(0));
-        }
-        if (!(getResourcebeansOfTI() == null) && !(getResourcebeansOfTI().size() == 0)) {
-            this.driverContext.setResourceBeanTI(getResourcebeansOfTI().get(0));
-        }
-    }
-
     @Override
     public String toString() {
         return "Point{" +
@@ -76,6 +68,7 @@ public class Point {
         driverContext = new ReportContext();
         switch (driverType){
             case IEC870:
+
                 driverContext.setReportStrategy(new Iec870Strategy());
                 break;
             case IEC850:
@@ -177,7 +170,6 @@ public class Point {
                                 .build()
                 );
 
-
         LogInfo.setLogDataWithTitle(
                 "Количество устройств для создания протокола",
                 String.valueOf(Point.getPointsCount()));
@@ -193,7 +185,9 @@ public class Point {
     }
 
     private void setReportPanelTitle(ResourceBean resourceBean) {
-        this.reportPanelTitle = isSpreconTable() ? new ReportPanelSprTitle(resourceBean) : new ReportPanelTitle(resourceBean);
+        this.reportPanelTitle = isSpreconTable() ?
+                new ReportPanelSprTitle(resourceBean) :
+                new ReportPanelTitle(resourceBean);
     }
 
     public DriverType getDriverType() {
@@ -275,7 +269,5 @@ public class Point {
     public int hashCode() {
         return Objects.hash(driverType, grouppingParameter);
     }
-
-
 
 }

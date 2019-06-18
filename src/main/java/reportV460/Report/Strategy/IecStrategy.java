@@ -1,20 +1,20 @@
 package reportV460.Report.Strategy;
 
+import reportV460.v460.Point;
 import reportV460.v460.ResourceBean;
 
 import java.util.LinkedHashMap;
 
 public class IecStrategy implements ReportStrategy{
-    LinkedHashMap titleTableTS = new LinkedHashMap<String,String>();
-    LinkedHashMap titleTableTI = new LinkedHashMap<String,String>();
 
+/*
     public LinkedHashMap getTitleTableTS() {
         return titleTableTS;
     }
 
     public LinkedHashMap getTitleTableTI() {
         return titleTableTI;
-    }
+    }*/
 
     /*    private int twoRowsFromPrevPointTable = 2;
     public int oneRowOffset = 1;
@@ -23,6 +23,7 @@ public class IecStrategy implements ReportStrategy{
 
     /*private ArrayList<ResourceBean>resourcebeansOfTS = new ArrayList<>();
     private ArrayList<ResourceBean>resourcebeansOfTI = new ArrayList<>();*/
+
 
     @Override
     /*public void createDocTable(XWPFDocument document, Point point) {
@@ -74,7 +75,7 @@ public class IecStrategy implements ReportStrategy{
     /*@Override
     public void createXlsTable(HSSFWorkbook document, Point point) {
 
-        ExcelDocument.createTable(point);
+        ExcelDocument.createTables(point);
 
         *//*createXlsTableTitlePanel(document, point.getReportPanelTitle());
         createXlsTableVariablesPanel(document, point.getResourceBeans());*//*
@@ -137,7 +138,7 @@ public class IecStrategy implements ReportStrategy{
 /*
 
         LinkedHashMap<String, String> titleTable = createHeadersTitle(reportPanelTitle);
-        XWPFTable table = document.createTable(titleTable.size(), colsForTitlePanel);
+        XWPFTable table = document.createTables(titleTable.size(), colsForTitlePanel);
 
         int rowNum = 0;
         for (Map.Entry<String, String> title : titleTable.entrySet()) {
@@ -194,13 +195,13 @@ public class IecStrategy implements ReportStrategy{
         splitBeansToTSTI(resourceBeans);
 
         if (!resourcebeansOfTS.isEmpty()) {
-            XWPFTable tableTS = document.createTable(resourcebeansOfTS.size()+1, createHeadersVariablesTS().length);
+            XWPFTable tableTS = document.createTables(resourcebeansOfTS.size()+1, createHeadersVariablesTS().length);
             addHeadersToVariablesTable(tableTS, createHeadersVariablesTS());
             addVariablesToVariablesTable(tableTS, createHeadersVariablesTS(), resourcebeansOfTS);
         }
 
         if (!resourcebeansOfTI.isEmpty()) {
-            XWPFTable tableTI = document.createTable(resourcebeansOfTI.size()+1,createHeadersVariablesTI().length);
+            XWPFTable tableTI = document.createTables(resourcebeansOfTI.size()+1,createHeadersVariablesTI().length);
             addHeadersToVariablesTable(tableTI, createHeadersVariablesTI());
             addVariablesToVariablesTable(tableTI, createHeadersVariablesTI(), resourcebeansOfTI);
         }
@@ -349,10 +350,9 @@ public class IecStrategy implements ReportStrategy{
         }
     }*/
 
-    public void createDataTemplateTI(ResourceBean resourceBean){
+    public LinkedHashMap<String, String> createDataTemplateTI(ResourceBean resourceBean){
 
-
-        LinkedHashMap titleTableTI = new LinkedHashMap<String,String>();
+        LinkedHashMap<String, String> titleTableTI = new LinkedHashMap();
         titleTableTI.put("№ панели", resourceBean.getPanelLocation());
         titleTableTI.put("Система", resourceBean.getSystem());
         titleTableTI.put("Класс напряж.", resourceBean.getVoltageClass());
@@ -365,12 +365,13 @@ public class IecStrategy implements ReportStrategy{
         titleTableTI.put("Адрес АСДУ", resourceBean.getIec870_coa1());
         titleTableTI.put("Адрес объекта", resourceBean.getIec870_ioa1());
 
+        return titleTableTI;
     }
 
 
-    public void createDataTemplateTS(ResourceBean resourceBean){
+    public LinkedHashMap<String,String> createDataTemplateTS(ResourceBean resourceBean){
 
-        LinkedHashMap titleTableTS = new LinkedHashMap<String,String>();
+        LinkedHashMap<String, String> titleTableTS = new LinkedHashMap();
         titleTableTS.put("№ панели", resourceBean.getPanelLocation());
         titleTableTS.put("Система", resourceBean.getSystem());
         titleTableTS.put("Класс напряж.", resourceBean.getVoltageClass());
@@ -382,6 +383,8 @@ public class IecStrategy implements ReportStrategy{
         titleTableTS.put("Тип АСДУ", resourceBean.getIec870_type());
         titleTableTS.put("Адрес АСДУ", resourceBean.getIec870_coa1());
         titleTableTS.put("Адрес объект", resourceBean.getIec870_ioa1());
+
+        return titleTableTS;
 
     }
 
