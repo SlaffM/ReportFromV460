@@ -19,17 +19,17 @@ import java.util.*;
 public class ExcelDocument implements ExtensionFormat {
     public String type = "xls";
     private DocumentFile file;
-    private static HSSFWorkbook document;
-    private static Sheet sheet;
+    private HSSFWorkbook document;
+    private Sheet sheet;
 
-    private static int twoRowsFromPrevPointTable = 2;
-    public static int oneRowOffset = 1;
-    private static int colsForTitlePanel = 2;
+    private int twoRowsFromPrevPointTable = 2;
+    private int oneRowOffset = 1;
+    private int colsForTitlePanel = 2;
 
     ExcelDocument(ArrayList<Point> points, DocumentFile documentFile) {
         this.file = documentFile;
         initPropertiesSheetAndHeaderFooter();
-        points.forEach(ExcelDocument::createTables);
+        points.forEach(this::createTables);
         addSignaturesToLastPage();
     }
 
@@ -60,6 +60,108 @@ public class ExcelDocument implements ExtensionFormat {
         footer.setCenter(StyleDocument.setBold("Страница " + HeaderFooter.page() + " из " + HeaderFooter.numPages()));
     }
 
+    private void createTables(Point point){
+        createTitlePanel(point.getReportPanelTitle());
+        createVariablesPanel(point);
+    }
+
+    private void createTitlePanel(ReportPanelTitle reportPanelTitle) {
+
+        LinkedHashMap titleTable = reportPanelTitle.createHeaders();
+
+        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
+        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
+
+        titleTable.forEach((key, value) -> {
+            Row row = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+
+            Cell cell;
+            int colNumber = 0;
+            for(; colNumber < 3; colNumber++){
+                cell = row.createCell(colNumber);
+                cell.setCellValue((String)key);
+                cell.setCellStyle(headerStyle);
+            }
+            sheet.addMergedRegion(new CellRangeAddress(
+                    sheet.getLastRowNum(),
+                    sheet.getLastRowNum(),
+                    0,
+                    2)
+            );
+            //sheet.setRepeatingRows(CellRangeAddress.valueOf("0:2"));
+
+            cell = row.createCell(colNumber);
+            cell.setCellValue((String)titleTable.get(key));
+            cell.setCellStyle(baseStyle);
+        });
+
+        addRows(oneRowOffset);
+    }
+    private void createVariablesPanel(Point point){
+
+        ReportContext reportContext = point.getDriverContext();
+        ReportStrategy reportStrategy = reportContext.getReportStrategy();
+
+        if (!point.getResourcebeansOfTS().isEmpty()) {
+            addVariablesToVariablesPanel(reportStrategy, point.getResourcebeansOfTS());
+        }
+        if (!point.getResourcebeansOfTI().isEmpty()) {
+            addRows(oneRowOffset);
+            addVariablesToVariablesPanel(reportStrategy, point.getResourcebeansOfTI());
+        }
+        point.clearBeansInPoint();
+        addRows(twoRowsFromPrevPointTable);
+    }
+
+    private void addHeadersToVariablesPanel(Map<String, String> headers){
+        Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+
+        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
+
+        int count = 0;
+        for(Map.Entry<String,String> header: headers.entrySet()){
+            Cell cell = tableRow.createCell(count);
+            cell.setCellValue(header.getKey());
+            cell.setCellStyle(headerStyle);
+            count++;
+        }
+    }
+    private void addVariablesToVariablesPanel(ReportStrategy reportStrategy, ArrayList<ResourceBean> resourceBeans) {
+        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
+
+        int cols = 0;
+        int rowTable = 0;
+
+        Map<String, String> titles;
+        for(ResourceBean resourceBean : resourceBeans){
+            titles = reportStrategy.createData(resourceBean);
+
+            if (rowTable == 0){
+                addHeadersToVariablesPanel(titles);
+                cols = titles.size();
+            }
+            Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+
+            int colNum = 0;
+            for (Map.Entry<String, String> title : titles.entrySet()) {
+                Cell cell = tableRow.createCell(colNum);
+                cell.setCellValue(title.getValue());
+                cell.setCellStyle(baseStyle);
+                colNum++;
+            }
+            rowTable++;
+        }
+
+        resizeCollumns(cols);
+    }
+
+    private void addRows(int countRows){
+        sheet.createRow(sheet.getLastRowNum() + countRows);
+    }
+    private void resizeCollumns(int countCollumns){
+        for(int i = 0; i < countCollumns; i++){ sheet.autoSizeColumn(i); }
+    }
+
     private void addSignaturesToLastPage() {
         HSSFWorkbook templateWorkBook = getTemplateBook();
         try {
@@ -68,7 +170,6 @@ public class ExcelDocument implements ExtensionFormat {
             LogInfo.setErrorData(e.getCause() + "\n" + e.getMessage());
         }
     }
-
     private HSSFWorkbook getTemplateBook(){
 
         File last_page = new File("." + "/template/template_last_page.xls");
@@ -84,7 +185,6 @@ public class ExcelDocument implements ExtensionFormat {
             return new HSSFWorkbook();
         }
     }
-
     private void copyRow(HSSFWorkbook srcWorkbook, HSSFWorkbook dstWorkbook) {
 
         HSSFSheet dstWorksheet = dstWorkbook.getSheetAt(0);
@@ -154,7 +254,6 @@ public class ExcelDocument implements ExtensionFormat {
             );
         }
     }
-
     private String getFileName(){
         return this.file.getName();
     }
@@ -174,151 +273,4 @@ public class ExcelDocument implements ExtensionFormat {
         }
     }
 
-    public static void createTables(Point point){
-        createXlsTableTitlePanel(point.getReportPanelTitle());
-        createXlsTableVariablesPanel(point);
-    }
-
-    private static void createXlsTableTitlePanel(ReportPanelTitle reportPanelTitle) {
-
-        LinkedHashMap titleTable = reportPanelTitle.createHeaders();
-
-        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
-        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
-
-        titleTable.forEach((key, value) -> {
-            Row row = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
-
-            Cell cell;
-            int colNumber = 0;
-            for(; colNumber < 3; colNumber++){
-                cell = row.createCell(colNumber);
-                cell.setCellValue((String)key);
-                cell.setCellStyle(headerStyle);
-            }
-            sheet.addMergedRegion(new CellRangeAddress(sheet.getLastRowNum(), sheet.getLastRowNum(), 0, 2));
-            //sheet.setRepeatingRows(CellRangeAddress.valueOf("0:2"));
-
-            cell = row.createCell(colNumber);
-            cell.setCellValue((String)titleTable.get(key));
-            cell.setCellStyle(baseStyle);
-        });
-
-        sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
-    }
-    private static void createXlsTableVariablesPanel(Point point){
-
-        ReportContext reportContext = point.getDriverContext();
-        ReportStrategy reportStrategy = reportContext.getReportStrategy();
-
-        if (!point.getResourcebeansOfTS().isEmpty()) {
-            addVariablesToVariablesTableTS(point);
-        }
-
-        if (!point.getResourcebeansOfTI().isEmpty()) {
-            addRows(oneRowOffset);
-            addVariablesToVariablesTableTI(point);
-        }
-
-        point.clearBeansInPoint();
-
-        addRows(twoRowsFromPrevPointTable);
-
-
-    }
-    private static void addHeadersToVariablesTableXls(Map<String, String> headers){
-        Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
-
-        CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
-
-        int count = 0;
-        for(Map.Entry<String,String> header: headers.entrySet()){
-            Cell cell = tableRow.createCell(count);
-            cell.setCellValue(header.getKey());
-            cell.setCellStyle(headerStyle);
-            count++;
-        }
-    }
-    private static void addVariablesToVariablesTableTS(Point point) {
-        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
-
-        int cols = 0;
-        int rowTable = 0;
-        for(ResourceBean resourceBean : point.getResourcebeansOfTS()){
-
-            ReportContext reportContext = point.getDriverContext();
-            ReportStrategy reportStrategy = reportContext.getReportStrategy();
-            Map<String, String> titles = reportStrategy.createDataTemplateTS(resourceBean);
-
-            if (rowTable == 0){
-                addHeadersToVariablesTableXls(titles);
-                cols = titles.size();
-            }
-
-            Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
-
-            int colNum = 0;
-            for (Map.Entry<String, String> title : titles.entrySet()) {
-
-                Cell cell = tableRow.createCell(colNum);
-                String prop = title.getValue();
-
-                cell.setCellValue(prop);
-                cell.setCellStyle(baseStyle);
-
-                colNum++;
-            }
-            rowTable++;
-        }
-
-        resizeCollumns(cols);
-
-    }
-
-    private static void addVariablesToVariablesTableTI(Point point) {
-        CellStyle baseStyle = StyleDocument.createBaseStyle(document);
-
-        int rowTable = 0;
-        for(ResourceBean resourceBean : point.getResourcebeansOfTI()){
-
-            ReportContext reportContext = point.getDriverContext();
-            ReportStrategy reportStrategy = reportContext.getReportStrategy();
-            Map<String, String> titles = reportStrategy.createDataTemplateTI(resourceBean);
-
-            if (rowTable == 0){ addHeadersToVariablesTableXls(titles); }
-
-            Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
-            int colNum = 0;
-            for (Map.Entry<String, String> title : titles.entrySet()) {
-
-                Cell cell = tableRow.createCell(colNum);
-                String prop = title.getValue();
-
-                cell.setCellValue(prop);
-                cell.setCellStyle(baseStyle);
-                colNum++;
-            }
-            rowTable++;
-        }
-    }
-
-    private static void addRows(int countRows){
-        sheet.createRow(sheet.getLastRowNum() + countRows);
-
-        /*for(int i = 0; i < lastRowNum; i++) {
-            //sheet.setRepeatingRows(region);
-            sheet.autoSizeColumn(i);
-        }*/
-
-        //sheet.autoSizeColumn(10);
-
-        /*for(int i = 0; i < reportStrategy.createDataTI().size(); i++) {
-            //sheet.setRepeatingRows(region);
-            sheet.autoSizeColumn(i);
-        }*/
-    }
-
-    private static void resizeCollumns(int countCollumns){
-        for(int i = 0; i < countCollumns; i++){ sheet.autoSizeColumn(i); }
-    }
 }

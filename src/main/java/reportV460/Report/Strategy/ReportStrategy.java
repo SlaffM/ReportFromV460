@@ -5,7 +5,5 @@ import reportV460.v460.ResourceBean;
 import java.util.LinkedHashMap;
 
 public interface ReportStrategy {
-        LinkedHashMap<String, String> createDataTemplateTS(ResourceBean resourceBean);
-        LinkedHashMap<String, String> createDataTemplateTI(ResourceBean resourceBean);
-
+        LinkedHashMap<String, String> createData(ResourceBean resourceBean);
 }

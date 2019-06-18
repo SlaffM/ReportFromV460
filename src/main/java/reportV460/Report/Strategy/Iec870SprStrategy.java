@@ -7,122 +7,30 @@ import java.util.LinkedHashMap;
 
 public class Iec870SprStrategy extends IecStrategy {
 
-    /*@Override
-    public String[] createHeadersVariablesTS(){
-        return new String[]{
-                "№ панели",
-                "Система",
-                "Класс напряж.",
-                "Присоединение",
-                "Устройство",
-                "Наименование сигнала",
-                "Текс состояния",
-                "Класс тревог",
-                "Адрес Sprecon",
-                "Тип АСДУ",
-                "Адрес АСДУ",
-                "Адрес объекта"
-        };
+    public LinkedHashMap<String,String> createData(ResourceBean resourceBean){
+
+        LinkedHashMap<String, String> titleTable = new LinkedHashMap();
+        titleTable.put("№ панели", resourceBean.getPanelLocation());
+        titleTable.put("Система", resourceBean.getSystem());
+        titleTable.put("Класс напряж.", resourceBean.getVoltageClass());
+        titleTable.put("Присоединение", resourceBean.getConnectionTitle());
+        titleTable.put("Устройство", resourceBean.getDevice());
+        titleTable.put("Наименование сигнала", resourceBean.getSignalName());
+        if(resourceBean.isVariableTI()) {
+            titleTable.put("Ед. измерения", resourceBean.getUnit());
+            titleTable.put("Ктт, Ктн", resourceBean.getCoefficientTransform());
+        }else{
+            titleTable.put("Текс состояния", resourceBean.getStatusText());
+            titleTable.put("Класс тревог", resourceBean.getAlarmClass());
+        }
+        titleTable.put("Адрес Sprecon", resourceBean.getRecourcesLabel());
+        titleTable.put("Тип АСДУ", resourceBean.getIec870_type());
+        titleTable.put("Адрес АСДУ", resourceBean.getIec870_coa1());
+        titleTable.put("Адрес объекта", resourceBean.getIec870_ioa1());
+
+        return titleTable;
+
     }
 
-    @Override
-    public String[] createHeadersVariablesTI(){
-        return new String[]{
-                "№ панели",
-                "Система",
-                "Класс напряж.",
-                "Присоединение",
-                "Устройство",
-                "Наименование сигнала",
-                "Ед. измерения",
-                "Ктт, Ктн",
-                "Адрес Sprecon",
-                "Тип АСДУ",
-                "Адрес АСДУ",
-                "Адрес объекта"
-        };
-    }*/
-
-
-    public LinkedHashMap<String, String> createDataTemplateTI(ResourceBean resourceBean){
-
-        LinkedHashMap titleTableTI = new LinkedHashMap<String,String>();
-        titleTableTI.put("№ панели", resourceBean.getPanelLocation());
-        titleTableTI.put("Система", resourceBean.getSystem());
-        titleTableTI.put("Класс напряж.", resourceBean.getVoltageClass());
-        titleTableTI.put("Присоединение", resourceBean.getConnectionTitle());
-        titleTableTI.put("Устройство", resourceBean.getDevice());
-        titleTableTI.put("Наименование сигнала", resourceBean.getSignalName());
-        titleTableTI.put("Ед. измерения", resourceBean.getUnit());
-        titleTableTI.put("Ктт, Ктн", resourceBean.getCoefficientTransform());
-        titleTableTI.put("Адрес Sprecon", resourceBean.getRecourcesLabel());
-        titleTableTI.put("Тип АСДУ", resourceBean.getIec870_type());
-        titleTableTI.put("Адрес АСДУ", resourceBean.getIec870_coa1());
-        titleTableTI.put("Адрес объекта", resourceBean.getIec870_ioa1());
-        return titleTableTI;
-    }
-
-
-    public LinkedHashMap<String, String> createDataTemplateTS(ResourceBean resourceBean){
-
-        LinkedHashMap titleTableTS = new LinkedHashMap<String,String>();
-        titleTableTS.put("№ панели", resourceBean.getPanelLocation());
-        titleTableTS.put("Система", resourceBean.getSystem());
-        titleTableTS.put("Класс напряж.", resourceBean.getVoltageClass());
-        titleTableTS.put("Присоединение", resourceBean.getConnectionTitle());
-        titleTableTS.put("Устройство", resourceBean.getDevice());
-        titleTableTS.put("Наименование сигнала", resourceBean.getSignalName());
-        titleTableTS.put("Текс состояния", resourceBean.getStatusText());
-        titleTableTS.put("Класс тревог", resourceBean.getAlarmClass());
-        titleTableTS.put("Адрес Sprecon", resourceBean.getRecourcesLabel());
-        titleTableTS.put("Тип АСДУ", resourceBean.getIec870_type());
-        titleTableTS.put("Адрес АСДУ", resourceBean.getIec870_coa1());
-        titleTableTS.put("Адрес объект", resourceBean.getIec870_ioa1());
-        return titleTableTS;
-    }
-
-
-/*
-
-    @Override
-    public ArrayList<String> getPropertiesResourceBeanTS(ResourceBean resourceBean){
-        ArrayList<String> props = new ArrayList<>();
-
-        props.add(resourceBean.getPanelLocation());
-        props.add(resourceBean.getSystem());
-        props.add(resourceBean.getVoltageClass());
-        props.add(resourceBean.getConnectionTitle());
-        props.add(resourceBean.getDevice());
-        props.add(resourceBean.getSignalName());
-        props.add(resourceBean.getStatusText());
-        props.add(resourceBean.getAlarmClass());
-        props.add(resourceBean.getRecourcesLabel());
-        props.add(resourceBean.getIec870_type());
-        props.add(resourceBean.getIec870_coa1());
-        props.add(resourceBean.getIec870_ioa1());
-
-        return props;
-    }
-
-    @Override
-    public ArrayList<String> getPropertiesResourceBeanTI(ResourceBean resourceBean){
-        ArrayList<String> props = new ArrayList<>();
-
-        props.add(resourceBean.getPanelLocation());
-        props.add(resourceBean.getSystem());
-        props.add(resourceBean.getVoltageClass());
-        props.add(resourceBean.getConnectionTitle());
-        props.add(resourceBean.getDevice());
-        props.add(resourceBean.getSignalName());
-        props.add(resourceBean.getUnit());
-        props.add(resourceBean.getCoefficientTransform());
-        props.add(resourceBean.getRecourcesLabel());
-        props.add(resourceBean.getIec870_type());
-        props.add(resourceBean.getIec870_coa1());
-        props.add(resourceBean.getIec870_ioa1());
-
-        return props;
-    }
-*/
 
 }

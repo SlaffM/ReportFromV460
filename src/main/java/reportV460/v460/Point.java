@@ -68,7 +68,6 @@ public class Point {
         driverContext = new ReportContext();
         switch (driverType){
             case IEC870:
-
                 driverContext.setReportStrategy(new Iec870Strategy());
                 break;
             case IEC850:
@@ -175,10 +174,6 @@ public class Point {
                 String.valueOf(Point.getPointsCount()));
         return getAllPoints();
     }
-/*
-    public void setEnipObjects(ArrayList<EnipObject> enipObjects) {
-        this.enipObjects = enipObjects;
-    }*/
 
     public ReportPanelTitle getReportPanelTitle() {
         return reportPanelTitle;
@@ -229,7 +224,6 @@ public class Point {
 
     public static final class Builder {
         private List<ResourceBean> resourceBeans;
-        //private ArrayList<EnipObject> enipObjects;
         private GrouperPoints grouperPoints;
 
         public Builder(){}
@@ -238,14 +232,6 @@ public class Point {
             resourceBeans = val;
             return this;
         }
-/*
-        public Builder enipObjects(ArrayList<EnipObject> val) {
-            if (val == null){
-                val = new ArrayList<EnipObject>();
-            }
-            enipObjects = val;
-            return this;
-        }*/
         
         public Builder grouperParameter(GrouperPoints val){
             grouperPoints = val;
