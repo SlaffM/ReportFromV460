@@ -38,6 +38,7 @@ public class ExcelDocument implements ExtensionFormat {
         for(Point point: points){
             //point.getDriverContext().createXlsTable(document, point);
             //point.getDriverContext().setReportStrategy(point.getDriverType());
+
             createTable(point);
 
             /*ReportContext reportContext = setReportStrategy(point.getDriverType());
@@ -362,7 +363,6 @@ public class ExcelDocument implements ExtensionFormat {
                 cell.setCellStyle(baseStyle);
             }*/
         }
-
     }
 
     private static void addRowAndResizeCollumns(Point point){
@@ -370,7 +370,6 @@ public class ExcelDocument implements ExtensionFormat {
 
         ReportContext reportContext = point.getDriverContext();
         ReportStrategy reportStrategy = reportContext.getReportStrategy();
-
 
         for(int i = 0; i < reportStrategy.getTitleTableTI().size(); i++) {
             //sheet.setRepeatingRows(region);

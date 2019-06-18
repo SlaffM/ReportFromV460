@@ -14,6 +14,7 @@ public interface ReportStrategy {
         /*ArrayList<String> getPropertiesResourceBeanTS(ResourceBean resourceBean);
         ArrayList<String> getPropertiesResourceBeanTI(ResourceBean resourceBean);*/
 
+
         void createDataTemplateTS(ResourceBean resourceBean);
         void createDataTemplateTI(ResourceBean resourceBean);
 

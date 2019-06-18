@@ -31,8 +31,9 @@ public class Point {
         addGrouppingParameter();
         addDriverType();
         addReportPanelTitle();
-        setDriverStrategy(getDriverType());
         splitBeansToTSTI();
+        setDriverStrategy();
+        setBeansToTSTIForHeaders();
 
         if (!hasPoint()){
             allPoints.put(getGrouppingParameter(), this);
@@ -52,6 +53,15 @@ public class Point {
         return false;
     }
 
+    public void setBeansToTSTIForHeaders() {
+        if (!(getResourcebeansOfTS() == null) && !(getResourcebeansOfTS().size() == 0)) {
+            this.driverContext.setResourceBeanTS(getResourcebeansOfTS().get(0));
+        }
+        if (!(getResourcebeansOfTI() == null) && !(getResourcebeansOfTI().size() == 0)) {
+            this.driverContext.setResourceBeanTI(getResourcebeansOfTI().get(0));
+        }
+    }
+
     @Override
     public String toString() {
         return "Point{" +
@@ -61,7 +71,7 @@ public class Point {
                 '}';
     }
 
-    private void setDriverStrategy(DriverType driverType){
+    private void setDriverStrategy(){
         //ReportContext reportContext = new ReportContext();
         driverContext = new ReportContext();
         switch (driverType){

@@ -2,6 +2,8 @@ package reportV460.Report.Strategy;
 
 import reportV460.v460.ResourceBean;
 
+import java.util.LinkedHashMap;
+
 public class Iec850Strategy extends IecStrategy {
 
 /*    @Override
@@ -38,6 +40,7 @@ public class Iec850Strategy extends IecStrategy {
 
     public void createDataTemplateTI(ResourceBean resourceBean){
 
+        LinkedHashMap titleTableTI = new LinkedHashMap<String,String>();
         titleTableTI.put("№ панели", resourceBean.getPanelLocation());
         titleTableTI.put("Система", resourceBean.getSystem());
         titleTableTI.put("Класс напряж.", resourceBean.getVoltageClass());
@@ -53,6 +56,7 @@ public class Iec850Strategy extends IecStrategy {
 
     public void createDataTemplateTS(ResourceBean resourceBean){
 
+        LinkedHashMap titleTableTS = new LinkedHashMap<String,String>();
         titleTableTS.put("№ панели", resourceBean.getPanelLocation());
         titleTableTS.put("Система", resourceBean.getSystem());
         titleTableTS.put("Класс напряж.", resourceBean.getVoltageClass());
