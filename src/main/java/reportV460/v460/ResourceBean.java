@@ -299,6 +299,11 @@ public class ResourceBean implements Comparable<ResourceBean>{
             return srcMatrix;
         }
     }
+    public void setCorrectMatrixToVariables(){
+        if (getSymbAddr().contains("CALH1/Health")){
+            setMatrix("ПС2_Неисправность_норма/1_0");
+        }
+    }
     private String getFormattedIec850Address(String symAddress){
         return Helpers.getTextWithPattern(symAddress, "!(\\w.*)")
                 .replace("[ST]","")

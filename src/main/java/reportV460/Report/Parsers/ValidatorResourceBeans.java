@@ -28,12 +28,19 @@ public class ValidatorResourceBeans {
         this.enipObjects = enips;
 
         addCorrectedDriverType();
+        setCorrectMatrixToVariables();
         addCoefficientTransform();
+
     }
 
     public List<ResourceBean> getReadyBeans(){
         return resourceBeans;
     }
+
+    private void setCorrectMatrixToVariables(){
+        resourceBeans.forEach(ResourceBean::setCorrectMatrixToVariables);
+    }
+
 
     private void addCorrectedDriverType(){
         resourceBeans.forEach(ResourceBean::setCorrectDriverTypeAfterInitAllFields);

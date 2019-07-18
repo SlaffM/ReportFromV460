@@ -11,6 +11,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import reportV460.Helpers.LogInfo;
+import reportV460.Helpers.Prefs;
 import reportV460.Report.Formats.CreatorPointsAndExtractToFormat;
 import reportV460.v460.GrouperPoints;
 
@@ -18,6 +19,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class Controller implements Initializable {
     @FXML public Label lblPathTxt;
@@ -34,6 +36,7 @@ public class Controller implements Initializable {
     @FXML public ComboBox<GrouperPoints> selectTypeGroup = new ComboBox<>();
     @FXML public ProgressBar progress = new ProgressBar();
     @FXML public ListView listLog;
+    @FXML public TextField txtIp;
 
     private File txtFile;
     private String extensionTxt = ".txt";
@@ -45,6 +48,8 @@ public class Controller implements Initializable {
     private Stage stage;
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
+        Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
+
         CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
                 .withPathEnipConfigurations(dirOfEnip)
@@ -142,6 +147,9 @@ public class Controller implements Initializable {
     @Override
     @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) {
+
+        txtIp.textProperty().setValue("192.168.220.");
+
         listLog.itemsProperty().bind(LogInfo.logDataProperty());
 
         LogInfo.logDataProperty().addListener((observableValue, observableList, t1) ->

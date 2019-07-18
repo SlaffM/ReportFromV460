@@ -1,8 +1,10 @@
 package reportV460.Report.ReportPanelTitle;
 
+import reportV460.Helpers.Prefs;
 import reportV460.v460.ResourceBean;
 
 import java.util.LinkedHashMap;
+import java.util.prefs.Preferences;
 
 public class ReportPanelTitle {
 
@@ -18,7 +20,7 @@ public class ReportPanelTitle {
         return getResourceBean().getDevice();
     }
     public String getIpAddress() {
-        return getResourceBean().getIpAddress();
+        return Prefs.getPrefValue("IP") + getResourceBean().getNetAddr();
     }
     public String getConnectionTitle(){
         return getResourceBean().getConnectionTitle();
