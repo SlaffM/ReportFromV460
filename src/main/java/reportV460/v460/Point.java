@@ -1,6 +1,6 @@
 package reportV460.v460;
 
-import jdk.internal.org.objectweb.asm.tree.InsnList;
+import org.xml.sax.SAXException;
 import reportV460.Helpers.LogInfo;
 import reportV460.Report.ReportContext;
 import reportV460.Report.ReportPanelTitle.ReportPanelSprTitle;
@@ -10,6 +10,9 @@ import reportV460.Report.Strategy.Iec850Strategy;
 import reportV460.Report.Strategy.Iec870SprStrategy;
 import reportV460.Report.Strategy.Iec870Strategy;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 import java.util.*;
 
 public class Point {
@@ -25,7 +28,9 @@ public class Point {
     private ArrayList<ResourceBean> resourcebeansOfTI = new ArrayList<>();
     private ArrayList<ResourceBean> resourcebeansOfTS = new ArrayList<>();
 
-    private Point(Builder builder) {
+    private Point(Builder builder)
+            throws ParserConfigurationException, SAXException,
+            XPathExpressionException, IOException {
         setResourceBeans(builder.resourceBeans);
         setGrouperPoints(builder.grouperPoints);
 
@@ -135,7 +140,9 @@ public class Point {
         }
     }
 
-    private void addReportPanelTitle(){
+    private void addReportPanelTitle()
+            throws ParserConfigurationException, SAXException,
+            XPathExpressionException, IOException {
         setReportPanelTitle(resourceBeans.get(0));
     }
 
@@ -163,10 +170,16 @@ public class Point {
                                                GrouperPoints grouperPoints){
 
         DistributerToPoints.buildPoints(resourceBeans, grouperPoints).forEach(resourceBeans1 ->
+                {
+                    try {
                         new Builder()
                                 .resourceBeans(resourceBeans1)
                                 .grouperParameter(grouperPoints)
-                                .build()
+                                .build();
+                    } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
+                        e.printStackTrace();
+                    }
+                }
                 );
 
         LogInfo.setLogDataWithTitle(
@@ -179,7 +192,9 @@ public class Point {
         return reportPanelTitle;
     }
 
-    private void setReportPanelTitle(ResourceBean resourceBean) {
+    private void setReportPanelTitle(ResourceBean resourceBean)
+            throws ParserConfigurationException, SAXException,
+            XPathExpressionException, IOException {
         this.reportPanelTitle = isSpreconTable() ?
                 new ReportPanelSprTitle(resourceBean) :
                 new ReportPanelTitle(resourceBean);
@@ -238,7 +253,9 @@ public class Point {
             return this;
         }
 
-        public Point build() {
+        public Point build()
+                throws ParserConfigurationException, SAXException,
+                XPathExpressionException, IOException {
             return new Point(this);
         }
     }

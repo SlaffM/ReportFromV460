@@ -6,11 +6,11 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.Tooltip?>
 <Pane prefHeight="702.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="reportV460.Controller">
    <children>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c3d4e343" height="189.0" layoutX="15.0" layoutY="274.0" stroke="BLACK" strokeType="INSIDE" width="847.0" />
@@ -61,10 +61,11 @@
       </Label>
       <ComboBox fx:id="selectTypeGroup" layoutX="221.0" layoutY="321.0" prefHeight="27.0" prefWidth="227.0" />
       <ListView fx:id="listLog" layoutX="16.0" layoutY="491.0" prefHeight="197.0" prefWidth="847.0" />
-      <TextField fx:id="txtIp" accessibleRole="TEXT" layoutX="465.0" layoutY="322.0" promptText="IP-адрес сети" >
+      <TextField fx:id="txtIp" accessibleRole="TEXT" layoutX="465.0" layoutY="322.0" promptText="IP-адрес сети">
          <tooltip>
-            <Tooltip text = "Введите IP адрес сети, например, 192.168.1."/>
+            <Tooltip text="Введите IP адрес сети, например, 192.168.1." />
          </tooltip>
       </TextField>
+      <Button fx:id="btnXml" layoutX="797.0" layoutY="322.0" mnemonicParsing="false" text="Button" onAction="#btnLoadXmlClick"/>
    </children>
 </Pane>

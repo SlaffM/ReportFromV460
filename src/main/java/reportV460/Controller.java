@@ -10,12 +10,20 @@ import javafx.scene.control.TextArea;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import reportV460.Helpers.LogInfo;
 import reportV460.Helpers.Prefs;
 import reportV460.Report.Formats.CreatorPointsAndExtractToFormat;
 import reportV460.v460.GrouperPoints;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -37,6 +45,7 @@ public class Controller implements Initializable {
     @FXML public ProgressBar progress = new ProgressBar();
     @FXML public ListView listLog;
     @FXML public TextField txtIp;
+    @FXML public Button btnXml;
 
     private File txtFile;
     private String extensionTxt = ".txt";
@@ -49,6 +58,8 @@ public class Controller implements Initializable {
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
         Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
+        Prefs.setPrefValue("PathProgramm", new File("." ).getAbsolutePath());
+
 
         CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
@@ -133,6 +144,8 @@ public class Controller implements Initializable {
 
     }
 
+
+
     public void btnLoadPathToEnipClick(ActionEvent event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(new File("."));
@@ -157,6 +170,37 @@ public class Controller implements Initializable {
 
         selectTypeGroup.getItems().addAll(GrouperPoints.values());
         selectTypeGroup.getSelectionModel().select(GrouperPoints.GROUP_BY_NETADDR);
+    }
+
+    public void btnLoadXmlClick(ActionEvent event)
+            throws ParserConfigurationException, IOException,
+            SAXException, XPathExpressionException {
+
+        Prefs.setPrefValue("PathProgramm", new File("." ).getAbsolutePath());
+
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(true);
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        Document doc = builder.parse(Prefs.getPrefValue("PathProgramm") + "/template/variables.xml");
+
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath xpath = factory.newXPath();
+        XPathExpression expr
+                = xpath.compile("//Apartment/Variable[Name = 'SPR.0200.Connect_vba']/Tagname/text()");
+
+        Object result = expr.evaluate(doc, XPathConstants.NODESET);
+        NodeList nodes = (NodeList) result;
+
+        /*for (int i = 0; i < nodes.getLength(); i++) {
+            LogInfo.setLogData(nodes.item(i).getNodeValue());
+        }*/
+
+        if (nodes.getLength() == 0)
+            LogInfo.setLogData("Нет записей");
+        else
+            LogInfo.setLogData(nodes.item(0).getNodeValue());
+
+
     }
 }
 

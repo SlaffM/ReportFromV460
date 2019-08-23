@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvBindByPosition;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import reportV460.Helpers.Helpers;
 import reportV460.Helpers.LogInfo;
+import reportV460.Helpers.Prefs;
 import reportV460.Report.Parsers.EnipObject;
 
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 import static reportV460.v460.DriverType.*;
 
 public class ResourceBean implements Comparable<ResourceBean>{
+    @CsvBindByPosition(position = 0)
+    String variableName;
     @CsvBindByPosition(position = 2)
     String driverType;
     @CsvBindByPosition(position = 4)
@@ -21,6 +24,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
     String tagname;
     @CsvBindByPosition(position = 7)
     String unit;
+    @CsvBindByPosition(position = 9)
+    String systemModel;
     @CsvBindByPosition(position = 12) //12
     String recourcesLabel;
     @CsvBindByPosition(position = 13)
@@ -36,6 +41,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     String coefficientTransform;
     AlarmClassType alarmClassType;
     String statusText;
+    String signRV;
 
 
     public void setCorrectDriverTypeAfterInitAllFields(){
@@ -84,6 +90,14 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getSignRV() {return signRV;}
+
+
+
+    public String getSystemModel() {
+        return systemModel;
     }
 
     public String getTypeName() {
@@ -160,6 +174,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
             default:    return "";
         }
     }
+
+    public String getVariableName() {return variableName;}
     public String getStatusText() {
         return statusText;
     }
@@ -190,7 +206,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public String getPrefixConnection(){return getTagname().substring(0,51).trim(); }
     public String getPrefixSpreconSymbAddress(){return getSpreconSymbPrefix(getSymbAddr());}
     public String getShortSymbAddress(){return getFormattedIec850Address(getSymbAddr());}
-    public String getIpAddress(){return String.format("10.47.171.%s", getNetAddr());}
+    //public String getIpAddress(){return String.format("10.47.171.%s", getNetAddr());}
     public String getCoefficientTransform(){
         if (coefficientTransform == null || coefficientTransform.isEmpty()){ setDefaultCoefficientTransform(); }
         return coefficientTransform;
@@ -205,8 +221,26 @@ public class ResourceBean implements Comparable<ResourceBean>{
         return lowSymbols.contains("ток") && (getUnit().equals("А"));
     }
 
+    public void setManualParameter() {
+        if(isVariablePositionSprAndManual()){this.signRV = "Ручной ввод";}
+    }
+
+    public boolean isVariablePositionSpr(){
+        return  !isVariableTI() &&
+                (getVariableName().endsWith(".Position") &&
+                (getDriverType() == DriverType.SPRECON850 ) || (getDriverType() == DriverType.SPRECON870));
+    }
+
+    public boolean isVariablePositionSprAndManual(){
+        return  isVariablePositionSpr() && isNotPhysicalPosition();
+    }
+
+    private boolean isNotPhysicalPosition(){
+        return !getSystemModel().contains("ManualMode.Physical");
+    }
+
     private String setDefaultCoefficient() {
-        if (isVariableU()) {
+        if (isVariableU() && (isNotTISSNorSPT())) {
             if (Helpers.tryParseInt(getVoltageClass())) {
                 String num = Helpers.getTextWithPattern(getVoltageClass(), "(\\d+)");
                 return String.format("%s0/1", Integer.parseInt(num));
@@ -215,6 +249,10 @@ public class ResourceBean implements Comparable<ResourceBean>{
         }
         //if (isVariableI()) { return "2000/1"; }
         return "";
+    }
+
+    private boolean isNotTISSNorSPT(){
+        return !(getVoltageClass().contains("0,4") || getVoltageClass().contains("0,2"));
     }
 
     public void setDefaultCoefficientTransform(){
@@ -228,6 +266,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public void setCoefficientTransformWithEnips(List<EnipObject> enipObjects){
         for (EnipObject enipObject : enipObjects) {
             if (isEnipObjectCorrect(enipObject)) {
+                //LogInfo.setLogData("Энип с  адресом " + enipObject.getIPAddress() + " найден в базе V460");
                 if (this.isVariableU()) {
                     this.setCoefficientTransform(enipObject.getVoltageCoefficient() + "/1");
                     break;
@@ -246,12 +285,16 @@ public class ResourceBean implements Comparable<ResourceBean>{
                 } else {
                     break;
                 }
-            }
+            }/*else {
+                LogInfo.setErrorData("Энип с адресом " + enipObject.getIPAddress() + "не найден в базе V460");
+            }*/
+
         }
     }
 
     private boolean isEnipObjectCorrect(EnipObject enipObject){
-        return this.getNetAddr().equals(enipObject.getNetAddress());
+        String enipIp = Prefs.getPrefValue("IP") + this.getNetAddr();
+        return enipIp.equals(enipObject.getIPAddress());
     }
 
     public boolean isAdditionalVariable() {
@@ -267,7 +310,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public boolean isVariableTI(){
         switch (this.getDriverType()){
             case SPRECON870: case IEC870:
-                return this.getIec870_type().contains("36");
+                return this.getIec870_type().contains("36") || this.getIec870_type().contains("34");
             case SPRECON850: case IEC850:
                 return this.getSymbAddr().contains("mag");
             default:
@@ -300,7 +343,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
         }
     }
     public void setCorrectMatrixToVariables(){
-        if (getSymbAddr().contains("CALH1/Health")){
+        if (getSymbAddr().contains("CALH1/Health") || (getSymbAddr().contains("LLN0/Health"))){
             setMatrix("ПС2_Неисправность_норма/1_0");
         }
     }
@@ -346,11 +389,11 @@ public class ResourceBean implements Comparable<ResourceBean>{
     @Override
     public int compareTo(ResourceBean o) {
         switch (getDriverType()){
-            case SPRECON850:
+            case SPRECON850: case SPRECON870:
                 return this.getResourceAddressHex().compareTo(o.getResourceAddressHex());
             case IEC850:
                 return this.getResourceAddressEkra().compareTo(o.getResourceAddressEkra());
-            case SPRECON870: case IEC870:
+            case IEC870:
                 return new CompareToBuilder()
                         .append(this.getDevice(), o.getDevice())
                         .append(Integer.parseInt(this.getIec870_coa1()), Integer.parseInt(o.getIec870_coa1()))

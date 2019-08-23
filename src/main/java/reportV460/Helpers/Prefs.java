@@ -9,6 +9,8 @@ public class Prefs {
     static{
         prefs = Preferences.userNodeForPackage(reportV460.Main.class);
         final String prefIP = "IP";
+        final String prefPathProgramm = "PathProgramm";
+
     }
 
     public static void setPrefValue(String prefName, String prefValue){

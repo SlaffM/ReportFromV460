@@ -2,6 +2,7 @@ package reportV460.Helpers;
 
 import reportV460.v460.ResourceBean;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,6 +51,34 @@ public class Helpers {
         }catch (NumberFormatException e){
             return false;
         }
+    }
+
+    private static String getCorrectTag(String tag, int startPos, int endPos){
+        final String value;
+        if (tag == null || tag.length() < 78)
+            value = "_";
+        else
+            value = tag.substring(startPos,endPos).trim();
+        return value;
+    }
+
+    public static String getPanelLocation(String tagname){
+        return getCorrectTag(tagname, 0,8);
+    }
+    public static String getSystem(String tagname){
+        return getCorrectTag(tagname, 8,16);
+    }
+    public static String getVoltageClass(String tagname){
+        return getCorrectTag(tagname, 16,24);
+    }
+    public static String getConnectionTitle(String tagname){
+        return getCorrectTag(tagname, 24,51);
+    }
+    public static String getDevice(String tagname){
+        return getCorrectTag(tagname, 51,78);
+    }
+    public static String getPrefixTagname(String tagname){
+        return getCorrectTag(tagname, 0,78);
     }
 
 

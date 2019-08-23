@@ -17,7 +17,7 @@ public class ReportPanelTitle {
     public String getTagname() { return getResourceBean().getTagname(); }
     public String getPanelLocation(){ return getResourceBean().getPanelLocation(); }
     public String getPanelTitle(){
-        return getResourceBean().getDevice();
+        return getResourceBean().getConnectionTitle();
     }
     public String getIpAddress() {
         return Prefs.getPrefValue("IP") + getResourceBean().getNetAddr();
@@ -26,7 +26,7 @@ public class ReportPanelTitle {
         return getResourceBean().getConnectionTitle();
     }
     public String getControllerTitle(){
-        return getResourceBean().getConnectionTitle();
+        return getResourceBean().getDevice();
     }
 
     public ResourceBean getResourceBean() {

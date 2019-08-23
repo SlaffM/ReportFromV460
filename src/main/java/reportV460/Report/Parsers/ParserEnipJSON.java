@@ -3,6 +3,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import reportV460.Helpers.LogInfo;
+import reportV460.Helpers.Prefs;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +16,6 @@ public class ParserEnipJSON {
     private static EnipObject getEnipFromJSON(File file){
 
         JSONParser jsonParser = new JSONParser();
-
 
         try (FileReader reader = new FileReader(file.getAbsolutePath()))
         {
@@ -32,15 +32,16 @@ public class ParserEnipJSON {
             JSONObject iec850 = (JSONObject)enip.get("Iec61850");
             String iedName = iec850.get("IedName").toString();
 
-            EnipObject enipObject = new EnipObject(
-                    voltageCoef,
-                    curCoef,
-                    powerCoef,
-                    ipAddress,
-                    iedName
-            );
-
-            return enipObject;
+            //if (ipAddress.startsWith(Prefs.getPrefValue("IP"))) {
+                EnipObject enipObject = new EnipObject(
+                        voltageCoef,
+                        curCoef,
+                        powerCoef,
+                        ipAddress,
+                        iedName
+                );
+                //return enipObject;
+            //}
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

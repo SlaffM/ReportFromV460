@@ -20,11 +20,12 @@ public class Iec850Strategy extends IecStrategy {
             titleTable.put("Ед. измерения", resourceBean.getUnit());
             titleTable.put("Ктт, Ктн", resourceBean.getCoefficientTransform());
         }else{
-            titleTable.put("Текс состояния", resourceBean.getStatusText());
+            titleTable.put("Текст. состояние", resourceBean.getStatusText());
             titleTable.put("Класс тревог", resourceBean.getAlarmClass());
         }
         titleTable.put("Адрес внутр.", resourceBean.getRecourcesLabel());
-        titleTable.put("Адрес МЕК 61850", resourceBean.getShortSymbAddress());
+        titleTable.put("Адрес МЕК", resourceBean.getShortSymbAddress());
+        titleTable.put("Результат", "");
 
         return titleTable;
 

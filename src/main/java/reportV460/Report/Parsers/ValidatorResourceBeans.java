@@ -30,7 +30,7 @@ public class ValidatorResourceBeans {
         addCorrectedDriverType();
         setCorrectMatrixToVariables();
         addCoefficientTransform();
-
+        setManualParameterForVariables();
     }
 
     public List<ResourceBean> getReadyBeans(){
@@ -41,6 +41,9 @@ public class ValidatorResourceBeans {
         resourceBeans.forEach(ResourceBean::setCorrectMatrixToVariables);
     }
 
+    private void setManualParameterForVariables(){
+        resourceBeans.forEach(ResourceBean::setManualParameter);
+    }
 
     private void addCorrectedDriverType(){
         resourceBeans.forEach(ResourceBean::setCorrectDriverTypeAfterInitAllFields);

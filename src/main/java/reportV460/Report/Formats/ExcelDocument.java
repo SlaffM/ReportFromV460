@@ -37,8 +37,14 @@ public class ExcelDocument implements ExtensionFormat {
         document = new HSSFWorkbook();
         document.createSheet("Report");
         sheet = document.getSheetAt(0);
-        sheet.getPrintSetup().setLandscape(true);
-        sheet.getPrintSetup().setPaperSize(PrintSetup.A3_PAPERSIZE);
+        sheet.setAutobreaks(true);
+        sheet.setFitToPage(true);
+        PrintSetup printSetup = sheet.getPrintSetup();
+        printSetup.setLandscape(true);
+        printSetup.setPaperSize(PrintSetup.A4_PAPERSIZE);
+        printSetup.setFitHeight((short)0);
+        printSetup.setFitWidth((short)1);
+
         //sheet.getPrintSetup().setPaperSize(HSSFPrintSetup.A5_PAPERSIZE);
 
         String numPr = "";
