@@ -27,10 +27,12 @@ public class ValidatorResourceBeans {
         this.resourceBeans = resourceBeans;
         this.enipObjects = enips;
 
+        removeManualAttributeVariables();
         addCorrectedDriverType();
         setCorrectMatrixToVariables();
         addCoefficientTransform();
         setManualParameterForVariables();
+
     }
 
     public List<ResourceBean> getReadyBeans(){
@@ -39,6 +41,10 @@ public class ValidatorResourceBeans {
 
     private void setCorrectMatrixToVariables(){
         resourceBeans.forEach(ResourceBean::setCorrectMatrixToVariables);
+    }
+
+    private void removeManualAttributeVariables(){
+        resourceBeans.removeIf(ResourceBean::isVariableManualAttribute);
     }
 
     private void setManualParameterForVariables(){

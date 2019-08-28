@@ -231,6 +231,10 @@ public class ResourceBean implements Comparable<ResourceBean>{
                 (getDriverType() == DriverType.SPRECON850 ) || (getDriverType() == DriverType.SPRECON870));
     }
 
+    public boolean isVariableEkra(){
+        return Helpers.isSubstringFoundWithRegex(getSymbAddr(), "(IED\\d+LD)");
+    }
+
     public boolean isVariablePositionSprAndManual(){
         return  isVariablePositionSpr() && isNotPhysicalPosition();
     }
@@ -292,6 +296,12 @@ public class ResourceBean implements Comparable<ResourceBean>{
         }
     }
 
+    public boolean isVariableManualAttribute(){
+        return  getSymbAddr().contains("subVal") ||
+                getSymbAddr().contains("subEna") ||
+                getSymbAddr().contains("subQ");
+    }
+
     private boolean isEnipObjectCorrect(EnipObject enipObject){
         String enipIp = Prefs.getPrefValue("IP") + this.getNetAddr();
         return enipIp.equals(enipObject.getIPAddress());
@@ -310,7 +320,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public boolean isVariableTI(){
         switch (this.getDriverType()){
             case SPRECON870: case IEC870:
-                return this.getIec870_type().contains("36") || this.getIec870_type().contains("34");
+                return  this.getIec870_type().contains("36") ||
+                        this.getIec870_type().contains("34");
             case SPRECON850: case IEC850:
                 return this.getSymbAddr().contains("mag");
             default:
@@ -337,7 +348,10 @@ public class ResourceBean implements Comparable<ResourceBean>{
         if(Helpers.isMatrixStartsAlarmClass(srcMatrix)){
             return Helpers.getTextWithPattern(srcMatrix, "_(\\w+)/");
         }else if(Helpers.isMatrixEndsWithAlarmClass(srcMatrix)){
-            return Helpers.getTextWithPattern(srcMatrix, "(^\\w+/\\w+)_");
+            String text = Helpers.getTextWithPattern(srcMatrix, "(^\\w+/\\w+)_");
+            if(text.equals(""))
+                return Helpers.getTextWithPattern(srcMatrix, "(^\\w+)/");
+            return text;
         }else{
             return srcMatrix;
         }

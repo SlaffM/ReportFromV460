@@ -42,6 +42,11 @@ public class Helpers {
         return !findHex.isEmpty();
     }
 
+    public static boolean isSubstringFoundWithRegex(String text, String pattern){
+        String find = getTextWithPattern(text, pattern);
+        return !find.isEmpty();
+    }
+
     public static boolean tryParseInt(String value){
         try{
             String num = Helpers.getTextWithPattern(value, "(\\d+)");

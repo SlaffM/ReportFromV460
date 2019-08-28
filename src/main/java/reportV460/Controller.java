@@ -45,9 +45,10 @@ public class Controller implements Initializable {
     @FXML public ProgressBar progress = new ProgressBar();
     @FXML public ListView listLog;
     @FXML public TextField txtIp;
-    @FXML public Button btnXml;
+    @FXML public Label lblPathXml;
 
     private File txtFile;
+    private File xmlFile;
     private String extensionTxt = ".txt";
     private String extensionExcel = ".xls";
     private String extensionWord = ".docx";
@@ -57,9 +58,6 @@ public class Controller implements Initializable {
     private Stage stage;
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
-        Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
-        Prefs.setPrefValue("PathProgramm", new File("." ).getAbsolutePath());
-
 
         CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
@@ -88,9 +86,11 @@ public class Controller implements Initializable {
         fileopen.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("TXT files", "*.txt"));
         txtFile = fileopen.showOpenDialog(stage.getScene().getWindow());
-        setLblText(lblPathTxt, txtFile.getAbsolutePath());
-        setLblText(lblPathEnip, dirOfEnip);
-        actualizingStateFormatFile();
+        if(txtFile != null) {
+            setLblText(lblPathTxt, txtFile.getAbsolutePath());
+            setLblText(lblPathEnip, dirOfEnip);
+            actualizingStateFormatFile();
+        }
     }
 
     @FXML public void rBtnExcelClicked(ActionEvent event){
@@ -144,8 +144,6 @@ public class Controller implements Initializable {
 
     }
 
-
-
     public void btnLoadPathToEnipClick(ActionEvent event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(new File("."));
@@ -170,37 +168,25 @@ public class Controller implements Initializable {
 
         selectTypeGroup.getItems().addAll(GrouperPoints.values());
         selectTypeGroup.getSelectionModel().select(GrouperPoints.GROUP_BY_NETADDR);
-    }
 
-    public void btnLoadXmlClick(ActionEvent event)
-            throws ParserConfigurationException, IOException,
-            SAXException, XPathExpressionException {
-
+        Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
         Prefs.setPrefValue("PathProgramm", new File("." ).getAbsolutePath());
 
-        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-        domFactory.setNamespaceAware(true);
-        DocumentBuilder builder = domFactory.newDocumentBuilder();
-        Document doc = builder.parse(Prefs.getPrefValue("PathProgramm") + "/template/variables.xml");
+        setLblText(lblPathXml, Prefs.getPrefValue("PathProgramm") + "/template/variables.xml");
+        setLblText(lblPathEnip, dirOfEnip);
 
-        XPathFactory factory = XPathFactory.newInstance();
-        XPath xpath = factory.newXPath();
-        XPathExpression expr
-                = xpath.compile("//Apartment/Variable[Name = 'SPR.0200.Connect_vba']/Tagname/text()");
+    }
 
-        Object result = expr.evaluate(doc, XPathConstants.NODESET);
-        NodeList nodes = (NodeList) result;
-
-        /*for (int i = 0; i < nodes.getLength(); i++) {
-            LogInfo.setLogData(nodes.item(i).getNodeValue());
-        }*/
-
-        if (nodes.getLength() == 0)
-            LogInfo.setLogData("Нет записей");
-        else
-            LogInfo.setLogData(nodes.item(0).getNodeValue());
-
-
+    public void btnLoadXmlFileClick(ActionEvent event) {
+        FileChooser fileopen = new FileChooser();
+        fileopen.setInitialDirectory(new File("."));
+        fileopen.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("XML files", "*.xml"));
+        xmlFile = fileopen.showOpenDialog(stage.getScene().getWindow());
+        if (xmlFile != null) {
+            setLblText(lblPathXml, xmlFile.getAbsolutePath());
+            Prefs.setPrefValue("PathProgramm", lblPathXml.textProperty().getValue());
+        }
     }
 }
 

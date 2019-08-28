@@ -37,15 +37,23 @@ public class ExcelDocument implements ExtensionFormat {
         document = new HSSFWorkbook();
         document.createSheet("Report");
         sheet = document.getSheetAt(0);
+
+        sheet.setMargin(Sheet.LeftMargin, 0.252);
+        sheet.setMargin(Sheet.RightMargin, 0.252);
+        sheet.setMargin(Sheet.TopMargin, 0.752);
+        sheet.setMargin(Sheet.BottomMargin, 0.752);
+
         sheet.setAutobreaks(true);
         sheet.setFitToPage(true);
+
         PrintSetup printSetup = sheet.getPrintSetup();
         printSetup.setLandscape(true);
         printSetup.setPaperSize(PrintSetup.A4_PAPERSIZE);
         printSetup.setFitHeight((short)0);
         printSetup.setFitWidth((short)1);
 
-        //sheet.getPrintSetup().setPaperSize(HSSFPrintSetup.A5_PAPERSIZE);
+        printSetup.setFooterMargin(0.33);
+        printSetup.setHeaderMargin(0.33);
 
         String numPr = "";
         Header header = sheet.getHeader();
@@ -64,14 +72,15 @@ public class ExcelDocument implements ExtensionFormat {
 
         Footer footer = sheet.getFooter();
         footer.setCenter(StyleDocument.setBold("Страница " + HeaderFooter.page() + " из " + HeaderFooter.numPages()));
+
     }
 
     public void createTables(Point point){
-        createTitlePanel(point.getReportPanelTitle());
-        createVariablesPanel(point);
+        createPanelTitle(point.getReportPanelTitle());
+        createPanelVariables(point);
     }
 
-    public void createTitlePanel(ReportPanelTitle reportPanelTitle) {
+    public void createPanelTitle(ReportPanelTitle reportPanelTitle) {
 
         LinkedHashMap titleTable = reportPanelTitle.createHeaders();
 
@@ -103,7 +112,7 @@ public class ExcelDocument implements ExtensionFormat {
 
         addRows(oneRowOffset);
     }
-    public void createVariablesPanel(Point point){
+    public void createPanelVariables(Point point){
 
         ReportContext reportContext = point.getDriverContext();
         ReportStrategy reportStrategy = reportContext.getReportStrategy();

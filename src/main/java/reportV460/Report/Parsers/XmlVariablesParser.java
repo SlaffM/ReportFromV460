@@ -13,6 +13,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
+import java.io.File;
 import java.io.IOException;
 
 public class XmlVariablesParser {
@@ -20,7 +21,6 @@ public class XmlVariablesParser {
     private String panelNumber;
     private String panelTitle;
     private String controllerTitle;
-
 
     public XmlVariablesParser(ResourceBean resourceBean)
             throws ParserConfigurationException, SAXException,
@@ -74,9 +74,12 @@ public class XmlVariablesParser {
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true);
         DocumentBuilder builder = domFactory.newDocumentBuilder();
-        Document doc = builder.parse(Prefs.getPrefValue("PathProgramm") + "/template/variables.xml");
 
-        //LogInfo.setLogData(Prefs.getPrefValue("PathProgramm") + "/template/variables.xml");
+        File file = new File(Prefs.getPrefValue("PathProgramm"));
+        if (file.isDirectory() || !file.exists())
+            return "";
+
+        Document doc = builder.parse(new File(Prefs.getPrefValue("PathProgramm")));
 
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
@@ -86,17 +89,10 @@ public class XmlVariablesParser {
         Object result = expr.evaluate(doc, XPathConstants.NODESET);
         NodeList nodes = (NodeList) result;
 
-        /*for (int i = 0; i < nodes.getLength(); i++) {
-            LogInfo.setLogData(nodes.item(i).getNodeValue());
-        }*/
+        LogInfo.setLogData("Поиск переменной - " + sprName);
 
-        LogInfo.setLogData(String.valueOf(nodes.getLength()));
-
-        if(nodes.getLength() == 0)
-            return "";
-        else
-            return nodes.item(0).getNodeValue();
-
+        if(nodes.getLength() == 0) return "";
+        else                       return nodes.item(0).getNodeValue();
     }
 
 }

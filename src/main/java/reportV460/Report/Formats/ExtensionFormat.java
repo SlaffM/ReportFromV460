@@ -13,8 +13,8 @@ public interface ExtensionFormat {
     void initPropertiesDocument();
     void createTables(Point point);
 
-    void createTitlePanel(ReportPanelTitle reportPanelTitle);
-    void createVariablesPanel(Point point);
+    void createPanelTitle(ReportPanelTitle reportPanelTitle);
+    void createPanelVariables(Point point);
 
     void addHeadersToVariablesPanel(Map<String, String> headers);
     void addVariablesToVariablesPanel(ReportStrategy reportStrategy, ArrayList<ResourceBean> resourceBeans);

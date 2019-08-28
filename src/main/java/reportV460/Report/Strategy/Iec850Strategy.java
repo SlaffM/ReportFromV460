@@ -23,8 +23,9 @@ public class Iec850Strategy extends IecStrategy {
             titleTable.put("Текст. состояние", resourceBean.getStatusText());
             titleTable.put("Класс тревог", resourceBean.getAlarmClass());
         }
-        titleTable.put("Адрес внутр.", resourceBean.getRecourcesLabel());
-        titleTable.put("Адрес МЕК", resourceBean.getShortSymbAddress());
+        if(resourceBean.isVariableEkra())
+            titleTable.put("Адрес внутр.", resourceBean.getRecourcesLabel());
+        titleTable.put("Адрес МЭК-61850", resourceBean.getShortSymbAddress());
         titleTable.put("Результат", "");
 
         return titleTable;

@@ -56,11 +56,11 @@ public class WordDocument implements ExtensionFormat {
     }
 
     public void createTables(Point point) {
-        createTitlePanel(point.getReportPanelTitle());
-        createVariablesPanel(point);
+        createPanelTitle(point.getReportPanelTitle());
+        createPanelVariables(point);
     }
 
-    public void createTitlePanel(ReportPanelTitle reportPanelTitle){
+    public void createPanelTitle(ReportPanelTitle reportPanelTitle){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
         run.addBreak();
@@ -76,7 +76,7 @@ public class WordDocument implements ExtensionFormat {
             rowNum++;
         }
     }
-    public void createVariablesPanel(Point point){
+    public void createPanelVariables(Point point){
         XWPFParagraph para = document.createParagraph();
         XWPFRun run = para.createRun();
         run.addBreak();
