@@ -25,7 +25,7 @@ public class Iec850SprStrategy extends IecStrategy {
         }
         titleTable.put("Адрес Sprecon", resourceBean.getRecourcesLabel());
         titleTable.put("Адрес МЭК-61850", resourceBean.getShortSymbAddress());
-        titleTable.put("Примечание", "");
+        titleTable.put("Примечание", resourceBean.getSignRV());
         titleTable.put("Результат", "");
 
         return titleTable;
