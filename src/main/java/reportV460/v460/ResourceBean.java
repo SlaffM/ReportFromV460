@@ -228,7 +228,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public boolean isVariablePositionSpr(){
         return  !isVariableTI() &&
                 (getVariableName().endsWith(".Position") &&
-                (getDriverType() == DriverType.SPRECON850 ) || (getDriverType() == DriverType.SPRECON870));
+                        ((getDriverType() == DriverType.SPRECON850) ||
+                        (getDriverType() == DriverType.SPRECON870)));
     }
 
     public boolean isVariableEkra(){

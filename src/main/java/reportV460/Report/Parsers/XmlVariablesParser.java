@@ -30,9 +30,9 @@ public class XmlVariablesParser {
         if (isFecController(sprName)){
             sprName = "SPR.STC01.Connect_vba";
         }else {
-            sprName = "SPR." +
-                    sprName.replace(".", "").replace("F2", "00") +
-                    ".Connect_vba";
+            sprName =   "SPR." +
+                        sprName.replace(".", "").replace("F2", "00") +
+                        ".Connect_vba";
         }
         String findedTagname = getDataOnRequest(sprName);
         setPanelNumber(Helpers.getPanelLocation(findedTagname));
@@ -76,8 +76,7 @@ public class XmlVariablesParser {
         DocumentBuilder builder = domFactory.newDocumentBuilder();
 
         File file = new File(Prefs.getPrefValue("PathProgramm"));
-        if (file.isDirectory() || !file.exists())
-            return "";
+        if (file.isDirectory() || !file.exists()) return "";
 
         Document doc = builder.parse(new File(Prefs.getPrefValue("PathProgramm")));
 
@@ -89,7 +88,7 @@ public class XmlVariablesParser {
         Object result = expr.evaluate(doc, XPathConstants.NODESET);
         NodeList nodes = (NodeList) result;
 
-        LogInfo.setLogData("Поиск переменной - " + sprName);
+        LogInfo.setLogData("Найдена переменная - " + sprName);
 
         if(nodes.getLength() == 0) return "";
         else                       return nodes.item(0).getNodeValue();
