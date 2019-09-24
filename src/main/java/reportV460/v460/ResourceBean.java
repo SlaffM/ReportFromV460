@@ -358,7 +358,10 @@ public class ResourceBean implements Comparable<ResourceBean>{
         }
     }
     public void setCorrectMatrixToVariables(){
-        if (getSymbAddr().contains("CALH1/Health") || (getSymbAddr().contains("LLN0/Health"))){
+        if (getSymbAddr().contains("CALH1/Health") ||
+                (getSymbAddr().contains("LLN0/Health")) ||
+                (getSymbAddr().contains("GGIO1/Ind175")) ||
+                (getSignalName().contains("Состояние связи"))){
             setMatrix("ПС2_Неисправность_норма/1_0");
         }
     }
@@ -377,6 +380,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
                 getRecourcesLabel(),
                 "(\\w{2}\\.\\w{2}\\.\\w{2}\\.\\w{2})");
         return !findHex.isEmpty();
+
     }
 
     private Long getResourceAddressHex(){

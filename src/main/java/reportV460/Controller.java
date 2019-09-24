@@ -59,6 +59,8 @@ public class Controller implements Initializable {
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
+        Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
+
         CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
                 .withPathEnipConfigurations(dirOfEnip)
@@ -169,7 +171,7 @@ public class Controller implements Initializable {
         selectTypeGroup.getItems().addAll(GrouperPoints.values());
         selectTypeGroup.getSelectionModel().select(GrouperPoints.GROUP_BY_NETADDR);
 
-        Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
+
         Prefs.setPrefValue("PathProgramm", new File("." ).getAbsolutePath());
 
         setLblText(lblPathXml, Prefs.getPrefValue("PathProgramm") + "/template/variables.xml");
@@ -185,6 +187,7 @@ public class Controller implements Initializable {
         xmlFile = fileopen.showOpenDialog(stage.getScene().getWindow());
         if (xmlFile != null) {
             setLblText(lblPathXml, xmlFile.getAbsolutePath());
+
             Prefs.setPrefValue("PathProgramm", lblPathXml.textProperty().getValue());
         }
     }
