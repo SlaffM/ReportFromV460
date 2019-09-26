@@ -411,7 +411,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
             case SPRECON850: case SPRECON870:
                 return this.getResourceAddressHex().compareTo(o.getResourceAddressHex());
             case IEC850:
-                if (this.getResourceAddressEkra().toString().isEmpty())
+                if (this.getResourceAddressEkra() == 0)
                     return this.getSymbAddr().compareTo(o.getSymbAddr());
                 else
                     return this.getResourceAddressEkra().compareTo(o.getResourceAddressEkra());
