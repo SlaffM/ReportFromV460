@@ -43,7 +43,6 @@ public class ResourceBean implements Comparable<ResourceBean>{
     String statusText;
     String signRV;
 
-
     public void setCorrectDriverTypeAfterInitAllFields(){
         switch(driverType){
             case "SPRECON870":
@@ -93,8 +92,6 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
 
     public String getSignRV() {return signRV;}
-
-
 
     public String getSystemModel() {
         return systemModel;

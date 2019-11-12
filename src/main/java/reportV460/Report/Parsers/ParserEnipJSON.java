@@ -58,7 +58,7 @@ public class ParserEnipJSON {
         if (folder.isDirectory() && folder.exists()){
             File[] files = folder.listFiles();
             for (File file : files) {
-                new EnipObject(getEnipFromJSON(file));
+                if(file.getName().endsWith(".json")) new EnipObject(getEnipFromJSON(file));
             }
             LogInfo.setLogDataWithTitle("Прочитаны конфигурации ЭНИПов",
                     String.valueOf(EnipObject.getEnipsCount()));
