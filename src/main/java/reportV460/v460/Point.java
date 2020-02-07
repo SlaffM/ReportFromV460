@@ -14,7 +14,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.Map;
 
 public class Point {
@@ -26,7 +25,7 @@ public class Point {
     private GrouperPoints grouperPoints;
     private ReportContext driverContext;
 
-    private static Map<String, Point> allPoints;
+    private static LinkedHashMap<String, Point> allPoints;
     private ArrayList<ResourceBean> resourcebeansOfTI = new ArrayList<>();
     private ArrayList<ResourceBean> resourcebeansOfTS = new ArrayList<>();
 
@@ -99,8 +98,11 @@ public class Point {
 
     public static ArrayList<Point> getAllPoints(){
         if (allPoints == null){
-            allPoints = new HashMap<>();
+            allPoints = new LinkedHashMap<>();
         }
+
+
+
         return new ArrayList<>(allPoints.values());
     }
 
@@ -163,7 +165,7 @@ public class Point {
 
     public static void clearPoints(){
         if(allPoints == null){
-            allPoints = new HashMap<>();
+            allPoints = new LinkedHashMap<>();
         }
         allPoints.clear();
     }
@@ -171,7 +173,24 @@ public class Point {
     public static ArrayList<Point> buildPoints(List<ResourceBean> resourceBeans,
                                                GrouperPoints grouperPoints){
 
-        DistributerToPoints.buildPoints(resourceBeans, grouperPoints).forEach(resourceBeans1 ->
+        /*DistributerToPoints.buildPoints(resourceBeans, grouperPoints).forEach(resourceBeans1 ->
+                {
+                    try {
+                        new Builder()
+                                .resourceBeans(resourceBeans1)
+                                .grouperParameter(grouperPoints)
+                                .build();
+                    } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
+                        e.printStackTrace();
+                    }
+                }
+        );*/
+
+        //DistributerToPoints.buildPoints(resourceBeans, grouperPoints);
+
+        Map<Integer, List<ResourceBean>> points = DistributerToPoints.buildPoints(resourceBeans, grouperPoints);
+
+        points.values().forEach(resourceBeans1 ->
                 {
                     try {
                         new Builder()
@@ -184,13 +203,11 @@ public class Point {
                 }
         );
 
-        //DistributerToPoints.buildPoints(resourceBeans, grouperPoints);
-
-        LogInfo.setLogDataWithTitle(
+                LogInfo.setLogDataWithTitle(
                 "Количество устройств для создания протокола",
                 String.valueOf(Point.getPointsCount()));
 
-        return getAllPoints();
+        return new ArrayList<>(allPoints.values());
     }
 
     public ReportPanelTitle getReportPanelTitle() {
