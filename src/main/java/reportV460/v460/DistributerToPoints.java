@@ -4,23 +4,30 @@ import reportV460.Helpers.LogInfo;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+
 
 public class DistributerToPoints {
 
-    public static Map<String, List<ResourceBean>> getPointsByNetAddr(List<ResourceBean> resourceBeans){
+    public static Map<Integer, List<ResourceBean>> getPointsByNetAddr(List<ResourceBean> resourceBeans){
         return resourceBeans.stream()
                 .filter(ResourceBean::isIecVariable)
-                .collect(Collectors.groupingBy(ResourceBean::getNetAddr));
+                .collect(Collectors.groupingBy(ResourceBean::getNetAddrInt));
     }
 
-    public static Map<String, List<ResourceBean>> getPointsByPanel(List<ResourceBean> resourceBeans){
+    public static Map<Integer, List<ResourceBean>> getPointsByPanel(List<ResourceBean> resourceBeans){
         return resourceBeans.stream()
                 .filter(ResourceBean::isIecVariable)
-                .collect(Collectors.groupingBy(ResourceBean::getPanelLocation));
+                .collect(Collectors.groupingBy(ResourceBean::getPanelLocationInt));
     }
 
     public static ArrayList<List<ResourceBean>> buildPoints(List<ResourceBean> resourceBeans, GrouperPoints grouperPoints){
-        Map<String, List<ResourceBean>> points = new HashMap<>();
+        Map<Integer, List<ResourceBean>> points = new HashMap<>();
         switch (grouperPoints){
             case GROUP_BY_NETADDR:
                 points = getPointsByNetAddr(resourceBeans);
@@ -30,13 +37,22 @@ public class DistributerToPoints {
                 break;
         }
 
+        //Map<Integer, List<ResourceBean>> sorted= new HashMap();
         try{
             points.forEach((s, resourceBeans1) -> Collections.sort(resourceBeans1));
+            /*sorted = points
+                    .entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                            (e1,e2) -> e2, LinkedHashMap::new));*/
+
         }catch (Exception e){
             LogInfo.setErrorData(e.getMessage());
         }
 
         return new ArrayList<>(points.values());
+        //return new ArrayList<>(sorted.values());
     }
 
 

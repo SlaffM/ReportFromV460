@@ -1,5 +1,6 @@
 package reportV460.v460;
 
+
 import com.opencsv.bean.CsvBindByPosition;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import reportV460.Helpers.Helpers;
@@ -7,7 +8,10 @@ import reportV460.Helpers.LogInfo;
 import reportV460.Helpers.Prefs;
 import reportV460.Report.Parsers.EnipObject;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 
 import static reportV460.v460.DriverType.*;
 
@@ -123,6 +127,11 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public String getNetAddr() {
         return netAddr;
     }
+    public int getNetAddrInt() {
+        if(netAddr.isEmpty()) return 0;
+        return Integer.valueOf(netAddr);
+    }
+
     public void setNetAddr(String netAddr) {
         this.netAddr = netAddr;
     }
@@ -181,6 +190,14 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
     public String getPanelLocation(){
         return getTagname().substring(0,8).trim();
+    }
+    public Integer getPanelLocationInt() {
+        try{
+            return NumberFormat.getInstance().parse(getPanelLocation()).intValue();
+        }catch (ParseException p){
+            return 0;
+        }
+        //return NumberFormat.getInstance().parse(getPanelLocation()).intValue();
     }
     public String getSystem(){
         return getTagname().substring(8,16).trim();

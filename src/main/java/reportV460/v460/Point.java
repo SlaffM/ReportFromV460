@@ -14,6 +14,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.Map;
 
 public class Point {
 
@@ -180,11 +182,14 @@ public class Point {
                         e.printStackTrace();
                     }
                 }
-                );
+        );
+
+        //DistributerToPoints.buildPoints(resourceBeans, grouperPoints);
 
         LogInfo.setLogDataWithTitle(
                 "Количество устройств для создания протокола",
                 String.valueOf(Point.getPointsCount()));
+
         return getAllPoints();
     }
 
