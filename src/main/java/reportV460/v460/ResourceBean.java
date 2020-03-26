@@ -11,7 +11,6 @@ import reportV460.Report.Parsers.EnipObject;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 
 import static reportV460.v460.DriverType.*;
 
@@ -24,7 +23,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     String typeName;
     @CsvBindByPosition(position = 5)
     String matrix;
-    @CsvBindByPosition(position = 6, required = true)
+    @CsvBindByPosition(position = 6)
     String tagname;
     @CsvBindByPosition(position = 7)
     String unit;
@@ -42,6 +41,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     String iec870_coa1;
     @CsvBindByPosition(position = 78)
     String iec870_ioa1;
+
     String coefficientTransform;
     AlarmClassType alarmClassType;
     String statusText;
@@ -220,7 +220,6 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public String getPrefixConnection(){return getTagname().substring(0,51).trim(); }
     public String getPrefixSpreconSymbAddress(){return getSpreconSymbPrefix(getSymbAddr());}
     public String getShortSymbAddress(){return getFormattedIec850Address(getSymbAddr());}
-    //public String getIpAddress(){return String.format("10.47.171.%s", getNetAddr());}
     public String getCoefficientTransform(){
         if (coefficientTransform == null || coefficientTransform.isEmpty()){ setDefaultCoefficientTransform(); }
         return coefficientTransform;
@@ -315,6 +314,17 @@ public class ResourceBean implements Comparable<ResourceBean>{
         return  getSymbAddr().contains("subVal") ||
                 getSymbAddr().contains("subEna") ||
                 getSymbAddr().contains("subQ");
+    }
+
+    public boolean isVariableInternalConnect(){
+        return  getVariableName().contains("Connect_vba") && (getDriverType() == DriverType.Intern);
+    }
+
+    public boolean isVariableHasBadIdentification(){
+        return  getVariableName().startsWith("EXT.") ||
+                getVariableName().startsWith("INT.") ||
+                getTagname().isEmpty() ||
+                getTagname().length() < 79;
     }
 
     private boolean isEnipObjectCorrect(EnipObject enipObject){

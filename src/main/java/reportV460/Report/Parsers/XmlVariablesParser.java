@@ -7,7 +7,6 @@ import reportV460.Helpers.Helpers;
 import reportV460.Helpers.LogInfo;
 import reportV460.Helpers.Prefs;
 import reportV460.v460.ResourceBean;
-import sun.rmi.runtime.Log;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,9 +26,13 @@ public class XmlVariablesParser {
             XPathExpressionException, IOException {
         String sprName = Helpers.getTextWithPattern(resourceBean.getRecourcesLabel(), "(\\w{2}\\.\\w{2})");
 
-        if (isFecController(sprName)){
+
+        if (isFecOsnController(sprName)){
             sprName = "SPR.STC01.Connect_vba";
-        }else {
+        }else if(isFecResController(sprName)){
+            sprName = "SPR.STC81.Connect_vba";
+        }
+        else {
             sprName =   "SPR." +
                         sprName.replace(".", "").replace("F2", "00") +
                         ".Connect_vba";
@@ -40,8 +43,12 @@ public class XmlVariablesParser {
         setControllerTitle(Helpers.getDevice(findedTagname));
     }
 
-    private boolean isFecController(String sprName){
+    private boolean isFecOsnController(String sprName){
         return sprName.startsWith("01");
+    }
+
+    private boolean isFecResController(String sprName){
+        return sprName.startsWith("81");
     }
 
     public String getPanelNumber() {

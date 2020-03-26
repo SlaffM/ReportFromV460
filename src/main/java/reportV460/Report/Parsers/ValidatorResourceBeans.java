@@ -28,11 +28,12 @@ public class ValidatorResourceBeans {
         this.enipObjects = enips;
 
         removeManualAttributeVariables();
+        removeVariablesWithBadIdentify();
         addCorrectedDriverType();
         setCorrectMatrixToVariables();
         addCoefficientTransform();
         setManualParameterForVariables();
-
+        removeInternalConnectVariables();
     }
 
     public List<ResourceBean> getReadyBeans(){
@@ -45,6 +46,14 @@ public class ValidatorResourceBeans {
 
     private void removeManualAttributeVariables(){
         resourceBeans.removeIf(ResourceBean::isVariableManualAttribute);
+    }
+
+    private void removeInternalConnectVariables(){
+        resourceBeans.removeIf(ResourceBean::isVariableInternalConnect);
+    }
+
+    private void removeVariablesWithBadIdentify(){
+        resourceBeans.removeIf(ResourceBean::isVariableHasBadIdentification);
     }
 
     private void setManualParameterForVariables(){

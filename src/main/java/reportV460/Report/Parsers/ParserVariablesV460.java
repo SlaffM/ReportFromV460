@@ -2,6 +2,7 @@ package reportV460.Report.Parsers;
 
 
 import com.opencsv.bean.*;
+import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import reportV460.v460.ResourceBean;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +28,22 @@ public class ParserVariablesV460 {
 
         Path path = Paths.get(getFile());
         ColumnPositionMappingStrategy<ResourceBean> ms = new ColumnPositionMappingStrategy<ResourceBean>();
+
+        Map<String, String> columnMapping = new HashMap<String, String>();
+/*        columnMapping.put("VariableName", "variableName");
+        columnMapping.put("DriverType", "driverType");
+        columnMapping.put("TypeName", "typeName");
+        columnMapping.put("Matrix", "matrix");
+        columnMapping.put("Tagname", "tagname");
+        columnMapping.put("Unit", "unit");
+        columnMapping.put("SystemModelGroup", "systemModel");
+        columnMapping.put("Recourceslabel", "recourcesLabel");
+        columnMapping.put("NetAddr", "netAddr");
+        columnMapping.put("SymbAddr", "symbAddr");
+        columnMapping.put("IEC870_TYPE", "iec870_type");
+        columnMapping.put("IEC870_COA1", "iec870_coa1");
+        columnMapping.put("IEC870_IOA1", "iec870_ioa1");*/
+
         ms.setType(ResourceBean.class);
 
         Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_16);
@@ -36,6 +53,8 @@ public class ParserVariablesV460 {
                 .withMappingStrategy(ms)
                 .withSeparator('\t')
                 .withSkipLines(1)
+                //.withFilter(line -> (!line[0].contains("Connect_vba") && !line[2].contains("Intern")))
+                .withFieldAsNull(CSVReaderNullFieldIndicator.NEITHER)
                 .build();
 
         ArrayList<ResourceBean> resourceBeans = new ArrayList<>(cb.parse());

@@ -101,8 +101,6 @@ public class Point {
             allPoints = new LinkedHashMap<>();
         }
 
-
-
         return new ArrayList<>(allPoints.values());
     }
 
