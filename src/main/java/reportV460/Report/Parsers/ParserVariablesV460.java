@@ -27,10 +27,9 @@ public class ParserVariablesV460 {
     public ArrayList getBeansFromCsv() throws IOException {
 
         Path path = Paths.get(getFile());
-        ColumnPositionMappingStrategy<ResourceBean> ms = new ColumnPositionMappingStrategy<ResourceBean>();
 
-        Map<String, String> columnMapping = new HashMap<String, String>();
-/*        columnMapping.put("VariableName", "variableName");
+        Map<String, String> columnMapping = new HashMap<>();
+        columnMapping.put("VariableName", "variableName");
         columnMapping.put("DriverType", "driverType");
         columnMapping.put("TypeName", "typeName");
         columnMapping.put("Matrix", "matrix");
@@ -42,25 +41,24 @@ public class ParserVariablesV460 {
         columnMapping.put("SymbAddr", "symbAddr");
         columnMapping.put("IEC870_TYPE", "iec870_type");
         columnMapping.put("IEC870_COA1", "iec870_coa1");
-        columnMapping.put("IEC870_IOA1", "iec870_ioa1");*/
+        columnMapping.put("IEC870_IOA1", "iec870_ioa1");
 
-        ms.setType(ResourceBean.class);
+        HeaderColumnNameTranslateMappingStrategy<ResourceBean> strategy = new HeaderColumnNameTranslateMappingStrategy<ResourceBean>();
+        strategy.setType(ResourceBean.class);
+        strategy.setColumnMapping(columnMapping);
 
-        Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_16);
+        ArrayList<ResourceBean> resourceBeans;
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_16)) {
 
-        CsvToBean<ResourceBean> cb = new CsvToBeanBuilder(reader)
-                .withType(ResourceBean.class)
-                .withMappingStrategy(ms)
-                .withSeparator('\t')
-                .withSkipLines(1)
-                //.withFilter(line -> (!line[0].contains("Connect_vba") && !line[2].contains("Intern")))
-                .withFieldAsNull(CSVReaderNullFieldIndicator.NEITHER)
-                .build();
-
-        ArrayList<ResourceBean> resourceBeans = new ArrayList<>(cb.parse());
-
-        reader.close();
-
+            CsvToBean<ResourceBean> cb = new CsvToBeanBuilder(reader)
+                    .withMappingStrategy(strategy)
+                    .withSeparator('\t')
+                    .withIgnoreLeadingWhiteSpace(true)
+                    //.withFilter(line -> (!line[0].contains("Connect_vba") && !line[2].contains("Intern")))
+                    .withFieldAsNull(CSVReaderNullFieldIndicator.NEITHER)
+                    .build();
+            resourceBeans = new ArrayList<>(cb.parse());
+        }
         return resourceBeans;
     }
 }

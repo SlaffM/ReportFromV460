@@ -12,7 +12,7 @@ public class ResourceBeanTest {
     private ResourceBean sourceBean;
 
     @Before
-    public void setUp() {
+/*    public void setUp() {
         sourceBean = new ResourceBean();
         sourceBean.setDriverType("IEC850");
         sourceBean.setTypeName("BOOL");
@@ -25,7 +25,7 @@ public class ResourceBeanTest {
         sourceBean.setIec870_type("");
         sourceBean.setIec870_coa1("");
         sourceBean.setIec870_ioa1("");
-    }
+    }*/
 
     private ResourceBean getValidatedBean(){
         ArrayList<ResourceBean> resourceBeans = new ArrayList<ResourceBean>();

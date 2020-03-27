@@ -1,6 +1,7 @@
 package reportV460.v460;
 
 
+import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import reportV460.Helpers.Helpers;
@@ -15,31 +16,44 @@ import java.util.List;
 import static reportV460.v460.DriverType.*;
 
 public class ResourceBean implements Comparable<ResourceBean>{
-    @CsvBindByPosition(position = 0)
+    //@CsvBindByPosition(position = 0)
+    @CsvBindByName (column = "VariableName")
     String variableName;
-    @CsvBindByPosition(position = 2)
+    //@CsvBindByPosition(position = 2)
+    @CsvBindByName (column = "DriverType")
     String driverType;
-    @CsvBindByPosition(position = 4)
+    //@CsvBindByPosition(position = 4)
+    @CsvBindByName (column = "TypeName")
     String typeName;
-    @CsvBindByPosition(position = 5)
+    //@CsvBindByPosition(position = 5)
+    @CsvBindByName (column = "Matrix")
     String matrix;
-    @CsvBindByPosition(position = 6)
+    //@CsvBindByPosition(position = 6)
+    @CsvBindByName (column = "Tagname")
     String tagname;
-    @CsvBindByPosition(position = 7)
+    //@CsvBindByPosition(position = 7)
+    @CsvBindByName (column = "Unit")
     String unit;
-    @CsvBindByPosition(position = 9)
+    //@CsvBindByPosition(position = 9)
+    @CsvBindByName (column = "SystemModelGroup")
     String systemModel;
-    @CsvBindByPosition(position = 12) //12
+    //@CsvBindByPosition(position = 12) //12
+    @CsvBindByName (column = "Recourceslabel")
     String recourcesLabel;
-    @CsvBindByPosition(position = 13)
+    //@CsvBindByPosition(position = 13)
+    @CsvBindByName (column = "NetAddr")
     String netAddr;
-    @CsvBindByPosition(position = 19)
+    //@CsvBindByPosition(position = 19)
+    @CsvBindByName (column = "SymbAddr")
     String symbAddr;
-    @CsvBindByPosition(position = 76)
+    //@CsvBindByPosition(position = 76)
+    @CsvBindByName (column = "IEC870_TYPE")
     String iec870_type;
-    @CsvBindByPosition(position = 77)
+    //@CsvBindByPosition(position = 77)
+    @CsvBindByName (column = "IEC870_COA1")
     String iec870_coa1;
-    @CsvBindByPosition(position = 78)
+    //@CsvBindByPosition(position = 78)
+    @CsvBindByName (column = "IEC870_IOA1")
     String iec870_ioa1;
 
     String coefficientTransform;
@@ -453,6 +467,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
 
     public ResourceBean(ResourceBean bean){
         this(
+                bean.getVariableName(),
                 bean.getDriverType().name(),
                 bean.getTypeName(),
                 bean.getMatrix(),
@@ -466,8 +481,12 @@ public class ResourceBean implements Comparable<ResourceBean>{
         );
     }
 
-    public ResourceBean(){
+    public ResourceBean(){}
+
+
+    /*public ResourceBean(){
         this(
+                "",
                 "",
                 "",
                 "",
@@ -479,9 +498,10 @@ public class ResourceBean implements Comparable<ResourceBean>{
                 "",
                 ""
         );
-    }
+    }*/
 
     public ResourceBean(
+            String variableName,
             String driverType,
             String typeName,
             String matrix,
@@ -493,6 +513,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
             String iec870_coa1,
             String iec870_ioa1
     ) {
+        this.variableName = variableName;
         this.driverType = driverType;
         this.typeName = typeName;
         this.matrix = matrix;
