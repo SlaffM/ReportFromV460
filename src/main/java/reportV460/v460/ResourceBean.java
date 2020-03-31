@@ -2,7 +2,6 @@ package reportV460.v460;
 
 
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvBindByPosition;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import reportV460.Helpers.Helpers;
 import reportV460.Helpers.LogInfo;
@@ -36,7 +35,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     String unit;
     //@CsvBindByPosition(position = 9)
     @CsvBindByName (column = "SystemModelGroup")
-    String systemModel;
+    String systemModelGroup;
     //@CsvBindByPosition(position = 12) //12
     @CsvBindByName (column = "Recourceslabel")
     String recourcesLabel;
@@ -111,8 +110,11 @@ public class ResourceBean implements Comparable<ResourceBean>{
 
     public String getSignRV() {return signRV;}
 
-    public String getSystemModel() {
-        return systemModel;
+    public String getSystemModelGroup() {
+        return systemModelGroup;
+    }
+    public void setSystemModelGroup(String systemModelGroup) {
+        this.systemModelGroup = systemModelGroup;
     }
 
     public String getTypeName() {
@@ -130,6 +132,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
         setAlarmClassEnum(getAlarmTypeByRules(getMatrix()));
         setStatusText(getMatrix());
     }
+
+
 
     public String getRecourcesLabel() {
         return recourcesLabel;
@@ -255,8 +259,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     public boolean isVariablePositionSpr(){
         return  !isVariableTI() &&
                 (getVariableName().endsWith(".Position") &&
-                        ((getDriverType() == DriverType.SPRECON850) ||
-                        (getDriverType() == DriverType.SPRECON870)));
+                        ((getDriverType() == DriverType.SPRECON850) || (getDriverType() == DriverType.SPRECON870)));
     }
 
     public boolean isVariableEkra(){
@@ -268,7 +271,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
     }
 
     private boolean isNotPhysicalPosition(){
-        return !getSystemModel().contains("ManualMode.Physical");
+        return !getSystemModelGroup().contains("ManualMode.Physical");
     }
 
     private String setDefaultCoefficient() {
@@ -330,8 +333,17 @@ public class ResourceBean implements Comparable<ResourceBean>{
                 getSymbAddr().contains("subQ");
     }
 
-    public boolean isVariableInternalConnect(){
-        return  getVariableName().contains("Connect_vba") && (getDriverType() == DriverType.Intern);
+    public boolean isVariableNotUsed(){
+        return  (getVariableName().contains("Connect_vba") && (getDriverType() == DriverType.Intern)) ||
+                (getVariableName().contains("Module") ||
+                        getVariableName().contains("NoSync") ||
+                        getVariableName().contains("PanelFailure") ||
+                        getVariableName().contains("PwrFailure") ||
+                        getVariableName().contains("CUS") ||
+                        getVariableName().contains("RDU") ||
+                        getVariableName().contains("MES") ||
+                        getNetAddr().equals("200") ||
+                        getSystemModelGroup().equals("SnmpDiagn.Variables"));
     }
 
     public boolean isVariableHasBadIdentification(){
@@ -472,6 +484,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
                 bean.getTypeName(),
                 bean.getMatrix(),
                 bean.getTagname(),
+                //bean.getUnit(),
+                //bean.getSystemModel(),
                 bean.getRecourcesLabel(),
                 bean.getNetAddr(),
                 bean.getSymbAddr(),
@@ -481,16 +495,17 @@ public class ResourceBean implements Comparable<ResourceBean>{
         );
     }
 
-    public ResourceBean(){}
 
 
-    /*public ResourceBean(){
+    public ResourceBean(){
         this(
                 "",
                 "",
                 "",
                 "",
                 "",
+                //"",
+                //"",
                 "",
                 "",
                 "",
@@ -498,7 +513,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
                 "",
                 ""
         );
-    }*/
+    }
 
     public ResourceBean(
             String variableName,
@@ -506,6 +521,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
             String typeName,
             String matrix,
             String tagname,
+            //String unit,
+            //String systemModel,
             String recourcesLabel,
             String netAddr,
             String symbAddr,
@@ -518,6 +535,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
         this.typeName = typeName;
         this.matrix = matrix;
         this.tagname = tagname;
+        //this.unit = unit;
+        //this.systemModel = systemModel;
         this.recourcesLabel = recourcesLabel;
         this.netAddr = netAddr;
         this.symbAddr = symbAddr;

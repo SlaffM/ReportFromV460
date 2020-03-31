@@ -35,7 +35,7 @@ public class ParserVariablesV460 {
         columnMapping.put("Matrix", "matrix");
         columnMapping.put("Tagname", "tagname");
         columnMapping.put("Unit", "unit");
-        columnMapping.put("SystemModelGroup", "systemModel");
+        columnMapping.put("SystemModelGroup", "systemModelGroup");
         columnMapping.put("Recourceslabel", "recourcesLabel");
         columnMapping.put("NetAddr", "netAddr");
         columnMapping.put("SymbAddr", "symbAddr");
