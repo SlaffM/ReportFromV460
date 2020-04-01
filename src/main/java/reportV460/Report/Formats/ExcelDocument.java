@@ -67,7 +67,8 @@ public class ExcelDocument implements ExtensionFormat {
 
         //header.setLeft(dateFormat.format(calendar.getTime()));
         header.setCenter(
-                StyleDocument.setBold("Приложение " + numPr +" к протоколу испытаний №"+ numPr +"-"+ munth +"/"+ year)
+                StyleDocument.setBold("Приложение 1 к протоколу испытаний №"+ numPr +"-"+ munth +"/"+ year +
+                        " проверки прохождения дискретных сигналов в ССПИ")
         );
 
         Footer footer = sheet.getFooter();

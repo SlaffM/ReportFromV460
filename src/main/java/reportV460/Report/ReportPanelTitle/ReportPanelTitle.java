@@ -1,6 +1,8 @@
 package reportV460.Report.ReportPanelTitle;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.Group;
 import reportV460.Helpers.Prefs;
+import reportV460.v460.GrouperPoints;
 import reportV460.v460.ResourceBean;
 
 import java.util.LinkedHashMap;
@@ -9,9 +11,11 @@ import java.util.prefs.Preferences;
 public class ReportPanelTitle {
 
     private ResourceBean resourceBean;
+    private GrouperPoints grouperPoints;
 
-    public ReportPanelTitle(ResourceBean resourceBean){
+    public ReportPanelTitle(ResourceBean resourceBean, GrouperPoints grouperPoints){
         this.resourceBean = resourceBean;
+        this.grouperPoints = grouperPoints;
     }
 
     public String getTagname() { return getResourceBean().getTagname(); }
@@ -32,6 +36,7 @@ public class ReportPanelTitle {
     public ResourceBean getResourceBean() {
         return resourceBean;
     }
+    public GrouperPoints getGrouperPoints(){return grouperPoints;}
 
     public LinkedHashMap createHeaders(){
         LinkedHashMap titleTable = new LinkedHashMap<String,String>();

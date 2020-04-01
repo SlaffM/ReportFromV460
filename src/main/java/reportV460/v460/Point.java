@@ -215,9 +215,11 @@ public class Point {
     private void setReportPanelTitle(ResourceBean resourceBean)
             throws ParserConfigurationException, SAXException,
             XPathExpressionException, IOException {
-        this.reportPanelTitle = isSpreconTable() ?
-                new ReportPanelSprTitle(resourceBean) :
-                new ReportPanelTitle(resourceBean);
+        if (isSpreconTable()) {
+            this.reportPanelTitle = new ReportPanelSprTitle(resourceBean, grouperPoints);
+        } else {
+            this.reportPanelTitle = new ReportPanelTitle(resourceBean, grouperPoints);
+        }
     }
 
     public DriverType getDriverType() {

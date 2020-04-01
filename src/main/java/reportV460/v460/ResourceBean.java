@@ -210,11 +210,16 @@ public class ResourceBean implements Comparable<ResourceBean>{
         return getTagname().substring(0,8).trim();
     }
     public Integer getPanelLocationInt() {
-        try{
+        if (Helpers.tryParseInt(getPanelLocation())){
+            return Integer.parseInt(Helpers.getTextWithPattern(getPanelLocation(), "(\\d+)"));
+        }else{
+            return 0;
+        }
+        /*try{
             return NumberFormat.getInstance().parse(getPanelLocation()).intValue();
         }catch (ParseException p){
             return 0;
-        }
+        }*/
         //return NumberFormat.getInstance().parse(getPanelLocation()).intValue();
     }
     public String getSystem(){
@@ -339,6 +344,7 @@ public class ResourceBean implements Comparable<ResourceBean>{
                         getVariableName().contains("NoSync") ||
                         getVariableName().contains("PanelFailure") ||
                         getVariableName().contains("PwrFailure") ||
+                        (getVariableName().contains("SPR") && getVariableName().contains("LOC")) ||
                         getVariableName().contains("CUS") ||
                         getVariableName().contains("RDU") ||
                         getVariableName().contains("MES") ||

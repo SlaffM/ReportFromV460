@@ -27,7 +27,7 @@ public class ValidatorResourceBeans {
         this.resourceBeans = resourceBeans;
         this.enipObjects = enips;
 
-        removeInternalConnectVariables();
+        removeNotUsedVariables();
         removeManualAttributeVariables();
         removeVariablesWithBadIdentify();
         addCorrectedDriverType();
@@ -49,7 +49,7 @@ public class ValidatorResourceBeans {
         resourceBeans.removeIf(ResourceBean::isVariableManualAttribute);
     }
 
-    private void removeInternalConnectVariables(){
+    private void removeNotUsedVariables(){
         resourceBeans.removeIf(ResourceBean::isVariableNotUsed);
     }
 
