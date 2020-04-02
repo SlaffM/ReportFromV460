@@ -28,8 +28,6 @@ public class ReportPanelSprTitle extends ReportPanelTitle {
                     return xmlVariablesParser.getPanelTitle();
                 else
                     return String.format("%s %s", getResourceBean().getVoltageClass(), getResourceBean().getConnectionTitle());
-            case GROUP_BY_PANEL:
-                return getResourceBean().getDevice();
             default:
                 return getResourceBean().getDevice();
         }
