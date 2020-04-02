@@ -1,2 +1,16 @@
 '.idea' 
 'ReportFromV460.iml' 
+/lib/
+/enips/
+/.idea/
+/module_reportfromv460.xml
+/target/
+/ReportFromV460.iml
+/reportfromv460.properties
+/reportfromv460.xml
+/v460.txt
+/v460_enips.txt
+/v460_enips_new.xls
+/v460_new.xls
+/variables.XML
+/out/
