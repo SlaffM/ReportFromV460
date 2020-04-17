@@ -1,5 +1,6 @@
 package reportV460.Report.Strategy;
 
+import reportV460.Helpers.Prefs;
 import reportV460.v460.Point;
 import reportV460.v460.ResourceBean;
 
@@ -26,7 +27,7 @@ public class Iec850Strategy extends IecStrategy {
         if(resourceBean.isVariableEkra())
             titleTable.put("Адрес внутр.", resourceBean.getRecourcesLabel());
         titleTable.put("Адрес МЭК-61850", resourceBean.getShortSymbAddress());
-        titleTable.put("Результат", "+");
+        titleTable.put("Результат", Prefs.getPrefValue("RESULT"));
 
         return titleTable;
 

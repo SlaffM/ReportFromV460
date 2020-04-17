@@ -46,6 +46,7 @@ public class Controller implements Initializable {
     @FXML public ListView listLog;
     @FXML public TextField txtIp;
     @FXML public Label lblPathXml;
+    @FXML public CheckBox chkResult;
 
     private File txtFile;
     private File xmlFile;
@@ -60,6 +61,7 @@ public class Controller implements Initializable {
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
         Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
+        Prefs.setPrefValue("RESULT", getChkResultValue());
 
         CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
@@ -80,7 +82,9 @@ public class Controller implements Initializable {
     public void setStage(Stage stage){
         this.stage = stage;
     }
-
+    private String getChkResultValue(){
+        return chkResult.selectedProperty().getValue() ? "+" : "";
+    }
 
     @FXML public void btnLoadTxtFileClick(ActionEvent event) throws InvocationTargetException, InterruptedException {
         FileChooser fileopen = new FileChooser();
@@ -176,6 +180,7 @@ public class Controller implements Initializable {
 
         setLblText(lblPathXml, Prefs.getPrefValue("PathProgramm") + "/template/variables.xml");
         setLblText(lblPathEnip, dirOfEnip);
+
 
     }
 

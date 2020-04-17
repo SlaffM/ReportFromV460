@@ -1,5 +1,6 @@
 package reportV460.Report.Strategy;
 
+import reportV460.Helpers.Prefs;
 import reportV460.v460.Point;
 import reportV460.v460.ResourceBean;
 
@@ -25,7 +26,7 @@ public class Iec850SprStrategy extends IecStrategy {
         }
         titleTable.put("Адрес Sprecon", resourceBean.getRecourcesLabel());
         titleTable.put("Адрес МЭК-61850", resourceBean.getShortSymbAddress());
-        titleTable.put("Результат", "+");
+        titleTable.put("Результат", Prefs.getPrefValue("RESULT"));
         titleTable.put("Примечание", resourceBean.getSignRV());
 
         return titleTable;

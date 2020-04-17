@@ -1,6 +1,7 @@
 package reportV460.Report.Strategy;
 
-import reportV460.v460.Point;
+import reportV460.Helpers.Prefs;
+
 import reportV460.v460.ResourceBean;
 
 import java.util.LinkedHashMap;
@@ -26,7 +27,7 @@ public class IecStrategy implements ReportStrategy{
         titleTable.put("Тип АСДУ", resourceBean.getIec870_type());
         titleTable.put("Адрес АСДУ", resourceBean.getIec870_coa1());
         titleTable.put("Адрес объекта", resourceBean.getIec870_ioa1());
-        titleTable.put("Результат", "+");
+        titleTable.put("Результат", Prefs.getPrefValue("RESULT"));
 
         return titleTable;
 
