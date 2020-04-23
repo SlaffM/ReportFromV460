@@ -12,6 +12,7 @@ public class ReportPanelTitle {
 
     private ResourceBean resourceBean;
     private GrouperPoints grouperPoints;
+    private int countLabels;
 
     public ReportPanelTitle(ResourceBean resourceBean, GrouperPoints grouperPoints){
         this.resourceBean = resourceBean;
@@ -48,5 +49,9 @@ public class ReportPanelTitle {
         titleTable.put("IP-адрес", getIpAddress());
 
         return titleTable;
+    }
+
+    public int getCountLabels() {
+        return createHeaders().size();
     }
 }

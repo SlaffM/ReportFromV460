@@ -21,10 +21,18 @@ public class ExcelDocument implements ExtensionFormat {
     private DocumentFile file;
     private HSSFWorkbook document;
     private Sheet sheet;
+    private int countLinesIncludeWithTitlePanel = 10;
 
     private int twoRowsFromPrevPointTable = 2;
     private int oneRowOffset = 1;
     private int colsForTitlePanel = 2;
+    private int headerRowCount = 1;
+    private int countRowsOnPage = 59;
+    private int limitOfRowsOnPoint = 21;
+    private int countRowsOfPointsWithSignaturesPage = 5;
+    private int countRowsOfSignatures = 7;
+    private Map<String, String> titlesForLastTable;
+
 
     ExcelDocument(ArrayList<Point> points, DocumentFile documentFile) {
         this.file = documentFile;
@@ -43,12 +51,12 @@ public class ExcelDocument implements ExtensionFormat {
         sheet.setMargin(Sheet.TopMargin, 0.752);
         sheet.setMargin(Sheet.BottomMargin, 0.752);
 
-        sheet.setAutobreaks(true);
+        sheet.setAutobreaks(false);
         sheet.setFitToPage(true);
 
         PrintSetup printSetup = sheet.getPrintSetup();
         printSetup.setLandscape(true);
-        printSetup.setPaperSize(PrintSetup.A4_PAPERSIZE);
+        printSetup.setPaperSize(PrintSetup.A3_PAPERSIZE);
         printSetup.setFitHeight((short)0);
         printSetup.setFitWidth((short)1);
 
@@ -60,14 +68,14 @@ public class ExcelDocument implements ExtensionFormat {
 
         Calendar calendar = new GregorianCalendar();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat munthFormat = new SimpleDateFormat("MM");
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
         SimpleDateFormat yearFormat = new SimpleDateFormat("YY");
-        String munth = munthFormat.format(calendar.getTime());
+        String month = monthFormat.format(calendar.getTime());
         String year = yearFormat.format(calendar.getTime());
 
         //header.setLeft(dateFormat.format(calendar.getTime()));
         header.setCenter(
-                StyleDocument.setBold("Приложение 1 к протоколу испытаний №"+ numPr +"-"+ munth +"/"+ year +
+                StyleDocument.setBold("Приложение 1 к протоколу испытаний №"+ numPr +"-"+ month +"/"+ year +
                         " проверки прохождения дискретных сигналов в ССПИ")
         );
 
@@ -77,8 +85,47 @@ public class ExcelDocument implements ExtensionFormat {
     }
 
     public void createTables(Point point){
+        addRowBreakForNewPoint(point);
         createPanelTitle(point.getReportPanelTitle());
         createPanelVariables(point);
+    }
+
+    private void addRowBreakForNewPoint(Point point){
+        if (sheet.getLastRowNum() < 2) {return;}
+        if (getLinesNumOfFullTitlePanel(point) > getLinesNumToEndPage()
+                || (sheet.getLastRowNum() + limitOfRowsOnPoint) > getLinesNumToEndPage()){
+            addRows(getLinesNumToEndPage() - sheet.getLastRowNum()-headerRowCount);
+            sheet.setRowBreak(sheet.getLastRowNum());
+        }else{
+            addRows(twoRowsFromPrevPointTable);
+        }
+    }
+
+    private void addRowBreakForTableTI(Point point){
+        if (sheet.getLastRowNum() + point.getCountTI() > getLinesNumToEndPage()-headerRowCount){
+            addRows(getLinesNumToEndPage()-headerRowCount - sheet.getLastRowNum());
+            sheet.setRowBreak(sheet.getLastRowNum());
+        }else{
+            addRows(oneRowOffset);
+        }
+    }
+
+    private int getLinesNumOfFullTitlePanel(Point point){
+        return  sheet.getLastRowNum() +
+                + point.getCountLabels() +
+                + oneRowOffset +
+                + headerRowCount +
+                + countLinesIncludeWithTitlePanel;
+    }
+
+    private int getLinesNumToEndPage(){
+        int startNum = sheet.getLastRowNum();
+        boolean end = false;
+        while(!end){
+            startNum++;
+            end = startNum % countRowsOnPage == 0;
+        }
+        return startNum;
     }
 
     public void createPanelTitle(ReportPanelTitle reportPanelTitle) {
@@ -89,6 +136,7 @@ public class ExcelDocument implements ExtensionFormat {
         CellStyle baseStyle = StyleDocument.createBaseStyle(document);
 
         titleTable.forEach((key, value) -> {
+
             Row row = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
 
             Cell cell;
@@ -122,15 +170,24 @@ public class ExcelDocument implements ExtensionFormat {
             addVariablesToVariablesPanel(reportStrategy, point.getResourcebeansOfTS());
         }
         if (!point.getResourcebeansOfTI().isEmpty()) {
-            addRows(oneRowOffset);
+            addRowBreakForTableTI(point);
             addVariablesToVariablesPanel(reportStrategy, point.getResourcebeansOfTI());
         }
         point.clearBeansInPoint();
-        addRows(twoRowsFromPrevPointTable);
     }
 
     public void addHeadersToVariablesPanel(Map<String, String> headers){
-        Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
+        addHeadersToVariablesPanel(headers, sheet.getLastRowNum() + oneRowOffset);
+    }
+
+    public void addHeadersToVariablesPanel(Map<String, String> headers, int insertedRowNum){
+
+        Row tableRow = sheet.getRow(insertedRowNum);
+        if(tableRow != null) {
+            sheet.shiftRows(insertedRowNum, sheet.getLastRowNum()-2, 1);
+        }else {
+             tableRow = sheet.createRow(insertedRowNum);
+        }
 
         CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
 
@@ -142,13 +199,17 @@ public class ExcelDocument implements ExtensionFormat {
             count++;
         }
     }
+
+
     public void addVariablesToVariablesPanel(ReportStrategy reportStrategy, ArrayList<ResourceBean> resourceBeans) {
         CellStyle baseStyle = StyleDocument.createBaseStyle(document);
 
         int cols = 0;
         int rowTable = 0;
 
-        Map<String, String> titles;
+        Map<String,String> titles;
+        titlesForLastTable = reportStrategy.createDataHeaders(resourceBeans.get(0));
+
         for(ResourceBean resourceBean : resourceBeans){
             titles = reportStrategy.createDataHeaders(resourceBean);
 
@@ -156,6 +217,12 @@ public class ExcelDocument implements ExtensionFormat {
                 addHeadersToVariablesPanel(titles);
                 cols = titles.size();
             }
+
+            if (sheet.getLastRowNum() == getLinesNumToEndPage()-headerRowCount) {
+                sheet.setRowBreak(sheet.getLastRowNum());
+                addHeadersToVariablesPanel(titles);
+            }
+
             Row tableRow = sheet.createRow(sheet.getLastRowNum() + oneRowOffset);
 
             int colNum = 0;
@@ -171,6 +238,7 @@ public class ExcelDocument implements ExtensionFormat {
         resizeCollumns(cols);
     }
 
+
     private void addRows(int countRows){
         sheet.createRow(sheet.getLastRowNum() + countRows);
     }
@@ -180,6 +248,11 @@ public class ExcelDocument implements ExtensionFormat {
 
     private void addSignaturesToLastPage() {
         HSSFWorkbook templateWorkBook = getTemplateBook();
+        if(((sheet.getLastRowNum()) + countRowsOfSignatures) > getLinesNumToEndPage()){
+            addHeadersToVariablesPanel(titlesForLastTable, sheet.getLastRowNum()-1 - countRowsOfPointsWithSignaturesPage);
+            sheet.setRowBreak(sheet.getLastRowNum()-2 - countRowsOfPointsWithSignaturesPage);
+        }
+        addRows(twoRowsFromPrevPointTable);
         try {
             copyRow(templateWorkBook, document);
         }catch (NullPointerException e){
@@ -268,10 +341,20 @@ public class ExcelDocument implements ExtensionFormat {
                             mergeAddress.getLastColumn()
                     )
             );
+
         }
     }
     private String getFileName(){
         return this.file.getName();
+    }
+
+
+    private int getCountRowsOfPoint(Point point){
+        return point.getCountLabels()+1 + point.getCountTS()+1 + point.getCountTI()+1;
+    }
+
+    private int getCountRowsOfLabelsPoint(Point point){
+        return point.getCountLabels()+1;
     }
 
     @Override

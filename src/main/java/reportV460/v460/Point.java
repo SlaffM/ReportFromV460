@@ -29,6 +29,16 @@ public class Point {
     private ArrayList<ResourceBean> resourcebeansOfTI = new ArrayList<>();
     private ArrayList<ResourceBean> resourcebeansOfTS = new ArrayList<>();
 
+    public int getCountTS(){
+        return getResourcebeansOfTS().size();
+    }
+    public int getCountTI(){
+        return getResourcebeansOfTI().size();
+    }
+    public int getCountLabels() {
+        return getReportPanelTitle().getCountLabels();
+    }
+
     private Point(Builder builder)
             throws ParserConfigurationException, SAXException,
             XPathExpressionException, IOException {
