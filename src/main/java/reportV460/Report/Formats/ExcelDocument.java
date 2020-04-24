@@ -92,13 +92,17 @@ public class ExcelDocument implements ExtensionFormat {
 
     private void addRowBreakForNewPoint(Point point){
         if (sheet.getLastRowNum() < 2) {return;}
-        if (getLinesNumOfFullTitlePanel(point) > getLinesNumToEndPage()
-                || (sheet.getLastRowNum() + limitOfRowsOnPoint) > getLinesNumToEndPage()){
+        if (isPartOrLimitOfPointNotFitOnPage(point)){
             addRows(getLinesNumToEndPage() - sheet.getLastRowNum()-headerRowCount);
             sheet.setRowBreak(sheet.getLastRowNum());
         }else{
             addRows(twoRowsFromPrevPointTable);
         }
+    }
+
+    private boolean isPartOrLimitOfPointNotFitOnPage(Point point){
+        return (getLinesNumOfFullTitlePanel(point) > getLinesNumToEndPage())
+                || ((sheet.getLastRowNum() + limitOfRowsOnPoint) > getLinesNumToEndPage());
     }
 
     private void addRowBreakForTableTI(Point point){
@@ -180,13 +184,13 @@ public class ExcelDocument implements ExtensionFormat {
         addHeadersToVariablesPanel(headers, sheet.getLastRowNum() + oneRowOffset);
     }
 
-    public void addHeadersToVariablesPanel(Map<String, String> headers, int insertedRowNum){
+    public void addHeadersToVariablesPanel(Map<String, String> headers, int destinationRowNum){
 
-        Row tableRow = sheet.getRow(insertedRowNum);
+        Row tableRow = sheet.getRow(destinationRowNum);
         if(tableRow != null) {
-            sheet.shiftRows(insertedRowNum, sheet.getLastRowNum()-2, 1);
+            sheet.shiftRows(destinationRowNum, sheet.getLastRowNum()-2, 1);
         }else {
-             tableRow = sheet.createRow(insertedRowNum);
+             tableRow = sheet.createRow(destinationRowNum);
         }
 
         CellStyle headerStyle = StyleDocument.createHeadingStyle(document);
@@ -218,7 +222,7 @@ public class ExcelDocument implements ExtensionFormat {
                 cols = titles.size();
             }
 
-            if (sheet.getLastRowNum() == getLinesNumToEndPage()-headerRowCount) {
+            if (sheet.getLastRowNum() == getLinesNumToEndPage() - headerRowCount) {
                 sheet.setRowBreak(sheet.getLastRowNum());
                 addHeadersToVariablesPanel(titles);
             }
@@ -248,8 +252,9 @@ public class ExcelDocument implements ExtensionFormat {
 
     private void addSignaturesToLastPage() {
         HSSFWorkbook templateWorkBook = getTemplateBook();
-        if(((sheet.getLastRowNum()) + countRowsOfSignatures) > getLinesNumToEndPage()){
-            addHeadersToVariablesPanel(titlesForLastTable, sheet.getLastRowNum()-1 - countRowsOfPointsWithSignaturesPage);
+        if(((sheet.getLastRowNum()) + countRowsOfSignatures) > getLinesNumToEndPage() - headerRowCount){
+            addHeadersToVariablesPanel(titlesForLastTable, sheet.getLastRowNum()
+                    - headerRowCount - countRowsOfPointsWithSignaturesPage);
             sheet.setRowBreak(sheet.getLastRowNum()-2 - countRowsOfPointsWithSignaturesPage);
         }
         addRows(twoRowsFromPrevPointTable);
@@ -346,15 +351,6 @@ public class ExcelDocument implements ExtensionFormat {
     }
     private String getFileName(){
         return this.file.getName();
-    }
-
-
-    private int getCountRowsOfPoint(Point point){
-        return point.getCountLabels()+1 + point.getCountTS()+1 + point.getCountTI()+1;
-    }
-
-    private int getCountRowsOfLabelsPoint(Point point){
-        return point.getCountLabels()+1;
     }
 
     @Override
