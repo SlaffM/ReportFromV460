@@ -18,6 +18,7 @@ import reportV460.Helpers.Prefs;
 import reportV460.Report.Formats.CreatorPointsAndExtractToFormat;
 import reportV460.v460.GrouperPoints;
 
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,7 +43,7 @@ public class Controller implements Initializable {
     @FXML public Label lblPathEnip;
     @FXML public TextArea txtLog;
     @FXML public ComboBox<GrouperPoints> selectTypeGroup = new ComboBox<>();
-    @FXML public ProgressBar progress = new ProgressBar();
+    @FXML public ProgressBar progress;
     @FXML public ListView listLog;
     @FXML public TextField txtIp;
     @FXML public Label lblPathXml;
@@ -62,6 +63,8 @@ public class Controller implements Initializable {
 
         Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
         Prefs.setPrefValue("RESULT", getChkResultValue());
+
+
 
         CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
@@ -88,7 +91,9 @@ public class Controller implements Initializable {
 
     @FXML public void btnLoadTxtFileClick(ActionEvent event) throws InvocationTargetException, InterruptedException {
         FileChooser fileopen = new FileChooser();
-        fileopen.setInitialDirectory(new File("."));
+        if (txtFile != null)    { fileopen.setInitialDirectory(txtFile.getParentFile());}
+        else                    { fileopen.setInitialDirectory(new File(".")); }
+
         fileopen.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("TXT files", "*.txt"));
         txtFile = fileopen.showOpenDialog(stage.getScene().getWindow());

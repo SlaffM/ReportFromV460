@@ -25,13 +25,15 @@ public class ExcelDocument implements ExtensionFormat {
 
     private int twoRowsFromPrevPointTable = 2;
     private int oneRowOffset = 1;
-    private int colsForTitlePanel = 2;
     private int headerRowCount = 1;
     private int countRowsOnPage = 59;
     private int limitOfRowsOnPoint = 21;
     private int countRowsOfPointsWithSignaturesPage = 5;
     private int countRowsOfSignatures = 7;
+
     private Map<String, String> titlesForLastTable;
+    private int countLinesOfLastPoint = 0;
+
 
 
     ExcelDocument(ArrayList<Point> points, DocumentFile documentFile) {
@@ -93,7 +95,7 @@ public class ExcelDocument implements ExtensionFormat {
     private void addRowBreakForNewPoint(Point point){
         if (sheet.getLastRowNum() < 2) {return;}
         if (isPartOrLimitOfPointNotFitOnPage(point)){
-            addRows(getLinesNumToEndPage() - sheet.getLastRowNum()-headerRowCount);
+            addRows(getLinesNumToEndPage() - sheet.getLastRowNum());
             sheet.setRowBreak(sheet.getLastRowNum());
         }else{
             addRows(twoRowsFromPrevPointTable);
@@ -106,8 +108,8 @@ public class ExcelDocument implements ExtensionFormat {
     }
 
     private void addRowBreakForTableTI(Point point){
-        if (sheet.getLastRowNum() + point.getCountTI() > getLinesNumToEndPage()-headerRowCount){
-            addRows(getLinesNumToEndPage()-headerRowCount - sheet.getLastRowNum());
+        if (sheet.getLastRowNum() + point.getCountTI() > getLinesNumToEndPage()){
+            addRows(getLinesNumToEndPage() - sheet.getLastRowNum());
             sheet.setRowBreak(sheet.getLastRowNum());
         }else{
             addRows(oneRowOffset);
@@ -129,7 +131,7 @@ public class ExcelDocument implements ExtensionFormat {
             startNum++;
             end = startNum % countRowsOnPage == 0;
         }
-        return startNum;
+        return startNum - headerRowCount;
     }
 
     public void createPanelTitle(ReportPanelTitle reportPanelTitle) {
@@ -172,11 +174,14 @@ public class ExcelDocument implements ExtensionFormat {
 
         if (!point.getResourcebeansOfTS().isEmpty()) {
             addVariablesToVariablesPanel(reportStrategy, point.getResourcebeansOfTS());
+            countLinesOfLastPoint = countLinesOfLastPoint + point.getCountTS() + headerRowCount;
         }
         if (!point.getResourcebeansOfTI().isEmpty()) {
             addRowBreakForTableTI(point);
             addVariablesToVariablesPanel(reportStrategy, point.getResourcebeansOfTI());
+            countLinesOfLastPoint = countLinesOfLastPoint + point.getCountTI() + headerRowCount;
         }
+        countLinesOfLastPoint = countLinesOfLastPoint + point.getCountLabels() + oneRowOffset;
         point.clearBeansInPoint();
     }
 
@@ -213,6 +218,7 @@ public class ExcelDocument implements ExtensionFormat {
 
         Map<String,String> titles;
         titlesForLastTable = reportStrategy.createDataHeaders(resourceBeans.get(0));
+        countLinesOfLastPoint = resourceBeans.size() + headerRowCount;
 
         for(ResourceBean resourceBean : resourceBeans){
             titles = reportStrategy.createDataHeaders(resourceBean);
@@ -222,7 +228,7 @@ public class ExcelDocument implements ExtensionFormat {
                 cols = titles.size();
             }
 
-            if (sheet.getLastRowNum() == getLinesNumToEndPage() - headerRowCount) {
+            if (sheet.getLastRowNum() == getLinesNumToEndPage()) {
                 sheet.setRowBreak(sheet.getLastRowNum());
                 addHeadersToVariablesPanel(titles);
             }
@@ -251,19 +257,40 @@ public class ExcelDocument implements ExtensionFormat {
     }
 
     private void addSignaturesToLastPage() {
-        HSSFWorkbook templateWorkBook = getTemplateBook();
-        if(((sheet.getLastRowNum()) + countRowsOfSignatures) > getLinesNumToEndPage() - headerRowCount){
-            addHeadersToVariablesPanel(titlesForLastTable, sheet.getLastRowNum()
-                    - headerRowCount - countRowsOfPointsWithSignaturesPage);
-            sheet.setRowBreak(sheet.getLastRowNum()-2 - countRowsOfPointsWithSignaturesPage);
+
+        int destNum = sheet.getLastRowNum();
+
+        if(ifCantPutPointWithSignOnPage()){
+            destNum = destNum - headerRowCount - countRowsOfPointsWithSignaturesPage;
+            addHeadersToVariablesPanel(titlesForLastTable, destNum);
+            sheet.setRowBreak(destNum - headerRowCount);
         }
+
+        addSignToPage();
+
+        deleteLastRows();
+    }
+
+    private boolean ifCantPutPointWithSignOnPage(){
+        return !(sheet.getLastRowNum() + countRowsOfSignatures <= getLinesNumToEndPage());
+    }
+
+    private void addSignToPage(){
         addRows(twoRowsFromPrevPointTable);
         try {
-            copyRow(templateWorkBook, document);
+            copyRow(getTemplateBook(), document);
         }catch (NullPointerException e){
             LogInfo.setErrorData(e.getCause() + "\n" + e.getMessage());
         }
     }
+
+    private void deleteLastRows(){
+        for(int rowNum = sheet.getLastRowNum(); rowNum >= getLinesNumToEndPage(); rowNum++){
+            Row row = sheet.getRow(rowNum);
+            sheet.removeRow(row);
+        }
+    }
+
     private HSSFWorkbook getTemplateBook(){
 
         File last_page = new File("." + "/template/template_last_page.xls");

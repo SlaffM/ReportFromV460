@@ -181,21 +181,6 @@ public class Point {
     public static ArrayList<Point> buildPoints(List<ResourceBean> resourceBeans,
                                                GrouperPoints grouperPoints){
 
-        /*DistributerToPoints.buildPoints(resourceBeans, grouperPoints).forEach(resourceBeans1 ->
-                {
-                    try {
-                        new Builder()
-                                .resourceBeans(resourceBeans1)
-                                .grouperParameter(grouperPoints)
-                                .build();
-                    } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
-                        e.printStackTrace();
-                    }
-                }
-        );*/
-
-        //DistributerToPoints.buildPoints(resourceBeans, grouperPoints);
-
         Map<Integer, List<ResourceBean>> points = DistributerToPoints.buildPoints(resourceBeans, grouperPoints);
 
         points.values().forEach(resourceBeans1 ->
