@@ -1,5 +1,6 @@
 package reportV460;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,25 +11,17 @@ import javafx.scene.control.TextArea;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import javafx.concurrent.Task;
 import reportV460.Helpers.LogInfo;
 import reportV460.Helpers.Prefs;
 import reportV460.Report.Formats.CreatorPointsAndExtractToFormat;
 import reportV460.v460.GrouperPoints;
 
-import javax.swing.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 public class Controller implements Initializable {
     @FXML public Label lblPathTxt;
@@ -58,13 +51,55 @@ public class Controller implements Initializable {
     private String dirOfEnip = new File("./enips").getAbsolutePath();
     private String logLine = "";
     private Stage stage;
+    private ActionEvent actionEvent;
+
 
     @FXML public void createFile(ActionEvent actionEvent) throws Exception {
 
         Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
         Prefs.setPrefValue("RESULT", getChkResultValue());
 
+        CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
+                .withPathV460Variables(txtFile.getAbsolutePath())
+                .withPathEnipConfigurations(dirOfEnip)
+                .withGrouperPoints(selectTypeGroup.getSelectionModel().getSelectedItem())
+                .withPathSavedFile(getlblPathDoc())
+                .build();
 
+        final Task<Void> taskCreateFile = creatorPointsAndExtractToFormat.createFile();
+        startTask(taskCreateFile);
+    }
+
+    private void startTask(Task<Void> task){
+        // Get the loading Task
+        //System.out.println("Starting task ...");
+
+        //final Task<Void> task = creatorPointsAndExtractToFormat.createFile();
+
+        // Catch any exceptions
+        task.setOnFailed(wse -> {
+            //System.out.println("Error");
+            task.getException().printStackTrace();
+        });
+
+        // Print success when complete
+        task.setOnSucceeded(wse -> {
+            //System.out.println("DONE!");
+            progress.setStyle("-fx-accent: #19ee15");
+        });
+
+        // Bind our ProgressBar's properties
+        progress.progressProperty().bind(task.progressProperty());
+
+        // Run the task
+        new Thread(task).start();
+    }
+
+
+    /*@FXML public void createFile(ActionEvent actionEvent) throws Exception {
+
+        Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
+        Prefs.setPrefValue("RESULT", getChkResultValue());
 
         CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
@@ -73,7 +108,8 @@ public class Controller implements Initializable {
                 .withPathSavedFile(getlblPathDoc())
                 .build();
         creatorPointsAndExtractToFormat.createFile();
-    }
+    }*/
+
     private String getlblPathDoc(){
         return lblPathDoc.textProperty().getValue();
     }
