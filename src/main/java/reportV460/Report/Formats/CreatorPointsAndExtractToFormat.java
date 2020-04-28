@@ -35,7 +35,7 @@ public class CreatorPointsAndExtractToFormat {
                     selectedFormat.writeDocument();
                 });
 
-                updateProgress(50, 100);
+                updateProgress(80, 100);
 
                 return null;
             }
@@ -80,37 +80,17 @@ public class CreatorPointsAndExtractToFormat {
             return this;
         }
 
-        public Task<Void> buildProcess(){
-            return new Task<Void>() {
-                @Override
-                protected Void call() throws Exception {
 
-                    updateProgress(0, 100);
-
-                    Platform.runLater(()->{
-                        EnipObject.clearAllEnips();
-                        Point.clearPoints();
-
-                        List<ResourceBean> resourceBeans =
-                                null;
-                        try {
-                            resourceBeans = new ValidatorResourceBeans(pathV460Variables, pathEnipConfigurations).getReadyBeans();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        Point.buildPoints(resourceBeans, grouperPoints);
-                    });
-
-                    updateProgress(50,100);
-
-                    return null;
-                }
-            };
-        }
 
         public CreatorPointsAndExtractToFormat build() throws IOException {
-            buildProcess();
+            EnipObject.clearAllEnips();
+            Point.clearPoints();
+
+            List<ResourceBean> resourceBeans =
+                    new ValidatorResourceBeans(pathV460Variables, pathEnipConfigurations).getReadyBeans();
+
+            Point.buildPoints(resourceBeans, grouperPoints);
+
             return new CreatorPointsAndExtractToFormat(pathSavedFile);
         }
     }
