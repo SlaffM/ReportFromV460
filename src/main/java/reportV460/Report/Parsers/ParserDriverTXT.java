@@ -44,17 +44,21 @@ public class ParserDriverTXT {
 
 
     public static ArrayList<DriverObject> createDrivers(String dir){
+
+        if (dir.isEmpty()) return new ArrayList<>();
+
+        dir = dir + "/zenon/custom/drivers";
         File folder = new File(dir);
         if (folder.isDirectory() && folder.exists()){
             File[] files = folder.listFiles();
             for (File file : files) {
                 if(file.getName().endsWith(".txt")) createDevicesForDriver(file);
             }
-            LogInfo.setLogDataWithTitle("Прочитаны конфигурации ЭНИПов",
+            LogInfo.setLogDataWithTitle("Прочитаны конфигурации драйверов",
                     String.valueOf(DriverObject.getAllDrivers().size()));
             return DriverObject.getAllDrivers();
         }
-        LogInfo.setErrorData("Директория с конфигурациями ENIP отсутствует!");
+        LogInfo.setErrorData("Директория с конфигурациями драйверов отсутствует!");
         return new ArrayList<>();
     }
 }
