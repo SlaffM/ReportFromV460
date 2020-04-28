@@ -67,9 +67,7 @@ public class Controller implements Initializable {
         Prefs.setPrefValue("RESULT", getChkResultValue());
         Prefs.setPrefValue("PathDrivers", lblPathDrivers.textProperty().getValue());
 
-        if (!lblPathDrivers.textProperty().getValue().isEmpty()) {
-            ParserDriverTXT.createDrivers(lblPathDrivers.textProperty().getValue());
-        }
+        ParserDriverTXT.createDrivers(lblPathDrivers.textProperty().getValue());
 
         CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
