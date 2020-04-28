@@ -30,6 +30,7 @@ public class ParserVariablesV460 {
 
         Map<String, String> columnMapping = new HashMap<>();
         columnMapping.put("VariableName", "variableName");
+        columnMapping.put("DriverName", "driverName");
         columnMapping.put("DriverType", "driverType");
         columnMapping.put("TypeName", "typeName");
         columnMapping.put("Matrix", "matrix");

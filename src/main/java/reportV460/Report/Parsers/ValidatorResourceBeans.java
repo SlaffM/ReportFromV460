@@ -35,7 +35,6 @@ public class ValidatorResourceBeans {
         setCorrectMatrixToVariables();
         addCoefficientTransform();
         setManualParameterForVariables();
-
     }
 
     public List<ResourceBean> getReadyBeans(){

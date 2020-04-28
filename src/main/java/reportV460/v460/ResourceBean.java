@@ -18,6 +18,8 @@ public class ResourceBean implements Comparable<ResourceBean>{
     //@CsvBindByPosition(position = 0)
     @CsvBindByName (column = "VariableName")
     String variableName;
+    @CsvBindByName (column = "DriverName")
+    String driverName;
     //@CsvBindByPosition(position = 2)
     @CsvBindByName (column = "DriverType")
     String driverType;
@@ -88,6 +90,14 @@ public class ResourceBean implements Comparable<ResourceBean>{
 
     public DriverType getDriverType() {
         return DriverType.valueOf(driverType);
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
     }
 
     public String getTagname() {

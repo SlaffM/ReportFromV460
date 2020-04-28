@@ -15,12 +15,15 @@ import javafx.concurrent.Task;
 import reportV460.Helpers.LogInfo;
 import reportV460.Helpers.Prefs;
 import reportV460.Report.Formats.CreatorPointsAndExtractToFormat;
+import reportV460.Report.Parsers.DriverObject;
+import reportV460.Report.Parsers.ParserDriverTXT;
 import reportV460.v460.GrouperPoints;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -41,6 +44,9 @@ public class Controller implements Initializable {
     @FXML public TextField txtIp;
     @FXML public Label lblPathXml;
     @FXML public CheckBox chkResult;
+    @FXML public Button btnLoadPathToDrivers;
+    @FXML public Label lblPathDrivers;
+
 
     private File txtFile;
     private File xmlFile;
@@ -49,6 +55,7 @@ public class Controller implements Initializable {
     private String extensionWord = ".docx";
     private String postfixNewFile = "_new";
     private String dirOfEnip = new File("./enips").getAbsolutePath();
+    private String dirOfDrivers;
     private String logLine = "";
     private Stage stage;
     private ActionEvent actionEvent;
@@ -58,6 +65,11 @@ public class Controller implements Initializable {
 
         Prefs.setPrefValue("IP", txtIp.textProperty().getValue());
         Prefs.setPrefValue("RESULT", getChkResultValue());
+        Prefs.setPrefValue("PathDrivers", lblPathDrivers.textProperty().getValue());
+
+        if (!lblPathDrivers.textProperty().getValue().isEmpty()) {
+            ParserDriverTXT.createDrivers(lblPathDrivers.textProperty().getValue());
+        }
 
         CreatorPointsAndExtractToFormat creatorPointsAndExtractToFormat = new CreatorPointsAndExtractToFormat.DocumentFacadeBuilder()
                 .withPathV460Variables(txtFile.getAbsolutePath())
@@ -191,6 +203,8 @@ public class Controller implements Initializable {
 
     }
 
+
+
     public void btnLoadPathToEnipClick(ActionEvent event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(new File("."));
@@ -235,6 +249,16 @@ public class Controller implements Initializable {
             setLblText(lblPathXml, xmlFile.getAbsolutePath());
 
             Prefs.setPrefValue("PathProgramm", lblPathXml.textProperty().getValue());
+        }
+    }
+
+    public void btnLoadPathToDriversClick(ActionEvent event) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setInitialDirectory(new File("."));
+        File dir = directoryChooser.showDialog(stage.getScene().getWindow());
+        if (dir != null){
+            dirOfDrivers = dir.getAbsolutePath();
+            setLblText(lblPathDrivers, dirOfDrivers);
         }
     }
 }

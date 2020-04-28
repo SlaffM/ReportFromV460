@@ -65,7 +65,6 @@ public class EnipObject {
         if (o == null || getClass() != o.getClass()) return false;
         EnipObject that = (EnipObject) o;
         return  getNetAddress().equals(that.getNetAddress());
-
     }
 
     @Override
@@ -84,13 +83,8 @@ public class EnipObject {
         return getAllEnips().size();
     }
 
-
     public String getVoltageCoefficient() {
         return VoltageCoefficient;
-    }
-
-    public void setVoltageCoefficient(String voltageCoefficient) {
-        VoltageCoefficient = voltageCoefficient;
     }
 
     public String getCurrentCoefficient() {
@@ -105,10 +99,6 @@ public class EnipObject {
         return PowerCoefficient;
     }
 
-    public void setPowerCoefficient(String powerCoefficient) {
-        PowerCoefficient = powerCoefficient;
-    }
-
     public String getIPAddress() {
         return IPAddress;
     }
@@ -119,10 +109,6 @@ public class EnipObject {
 
     public String getIedName() {
         return IedName;
-    }
-
-    public void setIedName(String iedName) {
-        IedName = iedName;
     }
 
     public String getNetAddress() {

@@ -2,6 +2,7 @@ package reportV460.Report.ReportPanelTitle;
 
 import org.apache.xmlbeans.impl.xb.xsdschema.Group;
 import reportV460.Helpers.Prefs;
+import reportV460.Report.Parsers.DriverObject;
 import reportV460.v460.GrouperPoints;
 import reportV460.v460.ResourceBean;
 
@@ -24,9 +25,19 @@ public class ReportPanelTitle {
     public String getPanelTitle(){
         return getResourceBean().getConnectionTitle();
     }
+
+
+
     public String getIpAddress() {
-        return Prefs.getPrefValue("IP") + getResourceBean().getNetAddr();
+        if (DriverObject.getDriversCount() > 0){
+            return DriverObject.getDeviceIpFromDrivers(
+                    getResourceBean().getDriverName(),
+                    getResourceBean().getNetAddr());
+        }else {
+            return Prefs.getPrefValue("IP") + getResourceBean().getNetAddr();
+        }
     }
+
     public String getConnectionTitle(){
         return getResourceBean().getConnectionTitle();
     }
